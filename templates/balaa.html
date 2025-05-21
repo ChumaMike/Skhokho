@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Balaa - Taxi Helper</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <h2>Balaa - Taxi Money Calculator</h2>
+    <form method="POST">
+        <label>Fare per person (e.g. 15):</label><br>
+        <input name="fare" type="number" step="0.01" required><br><br>
+
+        <label>Group size:</label><br>
+        <input name="group_size" type="number" min="1" required><br><br>
+
+        <label>Amounts received (e.g. 20, 50):</label><br>
+        <input name="amounts" type="text" placeholder="Separate with comma e.g. 20,50"><br><br>
+
+        <button type="submit">Calculate</button>
+    </form>
+
+    {% if result %}
+        {% if result.error %}
+            <p style="color:red;">Error: {{ result.error }}</p>
+        {% else %}
+            <h3>Result</h3>
+            <p>Total expected: R{{ result.expected }}</p>
+            <p>Total received: R{{ result.received }}</p>
+            <p>Change to give: R{{ result.change }}</p>
+        {% endif %}
+    {% endif %}
+
+    <h3>🕓 History (this session)</h3>
+    <ul>
+        {% for item in history %}
+            <li>
+                [{{ item.time }}] Fare: R{{ item.fare }} x {{ item.group_size }} |
+                Got: R{{ item.received }} |
+                Change: R{{ item.change }}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <p><a href="/">⬅ Back to Skhokho Home</a></p>
+</body>
+</html>
