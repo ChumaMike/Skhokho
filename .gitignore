@@ -32,3 +32,4 @@ htmlcov/
 
 # Pipenv files (if not used)
 Pipfile.lock
+.env
