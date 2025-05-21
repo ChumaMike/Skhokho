@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diary - Skhokho</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 10px; }
+        select, textarea, input[type=text], button { width: 100%; margin: 8px 0; padding: 8px; }
+        .entry { border-bottom: 1px solid #ddd; padding: 8px 0; }
+        .entry-time { font-size: 0.8em; color: gray; }
+        .error { color: red; }
+    </style>
+    <script>
+        function showInput() {
+            const type = document.getElementById('entry_type').value;
+            const container = document.getElementById('input_container');
+            let html = '';
+            if (type === 'todo' || type === 'need' || type === 'want') {
+                html = '<label>Enter comma separated items:</label><textarea name="content" rows="3" placeholder="Item1, Item2, ..."></textarea>';
+            } else if (type) {
+                html = '<label>Enter your '+ type.charAt(0).toUpperCase() + type.slice(1) + ':</label><textarea name="content" rows="3" required></textarea>';
+            } else {
+                html = '';
+            }
+            container.innerHTML = html;
+        }
+    </script>
+</head>
+<body>
+
+    <h2>Diary Entry</h2>
+
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+        <label for="entry_type">Select Entry Type:</label>
+        <select id="entry_type" name="entry_type" onchange="showInput()" required>
+            <option value="" selected disabled>Choose type</option>
+            <option value="note">Note</option>
+            <option value="feeling">Feeling</option>
+            <option value="reason">Reason</option>
+            <option value="todo">To-Do List</option>
+            <option value="need">Need List</option>
+            <option value="want">Want List</option>
+        </select>
+
+        <div id="input_container"></div>
+
+        <button type="submit">Save Entry</button>
+    </form>
+
+    <h3>Diary History</h3>
+
+    {% if entries %}
+        {% for date, daily_entries in entries.items() %}
+            <h4>{{ date }}</h4>
+            {% for entry in daily_entries %}
+                <div class="entry">
+                    <strong>{{ entry.type.capitalize() }}</strong>
+                    <div class="entry-time">{{ entry.timestamp }}</div>
+                    {% if entry.type in ['todo','need','want'] %}
+                        <ul>
+                        {% for item in entry.content.split(',') %}
+                            <li>{{ item.strip() }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>{{ entry.content }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    {% else %}
+        <p>No diary entries yet.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('home') }}">⬅ Back to Skhokho Home</a></p>
+
+</body>
+</html>

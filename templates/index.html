@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Skhokho</title>
+    <title>Skhokho - Personal Life Helper</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; text-align: center; }
+        a { display: block; margin: 20px 0; font-size: 1.2em; color: #007BFF; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
-    <h1>Welcome to Skhokho 🧠</h1>
-    <ul>
-        <li><a href="/balaa">Balaa – Taxi Money Helper</a></li>
-        <!-- More tools can be added here later -->
-    </ul>
+    <h1>Welcome to Skhokho</h1>
+    <p>Your personal life helper app.</p>
+
+    <a href="{{ url_for('balaa') }}">🚕 Balaa - Taxi Fare Calculator</a>
+    <a href="{{ url_for('diary') }}">📔 Diary - Daily Journal</a>
 </body>
 </html>
