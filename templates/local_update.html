@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Local Update for {{ location or 'your area' }}</title>
+</head>
+<body>
+    <h1>Get Local Updates, skhokho!</h1>
+    
+    <form method="POST" action="{{ url_for('local_update') }}">
+        <label for="location">Select Location:</label>
+        <select name="location" id="location">
+            <option value="Johannesburg" {% if location == "Johannesburg" %}selected{% endif %}>Johannesburg</option>
+            <option value="Soweto" {% if location == "Soweto" %}selected{% endif %}>Soweto</option>
+            <option value="Rosebank" {% if location == "Rosebank" %}selected{% endif %}>Rosebank</option>
+            <option value="Midrand" {% if location == "Midrand" %}selected{% endif %}>Midrand</option>
+        </select>
+        <button type="submit">Get Updates</button>
+    </form>
+
+    {% if weather %}
+        <h2>Weather Forecast for {{ location }}</h2>
+        <ul>
+            {% for item in weather %}
+            <li>{{ item.datetime }}: {{ item.temperature }}°C, {{ item.description }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if load_shedding %}
+        <h2>Load Shedding Info</h2>
+        <ul>
+            {% for item in load_shedding %}
+            <li>{{ item.note }} at {{ item.start }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if news %}
+        <h2>Latest News Headlines</h2>
+        <ul>
+            {% for article in news %}
+            <li><a href="{{ article.url }}">{{ article.title }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>
