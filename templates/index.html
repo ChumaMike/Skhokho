@@ -1,27 +1,28 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Skhokho - Personal Life Helper</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; text-align: center; }
-        a { display: block; margin: 20px 0; font-size: 1.2em; color: #007BFF; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-    </style>
-</head>
-<body>
-    {% if current_user.is_authenticated %}
-    <p>Welcome, {{ current_user.username }} | <a href="{{ url_for('logout') }}">Logout</a></p>
-    {% else %}
-        <p><a href="{{ url_for('login') }}">Login</a> | <a href="{{ url_for('register') }}">Register</a></p>
-    {% endif %}
+{% extends 'base.html' %}
 
-    <h1>Welcome to Skhokho</h1>
-    <p>Your personal life helper app.</p>
-    
-    <a href="{{ url_for('local_update') }}">📌 Local Update</a>
+{% block title %}Welcome Skhokho{% endblock %}
 
-    <a href="{{ url_for('balaa') }}">🚕 Balaa - Taxi Fare Calculator</a>
-    <a href="{{ url_for('diary') }}">📔 Diary - Daily Journal</a>
-</body>
-</html>
+{% block content %}
+<div class="text-center py-8">
+    <h1 class="text-4xl font-bold mb-2">Welcome to Skhokho 👋</h1>
+    <p class="text-gray-700 text-lg">Your personal life helper. Plan, calculate, reflect, and stay informed.</p>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <a href="{{ url_for('snapshot') }}" class="text-black no-underline hover:underline hover:text-purple-600">
+        <h2 class="text-xl font-semibold mb-2">🌤 Snapshot</h2></a>
+        <p>Get a quick look at the weather, a quote, and feel-good vibes to start your day.</p>
+
+    <a href="{{ url_for('local_update') }}"class="text-black no-underline hover:underline hover:text-purple-600">
+        <h2 class="text-xl font-semibold mb-2">📍 Local Update</h2></a>
+        <p>See your area’s latest weather, news, loadshedding, and upcoming events.</p>
+
+    <a href="{{ url_for('balaa') }}" class="block p-6 bg-white rounded shadow hover:bg-purple-50 transition">
+        <h2 class="text-xl font-semibold mb-2">💰 Balaa Calculator</h2></a>
+        <p>Calculate taxi fare contributions and change for your crew, skhokho.</p>
+
+    <a href="{{ url_for('diary') }}" class="block p-6 bg-white rounded shadow hover:bg-purple-50 transition">
+        <h2 class="text-xl font-semibold mb-2">📔 Diary</h2></a>
+        <p>Write down your thoughts, goals, and tasks. Stay mindful and organized.</p>
+</div>
+{% endblock %}

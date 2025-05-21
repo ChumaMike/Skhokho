@@ -1,47 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Local Update for {{ location or 'your area' }}</title>
-</head>
-<body>
-    <h1>Get Local Updates, skhokho!</h1>
-    
-    <form method="POST" action="{{ url_for('local_update') }}">
-        <label for="location">Select Location:</label>
-        <select name="location" id="location">
-            <option value="Johannesburg" {% if location == "Johannesburg" %}selected{% endif %}>Johannesburg</option>
-            <option value="Soweto" {% if location == "Soweto" %}selected{% endif %}>Soweto</option>
-            <option value="Rosebank" {% if location == "Rosebank" %}selected{% endif %}>Rosebank</option>
-            <option value="Midrand" {% if location == "Midrand" %}selected{% endif %}>Midrand</option>
-        </select>
-        <button type="submit">Get Updates</button>
-    </form>
+{% extends 'base.html' %}
 
-    {% if weather %}
-        <h2>Weather Forecast for {{ location }}</h2>
+{% block title %}Local Update{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Local Update for {{ location }}</h2>
+
+<form method="post" class="mb-6">
+    <label for="location" class="block mb-2">Choose Location:</label>
+    <select name="location" id="location" class="border px-4 py-2 w-full max-w-md">
+        <option value="Johannesburg">Johannesburg</option>
+        <option value="Soweto">Soweto</option>
+        <option value="Rosebank">Rosebank</option>
+        <option value="Midrand">Midrand</option>
+    </select>
+    <button type="submit" class="mt-2 bg-green-600 text-white px-4 py-2 rounded">Get Updates</button>
+</form>
+
+{% if weather %}
+    <div class="bg-white p-4 rounded shadow mb-4">
+        <h3 class="text-xl font-semibold">Weather Forecast</h3>
         <ul>
             {% for item in weather %}
             <li>{{ item.datetime }}: {{ item.temperature }}°C, {{ item.description }}</li>
             {% endfor %}
         </ul>
-    {% endif %}
+    </div>
+{% endif %}
 
-    {% if load_shedding %}
-        <h2>Load Shedding Info</h2>
+{% if load_shedding %}
+    <div class="bg-white p-4 rounded shadow mb-4">
+        <h3 class="text-xl font-semibold">Load Shedding</h3>
         <ul>
-            {% for item in load_shedding %}
-            <li>{{ item.note }} at {{ item.start }}</li>
+            {% for event in load_shedding %}
+            <li>{{ event.note }} at {{ event.start }}</li>
             {% endfor %}
         </ul>
-    {% endif %}
+    </div>
+{% endif %}
 
-    {% if news %}
-        <h2>Latest News Headlines</h2>
+{% if news %}
+    <div class="bg-white p-4 rounded shadow">
+        <h3 class="text-xl font-semibold">News Headlines</h3>
         <ul>
             {% for article in news %}
-            <li><a href="{{ article.url }}">{{ article.title }}</a></li>
+            <li><a href="{{ article.url }}" class="text-blue-600 hover:underline">{{ article.title }}</a></li>
             {% endfor %}
         </ul>
-    {% endif %}
-</body>
-</html>
+    </div>
+{% endif %}
+{% endblock %}

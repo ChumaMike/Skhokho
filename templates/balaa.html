@@ -1,99 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Balaa - Taxi Fare Calculator</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 10px; }
-        label, input, button { display: block; width: 100%; margin: 10px 0; }
-        input { padding: 8px; font-size: 1em; }
-        button { padding: 10px; font-size: 1.1em; }
-        .history-entry { border-bottom: 1px solid #ccc; padding: 8px 0; }
-        .error { color: red; }
-    </style>
-    <script>
-        function addAmountInput() {
-            const container = document.getElementById('amounts-container');
-            const input = document.createElement('input');
-            input.type = 'number';
-            input.name = 'amounts';
-            input.step = '0.01';
-            input.placeholder = 'Amount received';
-            input.required = true;
-            container.appendChild(input);
-        }
-    </script>
-</head>
-<body>
-    
-    {% if current_user.is_authenticated %}
-    <p>Welcome, {{ current_user.username }} | <a href="{{ url_for('logout') }}">Logout</a></p>
-    {% else %}
-        <p><a href="{{ url_for('login') }}">Login</a> | <a href="{{ url_for('register') }}">Register</a></p>
-    {% endif %}
+{% extends 'base.html' %}
 
-    <h2>Balaa - Taxi Fare Calculator</h2>
+{% block title %}Balaa Calculator{% endblock %}
 
-    <form method="POST">
-        <label for="fare">Taxi Fare per person:</label>
-        <input type="number" name="fare" step="0.01" id="fare" required>
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Balaa Fare Calculator</h2>
 
-        <label for="group_size">Number of people in the taxi:</label>
-        <input type="number" name="group_size" id="group_size" min="1" required onchange="adjustAmountInputs()">
+<form method="post" class="grid gap-4 max-w-lg bg-white p-4 rounded shadow mb-6">
+    <label>
+        Taxi Fare:
+        <input type="number" step="0.01" name="fare" required class="border px-4 py-2 w-full">
+    </label>
+    <label>
+        Group Size:
+        <input type="number" name="group_size" required class="border px-4 py-2 w-full">
+    </label>
+    <label>
+        Amounts Received (comma separated):
+        <input type="text" name="amounts" placeholder="e.g. 20, 10, 10" required class="border px-4 py-2 w-full">
+    </label>
+    <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded">Calculate</button>
+</form>
 
-        <label>Amounts received from passengers:</label>
-        <div id="amounts-container">
-            <!-- Amount inputs inserted here -->
-        </div>
-        <button type="button" onclick="addAmountInput()">+ Add Amount</button>
-
-        <button type="submit">Calculate</button>
-    </form>
-
-    <script>
-        function adjustAmountInputs() {
-            const groupSize = parseInt(document.getElementById('group_size').value);
-            const container = document.getElementById('amounts-container');
-            container.innerHTML = ''; // clear existing inputs
-            if (!groupSize || groupSize < 1) return;
-            for(let i=0; i < groupSize; i++) {
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.name = 'amounts';
-                input.step = '0.01';
-                input.placeholder = `Amount received from person ${i+1}`;
-                input.required = true;
-                container.appendChild(input);
-            }
-        }
-    </script>
-
-    {% if result %}
+{% if result %}
+    <div class="bg-green-100 p-4 rounded shadow mb-4">
         {% if result.error %}
-            <p class="error">Error: {{ result.error }}</p>
+            <p class="text-red-600 font-semibold">{{ result.error }}</p>
         {% else %}
-            <h3>Result</h3>
-            <p><strong>Fare per person:</strong> {{ result.fare }}</p>
-            <p><strong>Group size:</strong> {{ result.group_size }}</p>
-            <p><strong>Amounts received:</strong> {{ result.amounts }}</p>
-            <p><strong>Total expected:</strong> {{ result.expected }}</p>
-            <p><strong>Total received:</strong> {{ result.received }}</p>
-            <p><strong>Change to return:</strong> {{ result.change }}</p>
-            <p><em>Calculated at {{ result.time }}</em></p>
+            <p><strong>Fare:</strong> R{{ result.fare }}</p>
+            <p><strong>Group Size:</strong> {{ result.group_size }}</p>
+            <p><strong>Total Expected:</strong> R{{ result.expected }}</p>
+            <p><strong>Total Received:</strong> R{{ result.received }}</p>
+            <p><strong>Change:</strong> R{{ result.change }}</p>
+            <p><strong>Time:</strong> {{ result.time }}</p>
         {% endif %}
-    {% endif %}
+    </div>
+{% endif %}
 
-    <h3>Calculation History</h3>
-    {% if history %}
-        {% for h in history|reverse %}
-            <div class="history-entry">
-                <strong>{{ h.time }}</strong> — Fare: {{ h.fare }}, Group: {{ h.group_size }}, Received: {{ h.received }}, Change: {{ h.change }}
-            </div>
+{% if history %}
+    <h3 class="text-xl font-semibold mt-8 mb-2">Balaa History</h3>
+    <div class="bg-white p-4 rounded shadow">
+        <ul class="space-y-2">
+        {% for entry in history %}
+            <li class="border-b pb-2">
+                R{{ entry.fare }} × {{ entry.group_size }} → R{{ entry.expected }} | Received: R{{ entry.received }} | Change: R{{ entry.change }} | {{ entry.time }}
+            </li>
         {% endfor %}
-    {% else %}
-        <p>No calculations done yet.</p>
-    {% endif %}
-
-    <p><a href="{{ url_for('home') }}">⬅ Back to Home</a></p>
-</body>
-</html>
+        </ul>
+    </div>
+{% endif %}
+{% endblock %}

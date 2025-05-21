@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Weekly Snapshot{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Weekly Snapshot</h2>
+
+<form method="post" class="mb-6">
+    <label for="location" class="block mb-2">Enter Location:</label>
+    <input type="text" name="location" id="location" required class="border px-4 py-2 w-full max-w-md">
+    <button type="submit" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded">Get Snapshot</button>
+</form>
+
+{% if location %}
+    <div class="bg-white p-4 rounded shadow mb-4">
+        <h3 class="text-xl font-semibold mb-2">Weather in {{ location }}</h3>
+        {% if weather %}
+            <p><strong>Temperature:</strong> {{ weather.temperature }} °C</p>
+            <p><strong>Condition:</strong> {{ weather.description }}</p>
+        {% else %}
+            <p>No weather info available.</p>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}
