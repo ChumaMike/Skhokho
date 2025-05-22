@@ -9,20 +9,33 @@
 </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <a href="{{ url_for('snapshot') }}" class="text-black no-underline hover:underline hover:text-purple-600">
+    <a href="{{ url_for('snapshot') }}" class="link">
         <h2 class="text-xl font-semibold mb-2">🌤 Snapshot</h2></a>
         <p>Get a quick look at the weather, a quote, and feel-good vibes to start your day.</p>
 
-    <a href="{{ url_for('local_update') }}"class="text-black no-underline hover:underline hover:text-purple-600">
+    <a href="{{ url_for('local_update') }}"class="link">
         <h2 class="text-xl font-semibold mb-2">📍 Local Update</h2></a>
         <p>See your area’s latest weather, news, loadshedding, and upcoming events.</p>
 
-    <a href="{{ url_for('balaa') }}" class="block p-6 bg-white rounded shadow hover:bg-purple-50 transition">
+    <a href="{{ url_for('balaa') }}" class="link">
         <h2 class="text-xl font-semibold mb-2">💰 Balaa Calculator</h2></a>
         <p>Calculate taxi fare contributions and change for your crew, skhokho.</p>
 
-    <a href="{{ url_for('diary') }}" class="block p-6 bg-white rounded shadow hover:bg-purple-50 transition">
+    <a href="{{ url_for('diary') }}" class="link">
         <h2 class="text-xl font-semibold mb-2">📔 Diary</h2></a>
         <p>Write down your thoughts, goals, and tasks. Stay mindful and organized.</p>
+    <a href="/diary" class="link">Diary Entry</a>
+
+    <style>
+    .link {
+        color: black;
+        text-decoration: none;
+    }
+    .link:hover {
+        color: #9333ea; /* purple */
+        cursor: pointer;
+    }
+    </style>
+
 </div>
 {% endblock %}

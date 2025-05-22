@@ -1,24 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login - Skhokho</title>
-</head>
-<body>
-    <h1>Login</h1>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }}">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-    <form method="POST">
-        <label>Username:</label><br>
-        <input type="text" name="username" required><br>
-        <label>Password:</label><br>
-        <input type="password" name="password" required><br><br>
-        <button type="submit">Login</button>
-    </form>
-    <p>Don't have an account? <a href="/register">Register here</a></p>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Login - Skhokho{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-16 p-8 bg-white rounded shadow">
+  <h2 class="text-3xl font-bold mb-6 text-center">Welcome back, Skhokho!</h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="mb-4">
+      {% for category, message in messages %}
+        <div class="text-sm text-{{ 'red-600' if category == 'danger' else 'green-600' if category == 'success' else 'blue-600' }} mb-2">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  {% endwith %}
+
+  <form method="POST" class="space-y-6">
+    <div>
+      <label for="username" class="block text-gray-700 font-semibold mb-1">Username</label>
+      <input type="text" id="username" name="username" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600" />
+    </div>
+
+    <div>
+      <label for="password" class="block text-gray-700 font-semibold mb-1">Password</label>
+      <input type="password" id="password" name="password" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600" />
+    </div>
+
+    <button type="submit" class="w-full bg-purple-600 text-white font-bold py-2 rounded hover:bg-purple-700 transition">
+      Login
+    </button>
+  </form>
+
+  <p class="mt-6 text-center text-gray-600">
+    Don't have an account?
+    <a href="{{ url_for('register') }}" class="text-purple-600 hover:underline">Register here</a>
+  </p>
+</div>
+{% endblock %}
