@@ -4,20 +4,24 @@
     <meta charset="UTF-8">
     <title>{% block title %}Skhokho{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+
 </head>
 <body>
 
     <!-- Persistent Audio Player -->
-    <div id="music-player" style="position:fixed;bottom:0;left:0;width:100%;background:#111;color:white;padding:10px;z-index:999;">
-        <audio id="audioPlayer" controls autoplay>
-            <source id="audioSource" src="{{ url_for('static', filename='music/A-Reece - Angelz And Demonz (Lyric Video).mp3') }}" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
-        <button onclick="playNext()">Next</button>
-    </div>
+    <!-- 🎶 Persistent Audio Player -->
+<div id="music-player" style="position:fixed;bottom:0;left:0;width:100%;background:#111;color:white;padding:10px;z-index:999;text-align:center;">
+    <div id="track-title" style="font-weight:bold; margin-bottom:5px;"></div>
+    <audio id="audioPlayer" controls autoplay>
+        <source id="audioSource" src="{{ url_for('static', filename='music/A-Reece - Angelz And Demonz (Lyric Video).mp3') }}" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <br>
+    <button onclick="playNext()">Next</button>
+</div>
 
-    <script>
+<script>
     const tracks = [
         "{{ url_for('static', filename='music/A-Reece - Angelz And Demonz (Lyric Video).mp3') }}",
         "{{ url_for('static', filename='music/A-Reece - Changes Interlude (Lyric Video).mp3') }}",
@@ -25,38 +29,57 @@
         "{{ url_for('static', filename='music/A-Reece - God Laughs (Lyric Video).mp3') }}",
         "{{ url_for('static', filename='music/A-Reece - Intro (Lyric Video).mp3') }}"
     ];
+
+    const trackTitles = [
+        "Angelz And Demonz",
+        "Changes Interlude",
+        "El Dorado",
+        "God Laughs",
+        "Intro"
+    ];
+
     let current = 0;
     const player = document.getElementById("audioPlayer");
     const source = document.getElementById("audioSource");
+    const title = document.getElementById("track-title");
+
+    function updateTitle() {
+        title.textContent = "Now Playing: " + trackTitles[current];
+    }
 
     function playNext() {
         current = (current + 1) % tracks.length;
         source.src = tracks[current];
         player.load();
         player.play();
+        updateTitle();
     }
 
     player.addEventListener('ended', playNext);
+
+    // Set initial title
+    updateTitle();
 </script>
 
     <header>
         <h1>Skhokho</h1>
         <nav>
-            <a href="{{ url_for('home') }}">Home</a>
-            <a href="{{ url_for('diary') }}">Diary</a>
-            <a href="{{ url_for('balaa') }}">Balaa</a>
-            <a href="{{ url_for('snapshot') }}">Snapshot</a>
-            <a href="{{ url_for('local_update') }}">Local Update</a>
+            <a hx-get="{{ url_for('home') }}" hx-target="#main-content" hx-push-url="true">Home</a>
+            <a hx-get="{{ url_for('diary') }}" hx-target="#main-content" hx-push-url="true">Diary</a>
+            <a hx-get="{{ url_for('balaa') }}" hx-target="#main-content" hx-push-url="true">Balaa</a>
+            <a hx-get="{{ url_for('snapshot') }}" hx-target="#main-content" hx-push-url="true">Snapshot</a>
+            <a hx-get="{{ url_for('local_update') }}" hx-target="#main-content" hx-push-url="true">Local Update</a>
             {% if current_user.is_authenticated %}
-                <a href="{{ url_for('logout') }}">Logout</a>
+                <a hx-get="{{ url_for('logout') }}" hx-target="#main-content" hx-push-url="true">Logout</a>
             {% else %}
-                <a href="{{ url_for('login') }}">Login</a>
-                <a href="{{ url_for('register') }}">Register</a>
+                <a hx-get="{{ url_for('login') }}" hx-target="#main-content" hx-push-url="true">Login</a>
+                <a hx-get="{{ url_for('register') }}" hx-target="#main-content" hx-push-url="true">Register</a>
             {% endif %}
         </nav>
+
     </header>
 
-    <main>
+    <main id="main-content">
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         <ul class="flashes">
@@ -69,6 +92,7 @@
 
         {% block content %}{% endblock %}
     </main>
+
 
     <footer>
         <p>&copy; 2025 Skhokho. All rights reserved.</p>

@@ -6,18 +6,23 @@ from datetime import datetime
 from collections import defaultdict
 import requests
 import os
+import logging
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Initialize app
 app = Flask(__name__)
-app.secret_key = 'secret123'
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "fallback-secret")
 
 # Database config
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///skhokho.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
 
-# Login manager setup
-login_manager = LoginManager()
-login_manager.init_app(app)
+# Initialize extensions
+db = SQLAlchemy(app)
+login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 # Models
@@ -53,21 +58,25 @@ class BalaaHistory(db.Model):
 
 # Helper functions
 def get_weather(location):
+    api_key = os.getenv("WEATHER_API_KEY")
+    if not api_key:
+        logger.warning("No WEATHER_API_KEY found in environment.")
+        return {'error': 'Missing API key'}
+
     try:
-        api_key = os.getenv("WEATHER_API_KEY")
         url = f"https://api.openweathermap.org/data/2.5/weather?q={location}&appid={api_key}&units=metric"
         response = requests.get(url)
         data = response.json()
 
-        if response.status_code == 200:
+        if response.ok:
             return {
                 'temperature': data['main']['temp'],
                 'description': data['weather'][0]['description'],
                 'location': data['name']
             }
-        else:
-            return {'error': data.get('message', 'Could not fetch weather')}
+        return {'error': data.get('message', 'Weather fetch failed')}
     except Exception as e:
+        logger.error(f"Weather fetch failed: {e}")
         return {'error': str(e)}
 
 def get_loadshedding_status(location):
@@ -78,17 +87,24 @@ def get_daily_quote():
         response = requests.get("https://api.quotable.io/random")
         data = response.json()
         return f"Skhokho, here's a quote for you: \"{data['content']}\" — {data['author']}"
-    except:
+    except Exception as e:
+        logger.error(f"Quote fetch failed: {e}")
         return "Couldn't fetch a quote today, skhokho."
 
 def get_news_headlines(city):
+    api_key = os.getenv("NEWSAPI_KEY")
+    if not api_key:
+        return ["NewsAPI key missing, skhokho."]
+
     try:
-        api_key = os.getenv("NEWSAPI_KEY")
         url = f"https://newsapi.org/v2/everything?q={city}&apiKey={api_key}&pageSize=3"
         response = requests.get(url)
-        articles = response.json().get('articles', [])
-        return [f"{i+1}. {a['title']}" for i, a in enumerate(articles)]
-    except:
+        if response.ok:
+            articles = response.json().get('articles', [])
+            return [f"{i+1}. {a['title']}" for i, a in enumerate(articles)]
+        return [f"News fetch error: {response.status_code}"]
+    except Exception as e:
+        logger.error(f"News fetch failed: {e}")
         return ["No news right now, skhokho."]
 
 @login_manager.user_loader
@@ -107,6 +123,11 @@ def group_entries_by_date(entries):
 def home():
     return render_template('index.html')
 
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store'
+    return response
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -115,7 +136,7 @@ def register():
 
         if User.query.filter_by(username=username).first():
             flash('Username already exists', 'danger')
-            return redirect('/register')
+            return redirect(url_for('register'))
 
         new_user = User(username=username)
         new_user.set_password(password)
@@ -123,7 +144,7 @@ def register():
         db.session.commit()
 
         flash('Registration successful! Please login.', 'success')
-        return redirect('/login')
+        return redirect(url_for('login'))
 
     return render_template('register.html')
 
@@ -137,10 +158,10 @@ def login():
         if user and user.check_password(password):
             login_user(user)
             flash('Login successful!', 'success')
-            return redirect('/')
-        else:
-            flash('Invalid username or password', 'danger')
-            return redirect('/login')
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('home'))
+        flash('Invalid username or password', 'danger')
+        return redirect(url_for('login'))
 
     return render_template('login.html')
 
@@ -149,7 +170,7 @@ def login():
 def logout():
     logout_user()
     flash('You have been logged out.', 'info')
-    return redirect('/login')
+    return redirect(url_for('login'))
 
 @app.route('/balaa', methods=['GET', 'POST'])
 @login_required
@@ -254,6 +275,7 @@ def local_update():
     weather = []
     load_shedding = []
     news = []
+    city = ""
 
     if request.method == 'POST':
         city = request.form['location']
@@ -279,7 +301,7 @@ def local_update():
 
     return render_template(
         'local_update.html',
-        location=city if request.method == "POST" else "",
+        location=city,
         weather=weather,
         load_shedding=load_shedding,
         news=news
