@@ -8,59 +8,6 @@
 
 </head>
 <body>
-
-    <!-- Persistent Audio Player -->
-    <!-- 🎶 Persistent Audio Player -->
-<div id="music-player" style="position:fixed;bottom:0;left:0;width:100%;background:#111;color:white;padding:10px;z-index:999;text-align:center;">
-    <div id="track-title" style="font-weight:bold; margin-bottom:5px;"></div>
-    <audio id="audioPlayer" controls autoplay>
-        <source id="audioSource" src="{{ url_for('static', filename='music/A-Reece - Angelz And Demonz (Lyric Video).mp3') }}" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-    <br>
-    <button onclick="playNext()">Next</button>
-</div>
-
-<script>
-    const tracks = [
-        "{{ url_for('static', filename='music/A-Reece - Angelz And Demonz (Lyric Video).mp3') }}",
-        "{{ url_for('static', filename='music/A-Reece - Changes Interlude (Lyric Video).mp3') }}",
-        "{{ url_for('static', filename='music/A-Reece - El Dorado (Lyric Video).mp3') }}",
-        "{{ url_for('static', filename='music/A-Reece - God Laughs (Lyric Video).mp3') }}",
-        "{{ url_for('static', filename='music/A-Reece - Intro (Lyric Video).mp3') }}"
-    ];
-
-    const trackTitles = [
-        "Angelz And Demonz",
-        "Changes Interlude",
-        "El Dorado",
-        "God Laughs",
-        "Intro"
-    ];
-
-    let current = 0;
-    const player = document.getElementById("audioPlayer");
-    const source = document.getElementById("audioSource");
-    const title = document.getElementById("track-title");
-
-    function updateTitle() {
-        title.textContent = "Now Playing: " + trackTitles[current];
-    }
-
-    function playNext() {
-        current = (current + 1) % tracks.length;
-        source.src = tracks[current];
-        player.load();
-        player.play();
-        updateTitle();
-    }
-
-    player.addEventListener('ended', playNext);
-
-    // Set initial title
-    updateTitle();
-</script>
-
     <header>
         <h1>Skhokho</h1>
         <nav>
