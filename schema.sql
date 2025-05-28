@@ -16,6 +16,10 @@ CREATE TABLE IF NOT EXISTS diary_entries (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+-- Add privacy column to diary entries (run only if needed)
+-- NOTE: Only run this once. You can comment it out after it's added.
+ALTER TABLE diary_entries ADD COLUMN is_private INTEGER DEFAULT 0;
+
 -- Balaa history
 CREATE TABLE IF NOT EXISTS balaa_history (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

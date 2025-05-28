@@ -109,7 +109,7 @@ def get_news_headlines(city):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
 def group_entries_by_date(entries):
     grouped = defaultdict(list)
@@ -272,42 +272,23 @@ def snapshot():
 @app.route('/local-update', methods=['GET', 'POST'])
 @login_required
 def local_update():
-    weather = []
-    load_shedding = []
+    weather = {}
+    load_shedding = ""
     news = []
     city = ""
 
     if request.method == 'POST':
-        city = request.form['location']
-        weather_data = get_weather(city)
-        load_data = get_loadshedding_status(city)
-        news_data = get_news_headlines(city)
-        quote = get_daily_quote()
+        city = request.form.get('location', '').strip()
+        if not city:
+            flash("Please enter a location.", "danger")
+            return redirect(url_for('local_update'))
 
-        weather = [{
-            'datetime': datetime.now().strftime('%Y-%m-%d %H:%M'),
-            'temperature': weather_data.get('temperature'),
-            'description': weather_data.get('description')
-        }] if 'error' not in weather_data else []
+        weather = get_weather(city)
+        load_shedding = get_loadshedding_status(city)
+        news = get_news_headlines(city)
 
-        load_shedding = [{
-            'note': load_data,
-            'start': datetime.now().strftime('%Y-%m-%d %H:%M')
-        }]
+    quote = get_daily_quote()
 
-        news = [{'title': n, 'url': '#'} for n in news_data]
+    return render_template('local_update.html', weather=weather, load_shedding=load_shedding, news=news, quote=quote, city=city)
 
-        flash(quote, 'info')
 
-    return render_template(
-        'local_update.html',
-        location=city,
-        weather=weather,
-        load_shedding=load_shedding,
-        news=news
-    )
-
-if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-    app.run(host='0.0.0.0', debug=True)
