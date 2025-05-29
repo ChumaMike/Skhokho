@@ -1,35 +1,47 @@
 # Skhokho — Your Personal Life Helper 🌟
 
-Skhokho is a smart, lightweight Flask-based app designed to simplify your daily life. Whether on your phone or desktop, Skhokho helps you manage everyday tasks, finances, and personal reflections — all while keeping your data private and offline using SQLite.
+**Skhokho** is a smart, lightweight Flask-based app designed to simplify your daily life. Whether you're splitting a taxi fare, journaling your thoughts, or staying on top of local updates, Skhokho has your back — all while keeping your data private and offline using SQLite.
 
 ---
 
 ## 🚀 Features
 
-### 1. Balaa — Taxi Money Calculator 🚕  
+### 🧮 1. Balaa — Taxi Money Calculator 🚕  
 - Easily split taxi fares among multiple passengers  
 - Enter the fare, group size, and each passenger’s contribution  
 - Automatically calculate total expected, received amount, and change  
-- View your past calculations saved securely under your account  
+- View past calculations saved securely under your account  
 
-### 2. Diary — Personal Journal 📔  
-- Create diverse diary entries: Notes, Feelings, To-Dos, Needs, Wants, and more  
+### 📔 2. Diary — Personal Journal  
+- Create entries like Notes, Feelings, To-Dos, Needs, and Wants  
 - Timestamped entries organized by date for easy browsing  
-- All entries are saved privately to your user account  
+- All entries are saved privately per user  
 
-### 3. User Authentication 🔐  
-- Secure user registration and login system  
-- Data is separated per user to ensure privacy  
-- Passwords are safely hashed for security  
+### 🔐 3. User Authentication  
+- Secure registration and login system  
+- User-separated data ensures full privacy  
+- Passwords are safely hashed  
+
+### 📍 4. Weekly Snapshot / Local Update  
+- Get updates based on your selected location, including:  
+  - Weather forecast 🌤️  
+  - Load-shedding schedule 🔌  
+  - Local events or tips 🗓️  
+
+### 🤖 5. AI Bot Assistant (Upcoming)  
+- Friendly chatbot that helps with tasks and guides app usage  
+- Uses local or cloud-based AI (privacy-focused option in development)  
+- Always refers to you as *skhokho* for a personalized vibe  
 
 ---
 
-## 🛠 Technology Stack
+## 🛠️ Technology Stack
 
-- **Python** and **Flask** web framework  
-- **SQLite** database for local, offline data storage  
-- **Flask-Login** for user session management  
-- **Jinja2** templates for rendering responsive views  
+- **Backend:** Python & Flask  
+- **Frontend:** HTML, CSS, Jinja2 Templates  
+- **Database:** SQLite (offline-first, local storage)  
+- **User Auth:** Flask-Login  
+- **APIs:** Weather API, EskomSePush (for load-shedding), OpenAI (optional)
 
 ---
 
@@ -45,7 +57,7 @@ Skhokho is a smart, lightweight Flask-based app designed to simplify your daily 
     source venv/bin/activate  # Linux/Mac
     venv\Scripts\activate     # Windows
 
-3. nstall dependencies:
+3. Install dependencies:
 
     pip install -r requirements.txt
 
@@ -75,7 +87,18 @@ Skhokho is a smart, lightweight Flask-based app designed to simplify your daily 
 
 ## 🤝 Contributing & Vibe Coding
 
-I will be vibe coding most parts of Skhokho with ChatGPT’s help. Contributions and suggestions are welcome!
+I'm vibe coding most parts of Skhokho with ChatGPT’s help.
+Contributions and suggestions are always welcome!
+
+To contribute:
+
+Fork the repository
+
+Create a branch (git checkout -b feature/your-feature)
+
+Commit changes and push
+
+Open a pull request 💬
 
 ## 📄 License
 
@@ -83,4 +106,6 @@ MIT License
 
 ## 📫 Contact
 
-For any questions or suggestions, please open an issue or contact me at nmeyiswa@gmail.com
+Created with ❤️ by Chuma Mike.
+Email: nmeyiswa@gmail.com
+Or open an issue here on GitHub.
