@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome Skhokho{% endblock %}
+
+{% block content %}
+<div class="text-center py-8">
+    <h1 class="text-4xl font-bold mb-2">Welcome to Skhokho 👋</h1>
+    <p class="text-gray-700 text-lg">Your personal life helper. Plan, calculate, reflect, and stay informed.</p>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <a href="{{ url_for('tools.snapshot') }}" class="link block p-6 bg-white rounded shadow hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold mb-2">🌤 Snapshot</h2>
+        <p>Get a quick look at the weather, a quote, and feel-good vibes to start your day.</p>
+    </a>
+
+    <a href="{{ url_for('tools.snapshot') }}" class="link block p-6 bg-white rounded shadow hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold mb-2">📍 Local Update</h2>
+        <p>See your area’s latest weather, news, loadshedding, and upcoming events.</p>
+    </a>
+
+    <a href="{{ url_for('tools.balaa') }}" class="link block p-6 bg-white rounded shadow hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold mb-2">💰 Balaa Calculator</h2>
+        <p>Calculate taxi fare contributions and change for your crew, skhokho.</p>
+    </a>
+
+    <a href="{{ url_for('tools.diary') }}" class="link block p-6 bg-white rounded shadow hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold mb-2">📔 Diary</h2>
+        <p>Write down your thoughts, goals, and tasks. Stay mindful and organized.</p>
+    </a>
+</div>
+
+<style>
+    /* I moved the class on the <a> tag to make the whole card clickable and hoverable */
+    .link {
+        color: black;
+        text-decoration: none;
+    }
+    .link:hover h2 {
+        color: #9333ea; /* purple */
+    }
+</style>
+{% endblock %}
