@@ -4,165 +4,164 @@
 
 {% block content %}
 
-<div class="mb-8 border-b border-zinc-900 pb-6">
-    <h1 class="text-4xl md:text-6xl font-black text-white tracking-tighter">
-        <span class="text-zinc-600 mr-2">system.greet:</span>
-        <span class="typewriter-text text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-white">
-            {{ greeting }}, {{ current_user.username if current_user.is_authenticated else 'GUEST' }}
-        </span>
-        <span class="animate-pulse text-red-500">_</span>
-    </h1>
-    <p class="text-zinc-500 font-mono text-sm mt-2 ml-1">
-        SYSTEM ONLINE. ALL PARAMETERS NOMINAL.
-    </p>
+<div class="flex flex-col md:flex-row justify-between items-end gap-4 mb-8 border-b border-zinc-900 pb-4">
+    <div>
+        <p class="text-zinc-500 font-mono text-[10px] mb-1 tracking-widest uppercase flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+            SYSTEM ONLINE • {{ weather.location }}
+        </p>
+        
+        <div class="flex items-center">
+            <h1 class="text-3xl md:text-5xl font-bold text-white tracking-tight typewriter-text">
+                {{ greeting }}, {{ current_user.username if current_user.is_authenticated else 'Guest' }}
+            </h1>
+        </div>
+    </div>
+    
+    <div class="hidden md:block text-right">
+        <span class="bg-zinc-900 border border-zinc-800 text-zinc-500 text-xs px-3 py-1 rounded font-mono">v2.0.4 stable</span>
+    </div>
 </div>
+
+<style>
+    /* The Typing Animation Engine */
+    .typewriter-text {
+        overflow: hidden; /* Hides text until it types */
+        border-right: .15em solid #dc2626; /* The Red Cursor */
+        white-space: nowrap; /* Keeps it on one line */
+        margin: 0; 
+        width: 0; /* Start at 0 width */
+        animation: 
+            typing 2.5s steps(40, end) forwards, /* Type out */
+            blink-caret .75s step-end infinite; /* Blink cursor */
+        
+        /* Ensure the final state keeps the text visible */
+        animation-fill-mode: forwards;
+    }
+
+    /* Typewriter Keyframes */
+    @keyframes typing {
+        from { width: 0 }
+        to { width: 100% }
+    }
+
+    /* Blinking Cursor Keyframes */
+    @keyframes blink-caret {
+        from, to { border-color: transparent }
+        50% { border-color: #dc2626; }
+    }
+</style>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
     
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 relative overflow-hidden group">
-        <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-100 transition">
-            <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
-        </div>
-        
-        <h3 class="text-zinc-500 font-mono text-xs uppercase mb-4 tracking-widest">ENVIRONMENT</h3>
-        
-        <div class="flex items-end gap-4 mb-6">
-            <span class="text-5xl font-bold text-white">{{ weather.temperature | int }}°</span>
-            <span class="text-zinc-400 pb-2 capitalize">{{ weather.description }}</span>
-        </div>
-
-        <div class="border-t border-zinc-800 pt-4 flex justify-between items-center">
-            <div>
-                <p class="text-xs text-zinc-500 font-mono">LOAD SHEDDING</p>
-                <p class="text-xl font-bold {{ 'text-red-500' if power.stage|int > 0 else 'text-green-500' }}">
-                    STAGE {{ power.stage }}
-                </p>
-            </div>
-            <div class="text-right">
-                <p class="text-xs text-zinc-500 font-mono">LOCATION</p>
-                <p class="text-white font-bold">SOWETO</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 flex flex-col justify-between relative overflow-hidden">
-        <div class="absolute -right-10 -top-10 w-32 h-32 bg-red-600/10 rounded-full blur-2xl"></div>
+    <div class="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-2xl p-8 relative overflow-hidden flex flex-col justify-between min-h-[300px]">
+        <div class="absolute right-0 top-0 w-64 h-64 bg-red-600/5 rounded-full blur-3xl -z-10"></div>
         
         <div>
-            <h3 class="text-zinc-500 font-mono text-xs uppercase mb-4 tracking-widest">ACTIVE MISSIONS</h3>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-zinc-500 font-mono text-xs uppercase tracking-widest">ACTIVE MISSIONS</h3>
+                <a href="{{ url_for('goals.dashboard') }}" class="text-xs text-red-500 hover:text-white transition font-mono">MANAGE ></a>
+            </div>
+
             {% if current_user.is_authenticated and goals %}
-                <div class="space-y-4">
+                <div class="space-y-6">
                     {% for goal in goals %}
-                    <div>
-                        <div class="flex justify-between text-sm mb-1">
-                            <a href="{{ url_for('goals.view_goal', goal_id=goal.id) }}" class="text-white hover:text-red-500 font-bold transition">{{ goal.title }}</a>
+                    <div class="group">
+                        <div class="flex justify-between text-sm mb-2">
+                            <a href="{{ url_for('goals.view_goal', goal_id=goal.id) }}" class="text-white text-lg font-bold hover:text-red-500 transition flex items-center gap-2">
+                                {{ goal.title }}
+                                <svg class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity -rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </a>
                             <span class="text-zinc-500 font-mono">{{ goal.progress }}%</span>
                         </div>
-                        <div class="w-full bg-black h-1.5 rounded-full">
-                            <div class="bg-red-600 h-1.5 rounded-full" style="width: {{ goal.progress }}%"></div>
+                        <div class="w-full bg-black h-2 rounded-full overflow-hidden border border-zinc-800">
+                            <div class="bg-gradient-to-r from-red-900 to-red-600 h-full rounded-full transition-all duration-1000" style="width: {{ goal.progress }}%"></div>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
             {% elif not current_user.is_authenticated %}
-                <p class="text-zinc-500 italic text-sm">Authentication required to view mission parameters.</p>
-                <a href="{{ url_for('auth.login') }}" class="text-red-500 text-sm font-bold mt-2 block hover:underline">LOGIN &rarr;</a>
+                <div class="flex flex-col items-center justify-center h-40 opacity-50">
+                    <p class="text-zinc-400 font-mono text-sm">ACCESS RESTRICTED</p>
+                    <a href="{{ url_for('auth.login') }}" class="text-red-500 text-sm font-bold mt-2 hover:underline">AUTHENTICATE IDENTITY</a>
+                </div>
             {% else %}
-                <p class="text-zinc-500 italic text-sm">No active missions. Set objectives in Goal Tracker.</p>
+                <p class="text-zinc-500 italic text-sm">No active directives found.</p>
             {% endif %}
         </div>
         
-        {% if current_user.is_authenticated %}
-        <div class="mt-4 pt-4 border-t border-zinc-800">
-            <a href="{{ url_for('goals.dashboard') }}" class="text-xs font-mono text-zinc-400 hover:text-white transition">VIEW ALL OBJECTIVES &rarr;</a>
+        <div class="mt-8 pt-6 border-t border-zinc-800/50 flex justify-between items-end text-zinc-500 text-xs font-mono">
+            <span>PRIORITY LEVEL: HIGH</span>
+            <span>{{ goals|length if goals else 0 }} ACTIVE THREADS</span>
         </div>
-        {% endif %}
     </div>
 
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 flex flex-col relative">
-        <h3 class="text-zinc-500 font-mono text-xs uppercase mb-4 tracking-widest">NETWORK ALERTS</h3>
+    <div class="flex flex-col gap-6">
         
-        {% if current_user.is_authenticated and alerts %}
-            <ul class="space-y-3 mb-4">
-                {% for alert in alerts %}
-                <li class="flex items-center justify-between bg-black/40 p-3 rounded border border-red-900/30">
-                    <div class="flex items-center gap-3">
-                        <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                        <span class="text-white font-bold text-sm">{{ alert.name }}</span>
-                    </div>
-                    <span class="text-red-400 text-xs font-mono">{{ alert.days }} DAYS SILENT</span>
-                </li>
-                {% endfor %}
-            </ul>
-        {% elif not current_user.is_authenticated %}
-             <div class="flex-grow flex items-center justify-center text-zinc-600 text-sm">
-                <p>System Locked.</p>
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 flex-1 relative overflow-hidden">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-zinc-500 font-mono text-xs uppercase tracking-widest">STATUS</h3>
+                <span class="text-xs font-bold {{ 'text-red-500' if power.stage|int > 0 else 'text-green-500' }}">LoadShedding: STAGE {{ power.stage }}</span>
             </div>
-        {% else %}
-            <div class="flex-grow flex items-center justify-center text-zinc-600 text-sm">
-                <p>No immediate alerts. Network stable.</p>
+            
+            <div class="flex items-center gap-4">
+                <span class="text-6xl font-black text-white tracking-tighter">{{ weather.temperature | int }}°</span>
+                <div class="flex flex-col justify-center border-l border-zinc-700 pl-4 h-12">
+                    <span class="text-zinc-400 text-sm capitalize">{{ weather.description }}</span>
+                    <span class="text-zinc-600 text-xs uppercase">{{ weather.location }}</span>
+                </div>
             </div>
-        {% endif %}
+        </div>
 
-        <div class="mt-auto">
-             <div class="bg-zinc-800 p-3 rounded text-center">
-                 <p class="text-zinc-400 text-xs italic">"{{ quote }}"</p>
-             </div>
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 flex-1 flex flex-col justify-between">
+            <h3 class="text-zinc-500 font-mono text-xs uppercase tracking-widest mb-4">NETWORK ALERTS</h3>
+            
+            {% if current_user.is_authenticated and alerts %}
+                <ul class="space-y-2">
+                    {% for alert in alerts %}
+                    <li class="flex items-center justify-between p-2 rounded bg-red-900/10 border border-red-900/20">
+                        <span class="text-white text-sm font-bold ml-2">{{ alert.name }}</span>
+                        <span class="text-red-400 text-[10px] font-mono uppercase bg-red-900/20 px-2 py-1 rounded">{{ alert.days }} DAYS</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="text-center py-4">
+                    <span class="text-zinc-600 text-xs">NO ALERTS</span>
+                </div>
+            {% endif %}
+
+            <div class="mt-4 pt-4 border-t border-zinc-800 text-center">
+                <p class="text-zinc-500 text-[10px] italic">"{{ quote }}"</p>
+            </div>
         </div>
     </div>
 </div>
 
-<h2 class="text-xl font-bold text-white mb-6 pl-2 border-l-4 border-red-600">SYSTEM TOOLS</h2>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<h2 class="text-sm font-bold text-zinc-500 mb-4 pl-1 font-mono uppercase tracking-widest">System Launchpad</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
 
-    <a href="{{ url_for('tools.snapshot') }}" class="group relative bg-zinc-900 border border-zinc-800 p-8 rounded-xl hover:border-red-600/50 transition-all hover:bg-zinc-800">
-        <div class="absolute top-4 right-4 text-zinc-700 group-hover:text-red-500 transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    <a href="{{ url_for('tools.balaa') }}" class="group bg-zinc-900 border border-zinc-800 p-6 rounded-xl hover:bg-zinc-800 hover:border-zinc-700 transition-all text-center">
+        <div class="w-10 h-10 mx-auto bg-black rounded-full flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:bg-red-600 transition mb-3">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
         </div>
-        <h3 class="text-lg font-bold text-white mb-2">Snapshot</h3>
-        <p class="text-zinc-500 text-sm">Manual weather checks and detailed telemetry.</p>
-    </a>
-
-    <a href="{{ url_for('tools.balaa') }}" class="group relative bg-zinc-900 border border-zinc-800 p-8 rounded-xl hover:border-red-600/50 transition-all hover:bg-zinc-800">
-        <div class="absolute top-4 right-4 text-zinc-700 group-hover:text-red-500 transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-        </div>
-        <h3 class="text-lg font-bold text-white mb-2">Balaa</h3>
-        <p class="text-zinc-500 text-sm">Taxi mathematics engine.</p>
+        <span class="text-sm font-bold text-zinc-300 group-hover:text-white">Balaa</span>
     </a>
     
-    <a href="{{ url_for('tools.diary') }}" class="group relative bg-zinc-900 border border-zinc-800 p-8 rounded-xl hover:border-red-600/50 transition-all hover:bg-zinc-800">
-        <div class="absolute top-4 right-4 text-zinc-700 group-hover:text-red-500 transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+    <a href="{{ url_for('tools.diary') }}" class="group bg-zinc-900 border border-zinc-800 p-6 rounded-xl hover:bg-zinc-800 hover:border-zinc-700 transition-all text-center">
+        <div class="w-10 h-10 mx-auto bg-black rounded-full flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:bg-red-600 transition mb-3">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
         </div>
-        <h3 class="text-lg font-bold text-white mb-2">Diary</h3>
-        <p class="text-zinc-500 text-sm">Secure logs.</p>
+        <span class="text-sm font-bold text-zinc-300 group-hover:text-white">Diary</span>
     </a>
     
-    <a href="{{ url_for('crm.dashboard') }}" class="group relative bg-zinc-900 border border-zinc-800 p-8 rounded-xl hover:border-red-600/50 transition-all hover:bg-zinc-800">
-        <div class="absolute top-4 right-4 text-zinc-700 group-hover:text-red-500 transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+    <a href="{{ url_for('crm.dashboard') }}" class="group bg-zinc-900 border border-zinc-800 p-6 rounded-xl hover:bg-zinc-800 hover:border-zinc-700 transition-all text-center">
+        <div class="w-10 h-10 mx-auto bg-black rounded-full flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:bg-red-600 transition mb-3">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
         </div>
-        <h3 class="text-lg font-bold text-white mb-2">Network</h3>
-        <p class="text-zinc-500 text-sm">CRM & Allies.</p>
+        <span class="text-sm font-bold text-zinc-300 group-hover:text-white">Network</span>
     </a>
 
 </div>
-<style>
-    /* Hacker Typing Animation */
-    @keyframes typing {
-        from { width: 0 }
-        to { width: 100% }
-    }
-    
-    .typewriter-text {
-        display: inline-block;
-        overflow: hidden;
-        white-space: nowrap;
-        vertical-align: bottom;
-        /* Adjust speed (3s) as needed */
-        animation: typing 2.5s steps(40, end);
-        max-width: fit-content; 
-    }
-</style>
+
 {% endblock %}
