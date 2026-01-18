@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ contact.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+    
+    <div class="md:col-span-1">
+        <a href="{{ url_for('crm.dashboard') }}" class="text-zinc-500 hover:text-white text-sm mb-4 block">&larr; NETWORK</a>
+        
+        <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-xl text-center sticky top-24">
+            <div class="w-24 h-24 bg-zinc-800 rounded-full mx-auto flex items-center justify-center text-4xl font-bold text-white mb-4">
+                {{ contact.name[0] }}
+            </div>
+            <h1 class="text-2xl font-bold text-white">{{ contact.name }}</h1>
+            <p class="text-red-500 font-mono text-sm uppercase mb-6">{{ contact.role }}</p>
+            
+            <div class="text-left space-y-3 text-sm text-zinc-300 bg-black p-4 rounded border border-zinc-800">
+                <p><span class="text-zinc-600 block text-xs">EMAIL</span> {{ contact.email }}</p>
+                <p><span class="text-zinc-600 block text-xs">PHONE</span> {{ contact.phone }}</p>
+                <p><span class="text-zinc-600 block text-xs">LAST CONTACT</span> {{ contact.last_contacted.strftime('%Y-%m-%d') if contact.last_contacted else 'Never' }}</p>
+            </div>
+
+            <a href="{{ url_for('crm.delete_contact', id=contact.id) }}" onclick="return confirm('Burn this contact?')" class="block mt-6 text-red-900 hover:text-red-500 text-xs font-bold transition">
+                BURN ASSET
+            </a>
+        </div>
+    </div>
+
+    <div class="md:col-span-2">
+        <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-xl mb-6">
+            <h3 class="text-white font-bold mb-4">Log Interaction</h3>
+            <form method="POST" class="grid gap-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <select name="type" class="bg-black border border-zinc-700 text-white p-2 rounded">
+                        <option value="Call">Phone Call</option>
+                        <option value="Meeting">Coffee / Meeting</option>
+                        <option value="Email">Email / DM</option>
+                    </select>
+                    <input type="date" name="date" class="bg-black border border-zinc-700 text-white p-2 rounded">
+                </div>
+                <textarea name="description" rows="2" placeholder="What did you discuss?" required class="bg-black border border-zinc-700 text-white p-3 rounded w-full"></textarea>
+                <div class="text-right">
+                    <button type="submit" class="bg-zinc-800 hover:bg-white hover:text-black text-white px-6 py-2 rounded font-bold transition">LOG</button>
+                </div>
+            </form>
+        </div>
+
+        <h3 class="text-zinc-500 font-mono text-sm uppercase mb-4 pl-2">Timeline</h3>
+        <div class="space-y-4">
+            {% for log in contact.interactions|sort(attribute='completed_date', reverse=True) %}
+            <div class="flex gap-4">
+                <div class="flex flex-col items-center">
+                    <div class="w-3 h-3 bg-red-600 rounded-full"></div>
+                    <div class="w-0.5 h-full bg-zinc-800"></div>
+                </div>
+                <div class="pb-8">
+                    <p class="text-xs text-zinc-500 font-mono mb-1">{{ log.completed_date.strftime('%Y-%m-%d') }} • {{ log.interaction_type }}</p>
+                    <div class="bg-black border border-zinc-800 p-4 rounded-lg text-zinc-300 shadow-sm">
+                        {{ log.description }}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-zinc-600 italic pl-8">No history recorded.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

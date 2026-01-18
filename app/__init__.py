@@ -22,9 +22,12 @@ def create_app(config_class=Config):
     app.register_blueprint(main_bp)
     app.register_blueprint(tools_bp)
 
-    from app.routes.goals import goals_bp  
-    app.register_blueprint(goals_bp)      
-
+    from app.routes.goals import goals_bp
+    from app.routes.crm import crm_bp    # <--- Import
+    
+    app.register_blueprint(goals_bp)
+    app.register_blueprint(crm_bp)       # <--- Register
+    
     return app
 
 from app.models import User
