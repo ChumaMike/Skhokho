@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}System Access // Register{% endblock %}
+{% block title %}System Access // Login{% endblock %}
 
 {% block content %}
 <div class="max-w-md mx-auto mt-16 p-8 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl relative overflow-hidden">
   
   <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1 bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.8)]"></div>
 
-  <h2 class="text-3xl font-bold mb-2 text-center text-white tracking-tight">NEW USER</h2>
-  <p class="text-center text-zinc-500 font-mono text-xs mb-8">INITIALIZE SKHOKHO PROFILE</p>
+  <h2 class="text-3xl font-bold mb-2 text-center text-white tracking-tight">SYSTEM LOGIN</h2>
+  <p class="text-center text-zinc-500 font-mono text-xs mb-8">AUTHENTICATE IDENTITY</p>
 
   {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
@@ -22,7 +22,7 @@
   {% endif %}
   {% endwith %}
 
-  <form action="{{ url_for('auth.register') }}" method="POST" class="space-y-6">
+  <form action="{{ url_for('auth.login') }}" method="POST" class="space-y-6">
     <div>
       <label for="username" class="block text-zinc-500 text-xs font-mono uppercase tracking-wider mb-2">Username ID</label>
       <input type="text" id="username" name="username" required 
@@ -37,15 +37,16 @@
              placeholder="••••••••" />
     </div>
 
-    <button type="submit" class="w-full bg-red-600 text-white font-bold py-3 rounded hover:bg-red-700 hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] transition-all uppercase tracking-widest text-sm">
-      Initialize Account
+    <button type="submit" class="w-full bg-red-600 text-white font-bold py-3 rounded hover:bg-red-700 hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] transition-all uppercase tracking-widest text-sm flex justify-center items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+      ACCESS TERMINAL
     </button>
   </form>
 
   <div class="mt-8 text-center pt-6 border-t border-zinc-800">
     <p class="text-zinc-600 text-sm">
-      Already authorized?
-      <a href="{{ url_for('auth.login') }}" class="text-red-500 hover:text-white font-bold transition-colors">LOGIN HERE</a>
+      New user?
+      <a href="{{ url_for('auth.register') }}" class="text-red-500 hover:text-white font-bold transition-colors">INITIALIZE PROFILE</a>
     </p>
   </div>
 </div>
