@@ -15,14 +15,24 @@ def home():
     power = get_loadshedding_status()
     quote = get_daily_quote()
     
+    current_hour = datetime.now().hour
+    if 5 <= current_hour < 12:
+        greeting = "GOOD MORNING"
+    elif 12 <= current_hour < 17:
+        greeting = "GOOD AFTERNOON"
+    elif 17 <= current_hour < 21:
+        greeting = "GOOD EVENING"
+    else:
+        greeting = "LATE NIGHT OPS"
+        
     context = {
         'weather': weather,
         'power': power,
         'quote': quote,
+        'greeting': greeting,  # <--- Pass this to the template
         'goals': [],
         'alerts': []
     }
-
     # 2. User Specific Intel (Only if logged in)
     if current_user.is_authenticated:
         # Fetch Top 3 Active Goals (Sorted by those closest to completion)

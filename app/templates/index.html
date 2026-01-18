@@ -4,6 +4,19 @@
 
 {% block content %}
 
+<div class="mb-8 border-b border-zinc-900 pb-6">
+    <h1 class="text-4xl md:text-6xl font-black text-white tracking-tighter">
+        <span class="text-zinc-600 mr-2">system.greet:</span>
+        <span class="typewriter-text text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-white">
+            {{ greeting }}, {{ current_user.username if current_user.is_authenticated else 'GUEST' }}
+        </span>
+        <span class="animate-pulse text-red-500">_</span>
+    </h1>
+    <p class="text-zinc-500 font-mono text-sm mt-2 ml-1">
+        SYSTEM ONLINE. ALL PARAMETERS NOMINAL.
+    </p>
+</div>
+
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
     
     <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 relative overflow-hidden group">
@@ -135,5 +148,21 @@
     </a>
 
 </div>
-
+<style>
+    /* Hacker Typing Animation */
+    @keyframes typing {
+        from { width: 0 }
+        to { width: 100% }
+    }
+    
+    .typewriter-text {
+        display: inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+        vertical-align: bottom;
+        /* Adjust speed (3s) as needed */
+        animation: typing 2.5s steps(40, end);
+        max-width: fit-content; 
+    }
+</style>
 {% endblock %}
