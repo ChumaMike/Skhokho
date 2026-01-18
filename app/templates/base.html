@@ -1,38 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Skhokho{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Smooth scrolling for that premium feel */
+        html { scroll-behavior: smooth; }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
-    <header class="bg-indigo-600 text-white p-4 shadow-md">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Skhokho</h1>
-            <nav class="space-x-4">
-                <a href="{{ url_for('main.home') }}" class="hover:text-indigo-200">Home</a>
-                <a href="{{ url_for('tools.diary') }}" class="hover:text-indigo-200">Diary</a>
-                <a href="{{ url_for('tools.balaa') }}" class="hover:text-indigo-200">Balaa</a>
-                <a href="{{ url_for('tools.snapshot') }}" class="hover:text-indigo-200">Snapshot</a>
-                
-                {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('auth.logout') }}" class="hover:text-indigo-200">Logout</a>
-                {% else %}
-                    <a href="{{ url_for('auth.login') }}" class="hover:text-indigo-200">Login</a>
-                    <a href="{{ url_for('auth.register') }}" class="hover:text-indigo-200">Register</a>
-                {% endif %}
+<body class="bg-zinc-950 text-gray-200 min-h-screen flex flex-col selection:bg-red-500 selection:text-white">
+
+    <header class="bg-black/90 backdrop-blur-md border-b border-red-900/50 sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            
+            <a href="{{ url_for('main.home') }}" class="group flex items-center gap-2">
+                <div class="w-3 h-3 bg-red-600 rounded-full group-hover:animate-pulse"></div>
+                <h1 class="text-xl font-bold tracking-tight text-white group-hover:text-red-500 transition-colors">
+                    SKHOKHO <span class="text-red-600">.SYS</span>
+                </h1>
+            </a>
+
+            <nav class="hidden md:flex space-x-8 text-sm font-medium">
+                <a href="{{ url_for('main.home') }}" class="hover:text-red-500 transition-colors">HOME</a>
+                <a href="{{ url_for('tools.diary') }}" class="hover:text-red-500 transition-colors">DIARY</a>
+                <a href="{{ url_for('tools.balaa') }}" class="hover:text-red-500 transition-colors">BALAA</a>
+                <a href="{{ url_for('tools.snapshot') }}" class="hover:text-red-500 transition-colors">SNAPSHOT</a>
+                <a href="{{ url_for('goals.dashboard') }}" class="hover:text-red-500 transition-colors">GOALS</a>
             </nav>
+
+            <div class="flex items-center gap-4 text-sm font-semibold">
+                {% if current_user.is_authenticated %}
+                    <span class="text-gray-500 hidden sm:block">User: {{ current_user.username }}</span>
+                    <a href="{{ url_for('auth.logout') }}" class="border border-zinc-700 px-4 py-2 rounded hover:bg-red-600 hover:border-red-600 hover:text-white transition-all">
+                        LOGOUT
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="hover:text-white text-gray-400 transition-colors">LOGIN</a>
+                    <a href="{{ url_for('auth.register') }}" class="bg-red-600 text-white px-5 py-2 rounded hover:bg-red-700 shadow-[0_0_15px_rgba(220,38,38,0.5)] transition-all">
+                        ACCESS
+                    </a>
+                {% endif %}
+            </div>
         </div>
     </header>
 
-    <main id="main-content" class="container mx-auto p-6 min-h-screen">
+    <main id="main-content" class="container mx-auto px-6 py-12 flex-grow">
+        
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="mb-6 space-y-2">
+                <div class="mb-8 space-y-2 max-w-3xl mx-auto">
                     {% for category, message in messages %}
-                        <div class="p-4 rounded shadow-sm {{ 'bg-green-100 text-green-700' if category == 'success' else 'bg-red-100 text-red-700' }}">
-                            {{ message }}
+                        <div class="p-4 border-l-4 rounded bg-zinc-900 shadow-lg flex items-center justify-between
+                            {{ 'border-green-500 text-green-400' if category == 'success' else 'border-red-600 text-red-400' }}">
+                            <span class="font-mono text-sm">{{ message }}</span>
+                            <button onclick="this.parentElement.remove()" class="text-xl hover:text-white">×</button>
                         </div>
                     {% endfor %}
                 </div>
@@ -42,8 +70,11 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-gray-800 text-white text-center p-4 mt-8">
-        <p>&copy; 2025 Skhokho. All rights reserved.</p>
+    <footer class="border-t border-zinc-900 bg-black py-8 mt-auto">
+        <div class="container mx-auto px-6 text-center text-zinc-600 text-xs font-mono">
+            <p>SKHOKHO SYSTEM V2.0 // ENGINEERED IN SOWETO</p>
+            <p class="mt-2">&copy; 2025 CHUMA MEYISWA</p>
+        </div>
     </footer>
 </body>
 </html>

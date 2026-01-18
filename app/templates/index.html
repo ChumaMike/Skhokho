@@ -1,43 +1,65 @@
 {% extends 'base.html' %}
 
-{% block title %}Welcome Skhokho{% endblock %}
+{% block title %}System Dashboard{% endblock %}
 
 {% block content %}
-<div class="text-center py-8">
-    <h1 class="text-4xl font-bold mb-2">Welcome to Skhokho 👋</h1>
-    <p class="text-gray-700 text-lg">Your personal life helper. Plan, calculate, reflect, and stay informed.</p>
+<div class="text-center py-16 mb-12 relative overflow-hidden">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-red-600/10 blur-[100px] rounded-full -z-10"></div>
+    
+    <h1 class="text-5xl md:text-7xl font-bold tracking-tighter text-white mb-6">
+        LIFE <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-800">OS</span>
+    </h1>
+    <p class="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto font-light">
+        Deploy your daily tasks. Monitor your finances. Optimize your environment.
+        <br> <span class="text-red-500 font-mono text-sm mt-2 block">All systems operational.</span>
+    </p>
 </div>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <a href="{{ url_for('tools.snapshot') }}" class="link block p-6 bg-white rounded shadow hover:shadow-lg transition">
-        <h2 class="text-xl font-semibold mb-2">🌤 Snapshot</h2>
-        <p>Get a quick look at the weather, a quote, and feel-good vibes to start your day.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+    <a href="{{ url_for('tools.snapshot') }}" class="group relative bg-zinc-900 border border-zinc-800 p-8 rounded-xl hover:border-red-600/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(220,38,38,0.1)]">
+        <div class="absolute top-4 right-4 text-zinc-700 group-hover:text-red-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2 mt-4">Snapshot</h3>
+        <p class="text-zinc-500 text-sm leading-relaxed">Local telemetry. Weather, Quotes, and daily intelligence reports.</p>
+        <div class="mt-6 flex items-center text-red-500 text-xs font-bold font-mono group-hover:translate-x-2 transition-transform">
+            INITIATE SCAN &rarr;
+        </div>
     </a>
 
-    <a href="{{ url_for('tools.snapshot') }}" class="link block p-6 bg-white rounded shadow hover:shadow-lg transition">
-        <h2 class="text-xl font-semibold mb-2">📍 Local Update</h2>
-        <p>See your area’s latest weather, news, loadshedding, and upcoming events.</p>
+    <a href="{{ url_for('tools.snapshot') }}" class="group relative bg-zinc-900 border border-zinc-800 p-8 rounded-xl hover:border-red-600/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(220,38,38,0.1)]">
+        <div class="absolute top-4 right-4 text-zinc-700 group-hover:text-red-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2 mt-4">Local Ops</h3>
+        <p class="text-zinc-500 text-sm leading-relaxed">Grid status, load shedding alerts, and sector news updates.</p>
+        <div class="mt-6 flex items-center text-red-500 text-xs font-bold font-mono group-hover:translate-x-2 transition-transform">
+            VIEW STATUS &rarr;
+        </div>
     </a>
 
-    <a href="{{ url_for('tools.balaa') }}" class="link block p-6 bg-white rounded shadow hover:shadow-lg transition">
-        <h2 class="text-xl font-semibold mb-2">💰 Balaa Calculator</h2>
-        <p>Calculate taxi fare contributions and change for your crew, skhokho.</p>
+    <a href="{{ url_for('tools.balaa') }}" class="group relative bg-zinc-900 border border-zinc-800 p-8 rounded-xl hover:border-red-600/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(220,38,38,0.1)]">
+        <div class="absolute top-4 right-4 text-zinc-700 group-hover:text-red-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2 mt-4">Balaa Engine</h3>
+        <p class="text-zinc-500 text-sm leading-relaxed">High-precision taxi arithmetic and financial distribution calculator.</p>
+        <div class="mt-6 flex items-center text-red-500 text-xs font-bold font-mono group-hover:translate-x-2 transition-transform">
+            CALCULATE &rarr;
+        </div>
     </a>
 
-    <a href="{{ url_for('tools.diary') }}" class="link block p-6 bg-white rounded shadow hover:shadow-lg transition">
-        <h2 class="text-xl font-semibold mb-2">📔 Diary</h2>
-        <p>Write down your thoughts, goals, and tasks. Stay mindful and organized.</p>
+    <a href="{{ url_for('tools.diary') }}" class="group relative bg-zinc-900 border border-zinc-800 p-8 rounded-xl hover:border-red-600/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(220,38,38,0.1)]">
+        <div class="absolute top-4 right-4 text-zinc-700 group-hover:text-red-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2 mt-4">Encrypted Logs</h3>
+        <p class="text-zinc-500 text-sm leading-relaxed">Secure storage for thoughts, mission goals, and technical notes.</p>
+        <div class="mt-6 flex items-center text-red-500 text-xs font-bold font-mono group-hover:translate-x-2 transition-transform">
+            ACCESS LOGS &rarr;
+        </div>
     </a>
+
 </div>
-
-<style>
-    /* I moved the class on the <a> tag to make the whole card clickable and hoverable */
-    .link {
-        color: black;
-        text-decoration: none;
-    }
-    .link:hover h2 {
-        color: #9333ea; /* purple */
-    }
-</style>
 {% endblock %}
