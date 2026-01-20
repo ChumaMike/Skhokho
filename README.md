@@ -64,3 +64,61 @@ app/
 │   └── weather.py   # Weather Service
 ├── models.py        # SQLAlchemy Database Schema
 └── templates/       # Jinja2 UI (Tailwind CSS)
+
+🛠️ Installation & Setup
+Prerequisites
+Python 3.10+
+
+API Keys for OpenWeatherMap & EskomSePush (Optional)
+
+1. Clone the Repository
+Bash
+
+git clone [https://github.com/yourusername/skhokho.git](https://github.com/yourusername/skhokho.git)
+cd skhokho
+2. Initialize Environment
+Bash
+
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+3. Configure Variables
+Create a .env file in the root directory:
+
+Ini, TOML
+
+FLASK_APP=run.py
+FLASK_DEBUG=1
+SECRET_KEY=your-super-secret-key
+DATABASE_URL=sqlite:///skhokho.db
+WEATHER_API_KEY=your_key_here
+ESKOM_API_TOKEN=your_token_here
+4. Database Migration
+Initialize the SQLite database schema:
+
+Bash
+
+flask db upgrade
+5. Launch System
+Bash
+
+flask run
+Access the terminal at http://127.0.0.1:5000
+
+🧪 Testing & Quality Assurance
+Skhokho maintains a rigorous testing suite using pytest, covering authentication, math logic, and security edge cases.
+
+To execute the test suite:
+
+Bash
+
+pytest
+To generate a coverage report:
+
+Bash
+
+pytest --cov=app
+🛡️ License
+Distributed under the MIT License. See LICENSE for more information.
+
+Engineer: Chuma Meyiswa Version: 2.0.4 (Stable)
