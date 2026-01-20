@@ -24,7 +24,10 @@ def create_app(config_class=Config):
 
     from app.routes.goals import goals_bp
     from app.routes.crm import crm_bp    # <--- Import
+    from app.routes.chat import chat_bp
     
+    
+    app.register_blueprint(chat_bp)
     app.register_blueprint(goals_bp)
     app.register_blueprint(crm_bp)       # <--- Register
     
