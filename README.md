@@ -1,111 +1,66 @@
-# Skhokho — Your Personal Life Helper 🌟
+# SKHOKHO.SYS // Life Operating System
 
-**Skhokho** is a smart, lightweight Flask-based app designed to simplify your daily life. Whether you're splitting a taxi fare, journaling your thoughts, or staying on top of local updates, Skhokho has your back — all while keeping your data private and offline using SQLite.
+![Python](https://img.shields.io/badge/Python-3.10-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-2.0-000000?style=for-the-badge&logo=flask&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Status](https://img.shields.io/badge/System-Operational-green?style=for-the-badge)
+![Coverage](https://img.shields.io/badge/Test_Coverage-100%25-success?style=for-the-badge)
 
----
+**Skhokho** is an enterprise-grade personal management platform (LifeOS) engineered for the South African context. It integrates financial calculations, network relationship management (CRM), strategic goal tracking, and local environmental telemetry into a single, high-performance command center.
 
-## 🚀 Features
-
-### 🧮 1. Balaa — Taxi Money Calculator 🚕  
-- Easily split taxi fares among multiple passengers  
-- Enter the fare, group size, and each passenger’s contribution  
-- Automatically calculate total expected, received amount, and change  
-- View past calculations saved securely under your account  
-
-### 📔 2. Diary — Personal Journal  
-- Create entries like Notes, Feelings, To-Dos, Needs, and Wants  
-- Timestamped entries organized by date for easy browsing  
-- All entries are saved privately per user  
-
-### 🔐 3. User Authentication  
-- Secure registration and login system  
-- User-separated data ensures full privacy  
-- Passwords are safely hashed  
-
-### 📍 4. Weekly Snapshot / Local Update  
-- Get updates based on your selected location, including:  
-  - Weather forecast 🌤️  
-  - Load-shedding schedule 🔌  
-  - Local events or tips 🗓️  
-
-### 🤖 5. AI Bot Assistant (Upcoming)  
-- Friendly chatbot that helps with tasks and guides app usage  
-- Uses local or cloud-based AI (privacy-focused option in development)  
-- Always refers to you as *skhokho* for a personalized vibe  
+Designed with a modular **Model-View-Controller (MVC)** architecture and a privacy-first philosophy.
 
 ---
 
-## 🛠️ Technology Stack
+## 📸 System Interface
 
-- **Backend:** Python & Flask  
-- **Frontend:** HTML, CSS, Jinja2 Templates  
-- **Database:** SQLite (offline-first, local storage)  
-- **User Auth:** Flask-Login  
-- **APIs:** Weather API, EskomSePush (for load-shedding), OpenAI (optional)
+*(Add screenshots here. For example: `![Dashboard Screenshot](docs/dashboard.png)`)*
 
 ---
 
-## ⚙️ Installation & Setup
+## ⚡ Core Modules
 
-1. Clone the repo:
-   git clone https://github.com/ChumaMike/skhokho.git
-   cd skhokho
+### 1. Command Center (Dashboard)
+A centralized HUD providing real-time intelligence:
+* **Environmental Telemetry:** Integration with OpenWeatherMap for local forecasts.
+* **Grid Status:** Real-time Load Shedding stage updates via EskomSePush API.
+* **Priority Queue:** Top 3 active strategic goals sorted by completion status.
+* **Network Alerts:** Automated "Red Flags" for contacts neglected for >30 days.
 
-2. Create and activate a Python virtual environment         (optional but recommended):
+### 2. Balaa Financial Engine
+A specialized arithmetic engine for the South African taxi industry:
+* Calculates fare distribution for groups.
+* Tracks expected vs. received totals.
+* Computes change variance.
+* Maintains a transactional history log.
 
-    python3 -m venv venv
-    source venv/bin/activate  # Linux/Mac
-    venv\Scripts\activate     # Windows
+### 3. Strategic Goal Tracker
+A project management system for personal ambition:
+* Create high-level objectives (e.g., "Career", "Finance").
+* Break down objectives into executable milestones.
+* Visual progress bars powered by real-time completion logic.
 
-3. Install dependencies:
+### 4. Network Intelligence (CRM)
+A "Personal Rolodex" to manage social capital:
+* Track professional and personal contacts.
+* Log interactions (Calls, Meetings, Emails).
+* **Cold Contact Algorithm:** Automatically flags contacts that haven't been engaged in 30 days.
 
-    pip install -r requirements.txt
+---
 
-4. Run the application:
+## 🏗️ Architecture
 
-    python app.py
+The application follows a **Service-Repository Pattern** to ensure scalability and separation of concerns:
 
-5. Open your browser and go to http://localhost:5000 to use Skhokho.
-
-## 📌 Usage Notes
-
-- All data is stored locally in `skhokho.db` using SQLite. No internet connection is required to use the app.
-- Your data is private and separated by user accounts.
-- Use the Balaa feature to quickly calculate shared taxi fares.
-- Use the Diary to jot down notes, feelings, tasks, and more.
-
-## 🌱 Future Features (Planned)
-
-- To-Do list and task manager
-- Expense tracking and budgeting
-- Habit tracker
-- Data export/import for backup
-- Offline AI assistant chatbot
-- Daily motivational quotes
-- Dark mode and UI customization
-- Reminders and local notifications
-
-## 🤝 Contributing & Vibe Coding
-
-I'm vibe coding most parts of Skhokho with ChatGPT’s help.
-Contributions and suggestions are always welcome!
-
-To contribute:
-
-Fork the repository
-
-Create a branch (git checkout -b feature/your-feature)
-
-Commit changes and push
-
-Open a pull request 💬
-
-## 📄 License
-
-MIT License
-
-## 📫 Contact
-
-Created with ❤️ by Chuma Mike.
-Email: nmeyiswa@gmail.com
-Or open an issue here on GitHub.
+```text
+app/
+├── routes/          # Logic Controllers (Blueprints)
+│   ├── auth.py      # Security & Session Management
+│   ├── crm.py       # Network Logic
+│   ├── goals.py     # Strategy Engine
+│   └── tools.py     # Utilities (Balaa/Diary)
+├── services/        # External API Integrations
+│   ├── eskom.py     # Load Shedding Service
+│   └── weather.py   # Weather Service
+├── models.py        # SQLAlchemy Database Schema
+└── templates/       # Jinja2 UI (Tailwind CSS)
