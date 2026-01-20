@@ -32,3 +32,14 @@ def test_invalid_login(client, auth):
     auth.register()
     response = auth.login(password='wrongpassword')
     assert b"Invalid username or password" in response.data
+
+
+def test_register_duplicate_user(client, auth, app):
+    """Test that you cannot register the same username twice."""
+    auth.register() # Register 'testuser' once
+    
+    # Try to register 'testuser' again
+    response = auth.register()
+    
+    # It should fail and show the error message
+    assert b"Username already exists" in response.data
