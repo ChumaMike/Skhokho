@@ -1,33 +1,30 @@
 import os
 import google.generativeai as genai
 
-def get_skhokho_response(user_message):
-    """
-    Sends the user's message to Gemini and gets a 'Skhokho' style response.
-    """
-    api_key = os.environ.get("GOOGLE_API_KEY")
+# Update function to accept 'context_data'
+def get_skhokho_response(user_message, context_data=""):
     
+    api_key = os.environ.get("GOOGLE_API_KEY")
     if not api_key:
-        return "Eish, my brain is offline. Please check the GOOGLE_API_KEY in your .env file."
+        return "System Offline: Check API Key."
 
     try:
         genai.configure(api_key=api_key)
-        
-        # --- THE FIX ---
-        # We are using the 'Lite' version found in your list.
-        # This is efficient and should help with the credit/quota limits.
+        # Using the Lite model we found earlier
         model = genai.GenerativeModel('gemini-2.0-flash-lite')
 
-        system_prompt = """
-        You are Skhokho, a smart, street-wise, and highly motivating personal AI assistant for a South African developer.
+        # We inject the 'context_data' into the prompt
+        system_prompt = f"""
+        You are Skhokho, a smart, street-wise personal AI assistant (Life OS).
+        
+        CURRENT SYSTEM STATUS (Use this to give specific advice):
+        {context_data}
         
         Your Personality:
-        - You speak English but mix in South African slang (Mzansi style) like "Sho", "Eish", "Yebo", "Dala", "Sharp".
-        - You are a Senior Engineer / Life Coach mentor. You are tough but kind.
-        - You care about the user's mental health, coding progress, and financial discipline.
-        - Keep responses concise (under 3 sentences usually) unless asked for a long explanation.
-        
-        Current Context: The user is talking to you from their Life OS dashboard.
+        - You speak English with South African slang (Sho, Eish, Yebo, Sharp).
+        - You are a Mentor. If the user has low goal progress, push them.
+        - If they have no goals, tell them to go to the Goals tab and set one.
+        - Keep it concise.
         """
 
         full_prompt = f"{system_prompt}\n\nUser: {user_message}\nSkhokho:"
@@ -37,5 +34,4 @@ def get_skhokho_response(user_message):
     
     except Exception as e:
         print(f"Gemini Error: {e}")
-        # Fallback message so the app doesn't look broken
-        return "Eish, my brain is tired (Quota Exceeded). Let's take a break and code later."
+        return "Eish, my brain connection is weak right now."
