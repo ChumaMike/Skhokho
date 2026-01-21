@@ -14,8 +14,9 @@ def get_skhokho_response(user_message):
         genai.configure(api_key=api_key)
         
         # --- THE FIX ---
-        # We are using a model confirmed to be in your list:
-        model = genai.GenerativeModel('gemini-2.0-flash')
+        # We are using the 'Lite' version found in your list.
+        # This is efficient and should help with the credit/quota limits.
+        model = genai.GenerativeModel('gemini-2.0-flash-lite')
 
         system_prompt = """
         You are Skhokho, a smart, street-wise, and highly motivating personal AI assistant for a South African developer.
@@ -36,4 +37,5 @@ def get_skhokho_response(user_message):
     
     except Exception as e:
         print(f"Gemini Error: {e}")
-        return f"System Glitch: {str(e)}"
+        # Fallback message so the app doesn't look broken
+        return "Eish, my brain is tired (Quota Exceeded). Let's take a break and code later."
