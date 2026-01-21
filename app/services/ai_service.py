@@ -3,18 +3,20 @@ import google.generativeai as genai
 
 def get_skhokho_response(user_message):
     """
-    Sends the user's message to Gemini Pro and gets a 'Skhokho' style response.
+    Sends the user's message to Gemini and gets a 'Skhokho' style response.
     """
     api_key = os.environ.get("GOOGLE_API_KEY")
     
     if not api_key:
-        return "Eish, my brain is offline. Please check the API Key."
+        return "Eish, my brain is offline. Please check the GOOGLE_API_KEY in your .env file."
 
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-pro')
+        
+        # --- THE FIX ---
+        # We are using a model confirmed to be in your list:
+        model = genai.GenerativeModel('gemini-2.0-flash')
 
-        # This "System Prompt" defines Skhokho's personality
         system_prompt = """
         You are Skhokho, a smart, street-wise, and highly motivating personal AI assistant for a South African developer.
         
@@ -27,11 +29,11 @@ def get_skhokho_response(user_message):
         Current Context: The user is talking to you from their Life OS dashboard.
         """
 
-        # Combine system prompt with user message
         full_prompt = f"{system_prompt}\n\nUser: {user_message}\nSkhokho:"
         
         response = model.generate_content(full_prompt)
         return response.text
     
     except Exception as e:
+        print(f"Gemini Error: {e}")
         return f"System Glitch: {str(e)}"

@@ -19,38 +19,9 @@
     </div>
     
     <div class="hidden md:block text-right">
-        <span class="bg-zinc-900 border border-zinc-800 text-zinc-500 text-xs px-3 py-1 rounded font-mono">v2.0.4 stable</span>
+        <span class="bg-zinc-900 border border-zinc-800 text-zinc-500 text-xs px-3 py-1 rounded font-mono">v2.1.0 AI-Core</span>
     </div>
 </div>
-
-<style>
-    /* The Typing Animation Engine */
-    .typewriter-text {
-        overflow: hidden; /* Hides text until it types */
-        border-right: .15em solid #dc2626; /* The Red Cursor */
-        white-space: nowrap; /* Keeps it on one line */
-        margin: 0; 
-        width: 0; /* Start at 0 width */
-        animation: 
-            typing 2.5s steps(40, end) forwards, /* Type out */
-            blink-caret .75s step-end infinite; /* Blink cursor */
-        
-        /* Ensure the final state keeps the text visible */
-        animation-fill-mode: forwards;
-    }
-
-    /* Typewriter Keyframes */
-    @keyframes typing {
-        from { width: 0 }
-        to { width: 100% }
-    }
-
-    /* Blinking Cursor Keyframes */
-    @keyframes blink-caret {
-        from, to { border-color: transparent }
-        50% { border-color: #dc2626; }
-    }
-</style>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
     
@@ -101,7 +72,7 @@
         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 flex-1 relative overflow-hidden">
             <div class="flex justify-between items-start mb-4">
                 <h3 class="text-zinc-500 font-mono text-xs uppercase tracking-widest">STATUS</h3>
-                <span class="text-xs font-bold {{ 'text-red-500' if power.stage|int > 0 else 'text-green-500' }}">LoadShedding: STAGE {{ power.stage }}</span>
+                <span class="text-xs font-bold {{ 'text-red-500' if power.stage|int > 0 else 'text-green-500' }}">LS: STAGE {{ power.stage }}</span>
             </div>
             
             <div class="flex items-center gap-4">
@@ -138,30 +109,135 @@
     </div>
 </div>
 
-<h2 class="text-sm font-bold text-zinc-500 mb-4 pl-1 font-mono uppercase tracking-widest">System Launchpad</h2>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<h2 class="text-sm font-bold text-zinc-500 mb-4 pl-1 font-mono uppercase tracking-widest">Skhokho Intelligence</h2>
 
-    <a href="{{ url_for('tools.balaa') }}" class="group bg-zinc-900 border border-zinc-800 p-6 rounded-xl hover:bg-zinc-800 hover:border-zinc-700 transition-all text-center">
-        <div class="w-10 h-10 mx-auto bg-black rounded-full flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:bg-red-600 transition mb-3">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-        </div>
-        <span class="text-sm font-bold text-zinc-300 group-hover:text-white">Balaa</span>
-    </a>
+<div class="bg-black border border-zinc-800 rounded-xl overflow-hidden shadow-2xl flex flex-col h-[500px]">
     
-    <a href="{{ url_for('tools.diary') }}" class="group bg-zinc-900 border border-zinc-800 p-6 rounded-xl hover:bg-zinc-800 hover:border-zinc-700 transition-all text-center">
-        <div class="w-10 h-10 mx-auto bg-black rounded-full flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:bg-red-600 transition mb-3">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+    <div class="bg-zinc-900/80 backdrop-blur border-b border-zinc-800 p-4 flex flex-col md:flex-row justify-between items-center gap-4">
+        
+        <div class="flex items-center gap-3">
+            <div class="relative">
+                <div class="w-2 h-2 bg-green-500 rounded-full absolute top-0 right-0 animate-ping"></div>
+                <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">AI</div>
+            </div>
+            <div>
+                <h2 class="text-white font-bold text-sm tracking-wide">NEURAL CORE</h2>
+                <p class="text-zinc-500 text-[10px] font-mono uppercase">Link Active</p>
+            </div>
         </div>
-        <span class="text-sm font-bold text-zinc-300 group-hover:text-white">Diary</span>
-    </a>
-    
-    <a href="{{ url_for('crm.dashboard') }}" class="group bg-zinc-900 border border-zinc-800 p-6 rounded-xl hover:bg-zinc-800 hover:border-zinc-700 transition-all text-center">
-        <div class="w-10 h-10 mx-auto bg-black rounded-full flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:bg-red-600 transition mb-3">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-        </div>
-        <span class="text-sm font-bold text-zinc-300 group-hover:text-white">Network</span>
-    </a>
 
+        <div class="flex gap-2 bg-black/50 p-1 rounded-lg border border-zinc-800">
+            <a href="{{ url_for('tools.balaa') }}" class="px-3 py-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white text-xs font-mono transition flex items-center gap-2">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                BALAA
+            </a>
+            <div class="w-px bg-zinc-800 h-full"></div>
+            <a href="{{ url_for('tools.diary') }}" class="px-3 py-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white text-xs font-mono transition flex items-center gap-2">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                DIARY
+            </a>
+            <div class="w-px bg-zinc-800 h-full"></div>
+            <a href="{{ url_for('crm.dashboard') }}" class="px-3 py-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white text-xs font-mono transition flex items-center gap-2">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                NETWORK
+            </a>
+        </div>
+    </div>
+
+    <div id="chat-container" class="flex-grow p-6 overflow-y-auto space-y-4 bg-black/50">
+        <div class="flex gap-4">
+            <div class="w-8 h-8 bg-red-600 rounded-lg flex-shrink-0 flex items-center justify-center text-xs text-white font-bold">SK</div>
+            <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-lg rounded-tl-none max-w-[85%] text-zinc-300 text-sm leading-relaxed shadow-sm">
+                Sho {{ current_user.username }}! I'm online. Check your missions or let's talk strategy. What's on your mind?
+            </div>
+        </div>
+    </div>
+
+    <div class="p-4 bg-zinc-900 border-t border-zinc-800">
+        <form id="chat-form" class="flex gap-3 relative">
+            <input type="text" id="user-input" placeholder="Type command or message..." autocomplete="off"
+                   class="flex-grow bg-black border border-zinc-700 text-white rounded-lg pl-4 pr-12 py-3 focus:border-red-600 focus:outline-none focus:ring-1 focus:ring-red-600 transition font-mono text-sm shadow-inner">
+            
+            <button type="submit" class="absolute right-2 top-1.5 bottom-1.5 bg-red-600 hover:bg-red-700 text-white px-4 rounded-lg font-bold transition flex items-center justify-center">
+                ↵
+            </button>
+        </form>
+    </div>
 </div>
+
+<style>
+    .typewriter-text {
+        overflow: hidden;
+        border-right: .15em solid #dc2626;
+        white-space: nowrap;
+        margin: 0; 
+        width: 0; 
+        animation: typing 2.5s steps(40, end) forwards, blink-caret .75s step-end infinite;
+        animation-fill-mode: forwards;
+    }
+    @keyframes typing { from { width: 0 } to { width: 100% } }
+    @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: #dc2626; } }
+</style>
+
+<script>
+    const chatContainer = document.getElementById('chat-container');
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+
+    function appendMessage(role, text) {
+        const isUser = role === 'user';
+        const div = document.createElement('div');
+        div.className = `flex gap-4 ${isUser ? 'flex-row-reverse' : ''}`;
+        
+        div.innerHTML = `
+            <div class="w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center text-xs font-bold ${isUser ? 'bg-zinc-700 text-white' : 'bg-red-600 text-white'}">
+                ${isUser ? 'ME' : 'SK'}
+            </div>
+            <div class="p-3 rounded-lg max-w-[85%] text-sm leading-relaxed shadow-sm ${isUser ? 'bg-zinc-800 text-white rounded-tr-none' : 'bg-zinc-900 border border-zinc-800 text-zinc-300 rounded-tl-none'}">
+                ${text}
+            </div>
+        `;
+        
+        chatContainer.appendChild(div);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const message = userInput.value.trim();
+        if (!message) return;
+
+        appendMessage('user', message);
+        userInput.value = '';
+
+        // Loading State
+        const loadingId = 'loading-' + Date.now();
+        const loadingDiv = document.createElement('div');
+        loadingDiv.id = loadingId;
+        loadingDiv.className = 'flex gap-4';
+        loadingDiv.innerHTML = `
+            <div class="w-8 h-8 bg-red-600 rounded-lg flex-shrink-0 flex items-center justify-center text-xs text-white font-bold">SK</div>
+            <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-lg rounded-tl-none text-zinc-500 text-xs italic animate-pulse">
+                Thinking...
+            </div>
+        `;
+        chatContainer.appendChild(loadingDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        try {
+            const response = await fetch("{{ url_for('chat.send_message') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            });
+            const data = await response.json();
+            document.getElementById(loadingId).remove();
+            appendMessage('bot', data.reply);
+        } catch (error) {
+            document.getElementById(loadingId).remove();
+            appendMessage('bot', "Connection Error. Core offline.");
+        }
+    });
+</script>
 
 {% endblock %}
