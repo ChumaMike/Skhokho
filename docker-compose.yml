@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: skhokho-live
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./instance:/app/instance  # Keeps your database safe
+      - .:/app                    # Live Reload: Updates code without restarting!
+    env_file:
+      - .env                      # Reads your API keys automatically
+    environment:
+      - FLASK_DEBUG=1             # specific for docker dev mode
+    restart: always
