@@ -4,26 +4,42 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+import requests
+import os
+
 def get_weather(location):
-    api_key = os.environ.get("WEATHER_API_KEY")
-    if not api_key:
-        return {'error': 'API Key missing'}
+    """
+    RETURNS DUMMY DATA TO SAVE API CREDITS
+    """
+    # 1. Mock Data (The "Fake" Response)
+    mock_weather = {
+        'temperature': 28,
+        'description': 'clear sky',
+        'icon': '01d',
+        'location': 'Soweto (Simulated)',
+        'is_mock': True
+    }
 
-    try:
-        url = f"https://api.openweathermap.org/data/2.5/weather?q={location}&appid={api_key}&units=metric"
-        response = requests.get(url, timeout=5) # Enterprise Rule: Always set a timeout!
-        data = response.json()
+# def get_weather(location):
+#     api_key = os.environ.get("WEATHER_API_KEY")
+#     if not api_key:
+#         return {'error': 'API Key missing'}
 
-        if response.ok:
-            return {
-                'temperature': data['main']['temp'],
-                'description': data['weather'][0]['description'],
-                'location': data['name']
-            }
-        return {'error': data.get('message', 'Weather fetch failed')}
-    except Exception as e:
-        logger.error(f"Weather error: {e}")
-        return {'error': 'Service unavailable'}
+#     try:
+#         url = f"https://api.openweathermap.org/data/2.5/weather?q={location}&appid={api_key}&units=metric"
+#         response = requests.get(url, timeout=5) # Enterprise Rule: Always set a timeout!
+#         data = response.json()
+
+#         if response.ok:
+#             return {
+#                 'temperature': data['main']['temp'],
+#                 'description': data['weather'][0]['description'],
+#                 'location': data['name']
+#             }
+#         return {'error': data.get('message', 'Weather fetch failed')}
+#     except Exception as e:
+#         logger.error(f"Weather error: {e}")
+#         return {'error': 'Service unavailable'}
 
 def get_daily_quote():
     try:

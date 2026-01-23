@@ -1,16 +1,37 @@
 version: '3.8'
 
 services:
+  # 1. THE WEB APP (Your Flask Code)
   web:
     build: .
-    container_name: skhokho-live
+    container_name: skhokho-web
     ports:
       - "5000:5000"
     volumes:
-      - ./instance:/app/instance  # Keeps your database safe
-      - .:/app                    # Live Reload: Updates code without restarting!
-    env_file:
-      - .env                      # Reads your API keys automatically
+      - .:/app
+    depends_on:
+      - db  # Wait for the database to start first
     environment:
-      - FLASK_DEBUG=1             # specific for docker dev mode
+      - FLASK_DEBUG=1
+      # The Connection String: user:password@hostname:port/dbname
+      - DATABASE_URL=postgresql://skhokho_user:skhokho_pass@db:5432/skhokho_db
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY} 
     restart: always
+
+  # 2. THE DATABASE (PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    container_name: skhokho-db
+    environment:
+      POSTGRES_USER: skhokho_user
+      POSTGRES_PASSWORD: skhokho_pass
+      POSTGRES_DB: skhokho_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Saves data if container dies
+    restart: always
+
+# Define the volume storage
+volumes:
+  postgres_data:
