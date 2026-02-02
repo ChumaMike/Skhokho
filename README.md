@@ -124,7 +124,7 @@ pytest
 To generate a coverage report:
 
 Bash
-12
+1
 pytest --cov=app
 🛡️ License
 Distributed under the MIT License. See LICENSE for more information.
