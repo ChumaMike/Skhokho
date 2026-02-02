@@ -125,6 +125,7 @@ To generate a coverage report:
 
 Bash
 
+
 pytest --cov=app
 🛡️ License
 Distributed under the MIT License. See LICENSE for more information.
