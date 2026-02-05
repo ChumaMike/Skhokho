@@ -23,13 +23,15 @@ def create_app(config_class=Config):
     app.register_blueprint(tools_bp)
 
     from app.routes.goals import goals_bp
-    from app.routes.crm import crm_bp    # <--- Import
+    from app.routes.crm import crm_bp  
     from app.routes.chat import chat_bp
+    from app.routes.location import location_bp
     
     
     app.register_blueprint(chat_bp)
     app.register_blueprint(goals_bp)
-    app.register_blueprint(crm_bp)       # <--- Register
+    app.register_blueprint(crm_bp)      
+    app.register_blueprint(location_bp, url_prefix='/location')
     
     return app
 

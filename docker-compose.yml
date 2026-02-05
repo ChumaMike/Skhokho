@@ -20,18 +20,17 @@ services:
 
   # 2. THE DATABASE (PostgreSQL)
   db:
-    image: postgres:15-alpine
+    image: postgis/postgis:15-3.3-alpine
     container_name: skhokho-db
     environment:
       POSTGRES_USER: skhokho_user
       POSTGRES_PASSWORD: skhokho_pass
       POSTGRES_DB: skhokho_db
     ports:
-      - "5434:5432"
+      - "5435:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data # Saves data if container dies
+      - postgres_data:/var/lib/postgresql/data
     restart: always
-
 # Define the volume storage
 volumes:
   postgres_data:

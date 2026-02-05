@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template
 from flask_login import current_user
-from app.services.weather_service import get_weather, get_daily_quote
+from app.services.weather_service import get_current_weather, get_daily_quote
 from app.services.eskom_service import get_loadshedding_status
 from app.models import Goal, Contact
 from datetime import datetime
@@ -11,7 +11,7 @@ main_bp = Blueprint('main', __name__)
 def home():
     # 1. Environment Intel (Weather & Power)
     # [cite_start]Defaulting to Soweto since that's your base [cite: 2]
-    weather = get_weather("Soweto") 
+    weather = get_current_weather("Soweto") 
     power = get_loadshedding_status()
     quote = get_daily_quote()
     

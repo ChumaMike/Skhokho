@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from app.extensions import db
 from app.models import BalaaHistory, DiaryEntry
-from app.services.weather_service import get_weather, get_daily_quote
+from app.services.weather_service import get_current_weather, get_daily_quote
 from datetime import datetime
 from collections import defaultdict
 
@@ -82,6 +82,6 @@ def snapshot():
     if request.method == 'POST':
         city = request.form.get('location')
         if city:
-            weather_data = get_weather(city)
+            weather_data = get_current_weather(city)
             
     return render_template('local_update.html', weather=weather_data, quote=quote)

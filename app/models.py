@@ -2,6 +2,7 @@ from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.extensions import db
+from geoalchemy2 import Geometry
 
 # --- CORE USER MODEL ---
 class User(UserMixin, db.Model):
@@ -100,3 +101,22 @@ class BalaaHistory(db.Model):
     received = db.Column(db.Float, nullable=False)
     change = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class LocationTag(db.Model):
+    """
+    Stores 'Points of Interest' for the Super App.
+    Examples:
+    - Type: 'Internship', Name: 'Microsoft HQ', Coords: (-26.1, 28.0)
+    - Type: 'Danger', Name: 'Hillbrow Zone C', Coords: (-26.1, 28.0)
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    category = db.Column(db.String(50))  # 'Career', 'Safety', 'Social'
+    description = db.Column(db.String(255))
+    
+    # THE SPATIAL COLUMN (Stores GPS data)
+    # SRID 4326 is the standard for GPS (WGS84)
+    coordinates = db.Column(Geometry('POINT', srid=4326)) 
+
+    def __repr__(self):
+        return f'<Location {self.name}>'

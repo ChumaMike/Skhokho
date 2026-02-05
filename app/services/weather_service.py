@@ -1,50 +1,47 @@
-import requests
 import os
-import logging
-
-logger = logging.getLogger(__name__)
-
 import requests
-import os
+import random
 
-def get_weather(location):
+def get_current_weather(city="Johannesburg"):
     """
-    RETURNS DUMMY DATA TO SAVE API CREDITS
+    Safely gets weather. Returns Mock Data if API fails or key is missing.
     """
-    # 1. Mock Data (The "Fake" Response)
-    mock_weather = {
+    api_key = os.environ.get("WEATHER_API_KEY")
+
+    # --- PLAN A: REAL API ---
+    if api_key:
+        try:
+            url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                return {
+                    'temperature': data['main']['temp'],
+                    'description': data['weather'][0]['description'],
+                    'icon': data['weather'][0]['icon'],
+                    'city': city
+                }
+        except Exception as e:
+            print(f"⚠️ Weather API Failed: {e}")
+    
+    # --- PLAN B: FALLBACK ---
+    print("⚠️ Using Mock Weather Data")
+    return {
         'temperature': 28,
-        'description': 'clear sky',
+        'description': 'Sunny (Offline Mode)',
         'icon': '01d',
-        'location': 'Soweto (Simulated)',
-        'is_mock': True
+        'city': 'Soweto'
     }
 
-# def get_weather(location):
-#     api_key = os.environ.get("WEATHER_API_KEY")
-#     if not api_key:
-#         return {'error': 'API Key missing'}
-
-#     try:
-#         url = f"https://api.openweathermap.org/data/2.5/weather?q={location}&appid={api_key}&units=metric"
-#         response = requests.get(url, timeout=5) # Enterprise Rule: Always set a timeout!
-#         data = response.json()
-
-#         if response.ok:
-#             return {
-#                 'temperature': data['main']['temp'],
-#                 'description': data['weather'][0]['description'],
-#                 'location': data['name']
-#             }
-#         return {'error': data.get('message', 'Weather fetch failed')}
-#     except Exception as e:
-#         logger.error(f"Weather error: {e}")
-#         return {'error': 'Service unavailable'}
-
 def get_daily_quote():
-    try:
-        response = requests.get("https://api.quotable.io/random", timeout=3)
-        data = response.json()
-        return f"\"{data['content']}\" — {data['author']}"
-    except:
-        return "Keep pushing, Skhokho."
+    """
+    Returns a random motivational quote.
+    """
+    quotes = [
+        "The only way to do great work is to love what you do. - Steve Jobs",
+        "It always seems impossible until it is done. - Nelson Mandela",
+        "Don't watch the clock; do what it does. Keep going. - Sam Levenson",
+        "Code is like humor. When you have to explain it, it’s bad. - Cory House",
+        "Fix the cause, not the symptom. - Steve Maguire"
+    ]
+    return random.choice(quotes)
