@@ -1,40 +1,44 @@
 import os
 import google.generativeai as genai
+from PIL import Image
 
-# Note: We added 'context_data' as a second argument
-def get_skhokho_response(user_message, context_data=None):
+def get_skhokho_response(user_message, context_data="", image=None):
     api_key = os.environ.get("GOOGLE_API_KEY")
     
     if not api_key:
-        return "System Offline: Check API Key."
+        return "System Alert: Neural Link Disconnected (Key Missing)."
 
     try:
         genai.configure(api_key=api_key)
         
-        # Using the Lite model (Cost efficient)
-        model = genai.GenerativeModel('gemini-2.0-flash-lite')
+        # USE THE MODERN FLASH MODEL (Handles Text & Images)
+        model = genai.GenerativeModel('gemini-flash-latest')
+        
+        system_instruction = "You are Skhokho, a futuristic tactical advisor in Soweto. Use local slang (Sho, Sharp, Eish). Be concise."
 
-        # This is where the magic happens. We inject the database info.
-        system_prompt = f"""
-        You are Skhokho, a smart, street-wise personal AI assistant (Life OS).
-        
-        /// SYSTEM INTELLIGENCE (DATABASE REALITY) ///
-        {context_data if context_data else "No user data available."}
-        /////////////////////////////////////////////
-        
-        Your Personality:
-        - You speak English with South African slang (Sho, Eish, Yebo, Sharp, Mzansi).
-        - You are an Accountability Partner. 
-        - USE THE DATA ABOVE. If their goal progress is low (under 20%), push them to work.
-        - If they mention money, refer to their recent Balaa stats if relevant.
-        - Keep it concise (2-3 sentences max).
-        """
+        # SCENARIO A: VISION 👁️
+        if image:
+            print("👁️ ACTIVATING SKHOKHO VISION (Gemini 1.5 Flash)...", flush=True)
+            prompt = "Analyze this image. If it's a document, summarize key details (Dates, Prices). If it's a place, is it safe? Keep it brief."
+            response = model.generate_content([prompt, image])
+            return response.text
 
-        full_prompt = f"{system_prompt}\n\nUser: {user_message}\nSkhokho:"
+        # SCENARIO B: TEXT 💬
+        else:
+            full_prompt = f"{system_instruction}\n\nCONTEXT:\n{context_data}\n\nUSER:\n{user_message}"
+            response = model.generate_content(full_prompt)
+            return response.text
         
-        response = model.generate_content(full_prompt)
-        return response.text
-    
     except Exception as e:
-        print(f"Gemini Error: {e}")
-        return "Eish, the signal is weak. I can't reach the cloud right now."
+        print(f"⚠️ BRAIN FAILURE: {e}", flush=True)
+        
+        # DEBUG: If it fails, print what models ARE available so we stop guessing
+        try:
+            print("📋 AVAILABLE MODELS:", flush=True)
+            for m in genai.list_models():
+                if 'generateContent' in m.supported_generation_methods:
+                    print(f" - {m.name}", flush=True)
+        except:
+            pass
+            
+        return "Eish, my eyes are blurry. I can't process that right now."

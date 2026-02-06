@@ -1,9 +1,13 @@
-from flask import Blueprint, render_template
-from flask_login import current_user
+from flask import Blueprint, render_template, jsonify, request
+from flask_login import current_user, login_required
 from app.services.weather_service import get_current_weather, get_daily_quote
 from app.services.eskom_service import get_loadshedding_status
 from app.models import Goal, Contact
 from datetime import datetime
+from flask import request
+from PIL import Image
+import os
+
 
 main_bp = Blueprint('main', __name__)
 
@@ -59,3 +63,24 @@ def home():
         context['alerts'] = alerts[:3] # Just top 3 alerts
 
     return render_template('index.html', **context)
+
+@main_bp.route('/analyze/image', methods=['POST'])
+def analyze_image():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+
+    try:
+        # Open image for Gemini
+        image = Image.open(file)
+        
+        # Send to Skhokho Vision
+        from app.services.ai_service import get_skhokho_response
+        analysis = get_skhokho_response(user_message="", image=image)
+        
+        return jsonify({"analysis": analysis})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

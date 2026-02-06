@@ -11,11 +11,14 @@ services:
       - .:/app
     depends_on:
       - db  # Wait for the database to start first
+    env_file:
+      - .env
     environment:
       - FLASK_DEBUG=1
       # The Connection String: user:password@hostname:port/dbname
       - DATABASE_URL=postgresql://skhokho_user:skhokho_pass@db:5432/skhokho_db
       - GOOGLE_API_KEY=${GOOGLE_API_KEY} 
+      - WEATHER_API_KEY=${WEATHER_API_KEY}
     restart: always
 
   # 2. THE DATABASE (PostgreSQL)

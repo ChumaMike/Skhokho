@@ -92,34 +92,46 @@
     </div>
 
     <div class="flex gap-2">
-        <button onclick="scanLocation(false)" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-bold transition">
-            📡 Scan Here
-        </button>
+        <div class="mt-4 flex gap-2">
+    <button onclick="scanLocation(false)" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded shadow-lg transition flex items-center justify-center gap-2">
+        <i class="fas fa-satellite-dish"></i> Scan Area
+    </button>
+    
+    <label class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-4 rounded shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
+        <i class="fas fa-eye"></i> Analyze Intel
+        <input type="file" id="intel-upload" class="hidden" accept="image/*" onchange="uploadIntel(this)">
+    </label>
+</div>
 
-        <button onclick="scanLocation(true)" class="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg font-bold transition">
-            🕹️ Sim: Microsoft HQ
-        </button>
+<button onclick="scanLocation(true)" class="w-full mt-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-2 rounded shadow-lg text-sm">
+    🕹️ Sim: Microsoft HQ
+</button>
     </div>
 </div>
 
 <script>
 async function scanLocation(isSimulation) {
     const resultDiv = document.getElementById('radar-result');
-    resultDiv.innerHTML = "🛰️ Scanning satellites...";
+    
+    // 1. COOL LOADING ANIMATION 🛰️
+    resultDiv.innerHTML = `
+        <div class="flex items-center gap-3 text-red-400 animate-pulse p-4 border border-red-500/30 rounded-lg bg-red-900/10">
+            <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <span class="font-mono text-xs tracking-widest uppercase">Acquiring Satellite Lock...</span>
+        </div>
+    `;
 
     let lat, lng;
 
+    // 2. GET COORDINATES
     if (isSimulation) {
-        // Teleport to Microsoft Innovation Center (Soweto)
         lat = -26.25;
-        lng = 27.85;
+        lng = 27.85; // Microsoft HQ
     } else {
-        // Use Real Browser GPS
         if (!navigator.geolocation) {
-            resultDiv.innerHTML = "❌ GPS not supported.";
+            resultDiv.innerHTML = "<span class='text-red-500'>❌ GPS HARDWARE MISSING</span>";
             return;
         }
-        // This part waits for the browser popup
         try {
             const pos = await new Promise((resolve, reject) => {
                 navigator.geolocation.getCurrentPosition(resolve, reject);
@@ -127,12 +139,12 @@ async function scanLocation(isSimulation) {
             lat = pos.coords.latitude;
             lng = pos.coords.longitude;
         } catch (e) {
-            resultDiv.innerHTML = "❌ Access Denied.";
+            resultDiv.innerHTML = "<span class='text-red-500'>❌ SIGNAL BLOCKED (Check Permissions)</span>";
             return;
         }
     }
 
-    // Send to Python Backend
+    // 3. SEND TO BRAIN 🧠
     try {
         const response = await fetch('/location/scan', {
             method: 'POST',
@@ -142,21 +154,52 @@ async function scanLocation(isSimulation) {
         
         const data = await response.json();
         
-        // Show the AI's Advice
+        // 4. BUILD THE UI (The Fix for "Extra Microsoft")
+        let findingsHTML = "";
+        
+        if (data.findings && data.findings.length > 0) {
+            // Turn the list into TACTICAL CARDS
+            findingsHTML = data.findings.map(f => {
+                let cleanText = f.replace("📍 FOUND: ", ""); 
+                return `
+                <div class="bg-gray-800 border-l-2 border-red-500 p-3 rounded-r mb-2 flex justify-between items-center group">
+                    <div>
+                        <div class="text-white font-bold text-sm">${cleanText}</div>
+                        <div class="text-[10px] text-red-400 uppercase tracking-widest mt-1">TARGET ACQUIRED</div>
+                    </div>
+                    <div class="h-2 w-2 rounded-full bg-red-500 shadow-[0_0_10px_red]"></div>
+                </div>`;
+            }).join('');
+        } else {
+            findingsHTML = `<div class="text-gray-500 italic text-sm p-2">No strategic targets in range.</div>`;
+        }
+
+        // 5. DISPLAY THE RESULT
         resultDiv.innerHTML = `
-            <div class="text-green-400 font-bold mb-2">FOUND:</div>
-            <ul class="list-disc ml-5 mb-3">${data.findings.map(f => `<li>${f}</li>`).join('')}</ul>
-            <div class="text-white bg-gray-700 p-3 rounded border-l-4 border-purple-500">
-                <span class="font-bold text-purple-300">Skhokho says:</span> 
-                "${data.advice}"
+            <div class="animate-fade-in space-y-4">
+                <div>
+                    ${findingsHTML}
+                </div>
+                
+                <div class="bg-gradient-to-br from-gray-900 to-black p-4 rounded-xl border border-gray-700 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-2 opacity-10"><i class="fas fa-satellite-dish text-4xl text-white"></i></div>
+                    <div class="flex items-start gap-3 relative z-10">
+                        <div class="mt-1 min-w-[24px] text-2xl">🤖</div>
+                        <div>
+                            <div class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">STRATEGIC ADVICE</div>
+                            <div class="text-gray-300 text-sm leading-relaxed font-light">
+                                "${data.advice}"
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
     } catch (err) {
-        resultDiv.innerHTML = "❌ System Glitch: " + err;
+        resultDiv.innerHTML = `<span class='text-red-500'>❌ SYSTEM FAILURE: ${err}</span>`;
     }
 }
 </script>
-
         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 flex-1 flex flex-col justify-between">
             <h3 class="text-zinc-500 font-mono text-xs uppercase tracking-widest mb-4">NETWORK ALERTS</h3>
             
@@ -311,6 +354,44 @@ async function scanLocation(isSimulation) {
             appendMessage('bot', "Connection Error. Core offline.");
         }
     });
+    async function uploadIntel(input) {
+    if (input.files && input.files[0]) {
+        const resultDiv = document.getElementById('radar-result');
+        // Loading Animation
+        resultDiv.innerHTML = `
+            <div class="flex items-center gap-3 text-purple-400 animate-pulse p-4 border border-purple-500/30 rounded-lg bg-purple-900/10">
+                <i class="fas fa-eye animate-ping"></i>
+                <span class="font-mono text-xs tracking-widest uppercase">Analyzing Visual Data...</span>
+            </div>
+        `;
+
+        const formData = new FormData();
+        formData.append('file', input.files[0]);
+
+        try {
+            const response = await fetch('/analyze/image', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+
+            // Display Result
+            resultDiv.innerHTML = `
+                <div class="bg-gray-900 border-l-4 border-purple-500 p-4 rounded-r-xl shadow-2xl animate-fade-in">
+                    <div class="flex items-start gap-3">
+                        <div class="text-2xl mt-1">👁️</div>
+                        <div>
+                            <div class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-1">VISUAL ANALYSIS</div>
+                            <div class="text-gray-200 text-sm leading-relaxed">${data.analysis}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } catch (err) {
+            resultDiv.innerHTML = "<span class='text-red-500'>❌ UPLOAD FAILED</span>";
+        }
+    }
+}
 </script>
 
 {% endblock %}

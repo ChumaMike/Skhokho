@@ -13,14 +13,18 @@ def get_current_weather(city="Johannesburg"):
         try:
             url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
             response = requests.get(url, timeout=5)
+            
             if response.status_code == 200:
                 data = response.json()
                 return {
                     'temperature': data['main']['temp'],
-                    'description': data['weather'][0]['description'],
+                    'description': data['weather'][0]['description'].title(),
                     'icon': data['weather'][0]['icon'],
                     'city': city
                 }
+            else:
+                print(f"⚠️ API Error: {response.status_code}")
+                
         except Exception as e:
             print(f"⚠️ Weather API Failed: {e}")
     
@@ -45,3 +49,6 @@ def get_daily_quote():
         "Fix the cause, not the symptom. - Steve Maguire"
     ]
     return random.choice(quotes)
+
+# Backward compatibility alias
+get_weather = get_current_weather
