@@ -1,6 +1,7 @@
 import os
 import google.generativeai as genai
 from PIL import Image
+import json
 
 def get_skhokho_response(user_message, context_data="", image=None):
     api_key = os.environ.get("GOOGLE_API_KEY")
@@ -23,12 +24,29 @@ def get_skhokho_response(user_message, context_data="", image=None):
             response = model.generate_content([prompt, image])
             return response.text
 
-        # SCENARIO B: TEXT 💬
         else:
+            # Use the standard model for text
+            model = genai.GenerativeModel('gemini-flash-latest')
+            
+            # OLD: "You are a futuristic tactical advisor... Be concise." (Too strict!)
+            
+            # NEW: Warmer, Mentor Vibe 🧠🔥
+            system_instruction = """
+            You are Skhokho, a wise and supportive street-smart mentor for a young hustler in Soweto.
+            
+            Your Vibe:
+            - You are encouraging, not harsh.
+            - You use local slang naturally (Sho, Sharp, Eish, Bra), but don't overdo it.
+            - You focus on "The Hustle" (making progress), but you are patient.
+            - If the user has no money/goals, suggest small easy steps to start, don't scold them.
+            
+            Keep responses short (under 2 sentences) and conversational.
+            """
+            
             full_prompt = f"{system_instruction}\n\nCONTEXT:\n{context_data}\n\nUSER:\n{user_message}"
+            
             response = model.generate_content(full_prompt)
             return response.text
-        
     except Exception as e:
         print(f"⚠️ BRAIN FAILURE: {e}", flush=True)
         
@@ -42,3 +60,39 @@ def get_skhokho_response(user_message, context_data="", image=None):
             pass
             
         return "Eish, my eyes are blurry. I can't process that right now."
+    
+
+def get_hustle_plan(goal):
+    api_key = os.environ.get("GOOGLE_API_KEY")
+    if not api_key: return None
+
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-flash-latest') # Use the fast one!
+        
+        # PROMPT ENGINEERING: Force JSON Output
+        prompt = f"""
+        You are a business mentor in Soweto.
+        Create a 5-step 'Hustle Plan' for: "{goal}".
+        
+        IMPORTANT: Return ONLY raw JSON. No markdown. No text.
+        Format:
+        {{
+            "title": "Short catchy title",
+            "steps": [
+                {{"icon": "📝", "task": "Step 1 details"}},
+                {{"icon": "💰", "task": "Step 2 details"}}
+            ]
+        }}
+        """
+        
+        response = model.generate_content(prompt)
+        
+        # Clean the response (sometimes AI adds ```json ... ```)
+        clean_json = response.text.replace("```json", "").replace("```", "").strip()
+        
+        return json.loads(clean_json) # Return as Python Dictionary
+        
+    except Exception as e:
+        print(f"⚠️ PLANNER FAILED: {e}", flush=True)
+        return None

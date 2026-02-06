@@ -24,7 +24,7 @@ def send_message():
     # --- 1. GATHER SYSTEM INTELLIGENCE ---
     
     # A. Get Active Goals
-    active_goals = Goal.query.filter_by(user_id=current_user.id, completed=False).all()
+    active_goals = Goal.query.filter_by(user_id=current_user.id).all()
     if active_goals:
         goals_text = "\n".join([f"- {g.title}: {g.progress}% Complete" for g in active_goals])
     else:
