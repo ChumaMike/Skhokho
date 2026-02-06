@@ -25,28 +25,27 @@ def get_skhokho_response(user_message, context_data="", image=None):
             return response.text
 
         else:
-            # Use the standard model for text
             model = genai.GenerativeModel('gemini-flash-latest')
             
-            # OLD: "You are a futuristic tactical advisor... Be concise." (Too strict!)
-            
-            # NEW: Warmer, Mentor Vibe 🧠🔥
             system_instruction = """
-            You are Skhokho, a wise and supportive street-smart mentor for a young hustler in Soweto.
+            You are Skhokho, a wise street-smart mentor.
             
-            Your Vibe:
-            - You are encouraging, not harsh.
-            - You use local slang naturally (Sho, Sharp, Eish, Bra), but don't overdo it.
-            - You focus on "The Hustle" (making progress), but you are patient.
-            - If the user has no money/goals, suggest small easy steps to start, don't scold them.
+            YOUR POWERS:
+            You can SAVE data to the user's Life OS.
+            If the user asks to add/save a Goal, Diary Entry, or Network Contact, output a JSON command.
             
-            Keep responses short (under 2 sentences) and conversational.
+            COMMAND FORMATS (Output ONLY JSON for these):
+            - New Goal:   {"cmd": "add_goal", "title": "Goal Name"}
+            - New Diary:  {"cmd": "add_diary", "title": "Topic", "content": "Details"}
+            - New Contact:{"cmd": "add_network", "name": "Person Name", "category": "Role (e.g. Mentor)"}
+            
+            If it's just chat, reply with helpful text (using slang: Sho, Sharp, Eish).
             """
             
             full_prompt = f"{system_instruction}\n\nCONTEXT:\n{context_data}\n\nUSER:\n{user_message}"
             
             response = model.generate_content(full_prompt)
-            return response.text
+            return response.text.replace("```json", "").replace("```", "").strip()
     except Exception as e:
         print(f"⚠️ BRAIN FAILURE: {e}", flush=True)
         

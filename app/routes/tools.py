@@ -2,10 +2,10 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from app.extensions import db
 from app.models import BalaaHistory, DiaryEntry
-from app.services.weather_service import get_current_weather, get_daily_quote
 from datetime import datetime
 from collections import defaultdict
 
+# URL Prefix is handled in __init__.py (/tools)
 tools_bp = Blueprint('tools', __name__)
 
 # Helper for Diary
@@ -72,16 +72,3 @@ def diary():
 
     entries = DiaryEntry.query.filter_by(user_id=current_user.id).order_by(DiaryEntry.timestamp.desc()).all()
     return render_template('diary.html', entries=group_entries_by_date(entries))
-
-@tools_bp.route('/snapshot', methods=['GET', 'POST'])
-@login_required
-def snapshot():
-    weather_data = None
-    quote = get_daily_quote()
-    
-    if request.method == 'POST':
-        city = request.form.get('location')
-        if city:
-            weather_data = get_current_weather(city)
-            
-    return render_template('local_update.html', weather=weather_data, quote=quote)

@@ -1,320 +1,146 @@
 {% extends 'base.html' %}
-
 {% block title %}Command Center{% endblock %}
 
 {% block content %}
 
-<div class="flex flex-col md:flex-row justify-between items-end gap-4 mb-8 border-b border-zinc-900 pb-4">
+<div class="flex flex-col md:flex-row justify-between items-end gap-4 mb-8 pb-4 border-b border-zinc-900">
     <div>
-        <p class="text-zinc-500 font-mono text-[10px] mb-1 tracking-widest uppercase flex items-center gap-2">
+        <div class="flex items-center gap-2 mb-2">
             <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-            SYSTEM ONLINE • {{ weather.location }}
-        </p>
-        
-        <div class="flex items-center">
-            <h1 class="text-3xl md:text-5xl font-bold text-white tracking-tight typewriter-text">
-                {{ greeting }}, {{ current_user.username if current_user.is_authenticated else 'Guest' }}
-            </h1>
+            <p class="text-zinc-500 font-mono text-[10px] tracking-widest uppercase">SYSTEM ONLINE • {{ weather.location }}</p>
         </div>
+        <h1 class="text-3xl md:text-5xl font-bold text-white tracking-tight typewriter-text">
+            {{ greeting }}, {{ current_user.username }}
+        </h1>
     </div>
     
-    <div class="hidden md:block text-right">
-        <span class="bg-zinc-900 border border-zinc-800 text-zinc-500 text-xs px-3 py-1 rounded font-mono">v2.1.0 AI-Core</span>
+    <div class="flex gap-4">
+        <div class="bg-gray-900 px-4 py-2 rounded-lg border border-gray-800 text-right">
+            <div class="text-2xl font-bold text-white">{{ weather.temperature }}°</div>
+            <div class="text-[10px] text-gray-500 uppercase">{{ weather.description }}</div>
+        </div>
+        <div class="bg-gray-900 px-4 py-2 rounded-lg border border-gray-800 text-right">
+            <div class="text-2xl font-bold {{ 'text-red-500' if power.stage > 0 else 'text-green-500' }}">S{{ power.stage }}</div>
+            <div class="text-[10px] text-gray-500 uppercase">Loadshedding</div>
+        </div>
     </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
-    
-    <div class="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-2xl p-8 relative overflow-hidden flex flex-col justify-between min-h-[300px]">
-        <div class="absolute right-0 top-0 w-64 h-64 bg-red-600/5 rounded-full blur-3xl -z-10"></div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
+
+    <div class="lg:col-span-7 space-y-6">
         
-        <div>
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-zinc-500 font-mono text-xs uppercase tracking-widest">ACTIVE MISSIONS</h3>
-                <a href="{{ url_for('goals.dashboard') }}" class="text-xs text-red-500 hover:text-white transition font-mono">MANAGE ></a>
+        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 relative overflow-hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-zinc-500 font-mono text-xs uppercase tracking-widest flex items-center gap-2">
+                    <i class="fas fa-crosshairs"></i> Active Missions
+                </h3>
+                <a href="{{ url_for('goals.dashboard') }}" class="text-[10px] bg-red-600/20 text-red-500 px-2 py-1 rounded hover:bg-red-600 hover:text-white transition">MANAGE</a>
             </div>
 
-            {% if current_user.is_authenticated and goals %}
-                <div class="space-y-6">
+            {% if goals %}
+                <div class="space-y-4">
                     {% for goal in goals %}
-                    <div class="group">
-                        <div class="flex justify-between text-sm mb-2">
-                            <a href="{{ url_for('goals.view_goal', goal_id=goal.id) }}" class="text-white text-lg font-bold hover:text-red-500 transition flex items-center gap-2">
-                                {{ goal.title }}
-                                <svg class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity -rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                            </a>
-                            <span class="text-zinc-500 font-mono">{{ goal.progress }}%</span>
-                        </div>
-                        <div class="w-full bg-black h-2 rounded-full overflow-hidden border border-zinc-800">
-                            <div class="bg-gradient-to-r from-red-900 to-red-600 h-full rounded-full transition-all duration-1000" style="width: {{ goal.progress }}%"></div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            {% elif not current_user.is_authenticated %}
-                <div class="flex flex-col items-center justify-center h-40 opacity-50">
-                    <p class="text-zinc-400 font-mono text-sm">ACCESS RESTRICTED</p>
-                    <a href="{{ url_for('auth.login') }}" class="text-red-500 text-sm font-bold mt-2 hover:underline">AUTHENTICATE IDENTITY</a>
-                </div>
-            {% else %}
-                <p class="text-zinc-500 italic text-sm">No active directives found.</p>
-            {% endif %}
-        </div>
-        
-        <div class="mt-8 pt-6 border-t border-zinc-800/50 flex justify-between items-end text-zinc-500 text-xs font-mono">
-            <span>PRIORITY LEVEL: HIGH</span>
-            <span>{{ goals|length if goals else 0 }} ACTIVE THREADS</span>
-        </div>
-    </div>
-
-    <div class="flex flex-col gap-6">
-        
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 flex-1 relative overflow-hidden">
-            <div class="flex justify-between items-start mb-4">
-                <h3 class="text-zinc-500 font-mono text-xs uppercase tracking-widest">STATUS</h3>
-                <span class="text-xs font-bold {{ 'text-red-500' if power.stage|int > 0 else 'text-green-500' }}">LS: STAGE {{ power.stage }}</span>
-            </div>
-            
-            <div class="flex items-center gap-4">
-                <span class="text-6xl font-black text-white tracking-tighter">{{ weather.temperature | int }}°</span>
-                <div class="flex flex-col justify-center border-l border-zinc-700 pl-4 h-12">
-                    <span class="text-zinc-400 text-sm capitalize">{{ weather.description }}</span>
-                    <span class="text-zinc-600 text-xs uppercase">{{ weather.location }}</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 mt-6">
-    <h3 class="text-xl font-bold text-white mb-4">📍 Skhokho Radar</h3>
-
-    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-xl mt-6 relative overflow-hidden group">
-    <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition"><i class="fas fa-list-check text-6xl text-green-500"></i></div>
-    
-    <h3 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
-        <span class="bg-green-600 text-xs px-2 py-1 rounded text-white">BETA</span>
-        Hustle Planner
-    </h3>
-    <p class="text-gray-400 text-sm mb-4">Tell Skhokho your goal, and get a tactical checklist.</p>
-    
-    <div class="flex gap-2">
-        <input type="text" id="hustle-goal" placeholder="e.g. Start a Kota business..." class="flex-1 bg-gray-900 border border-gray-600 rounded p-3 text-white focus:border-green-500 focus:outline-none">
-        <button onclick="generatePlan()" class="bg-green-600 hover:bg-green-500 text-white font-bold px-6 rounded transition">
-            GO
-        </button>
-    </div>
-
-    <div id="plan-result" class="mt-4 hidden"></div>
-</div>
-
-<script>
-async function generatePlan() {
-    const goal = document.getElementById('hustle-goal').value;
-    const resultDiv = document.getElementById('plan-result');
-    
-    if (!goal) return;
-
-    // Loading State
-    resultDiv.classList.remove('hidden');
-    resultDiv.innerHTML = `<div class="text-green-400 animate-pulse text-sm">💡 Generating Strategy...</div>`;
-
-    try {
-        const response = await fetch('/plan/create', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ goal: goal })
-        });
-        const data = await response.json();
-
-        // Render the Checklist
-        let stepsHTML = data.steps.map(s => `
-            <div class="flex items-start gap-3 bg-gray-900/50 p-3 rounded mb-2 border-l-2 border-green-500">
-                <div class="text-lg">${s.icon}</div>
-                <div class="text-gray-200 text-sm">${s.task}</div>
-                <input type="checkbox" class="ml-auto accent-green-500 h-5 w-5">
-            </div>
-        `).join('');
-
-        resultDiv.innerHTML = `
-            <div class="animate-fade-in mt-4">
-                <div class="text-xs font-bold text-green-400 uppercase tracking-widest mb-2">${data.title}</div>
-                ${stepsHTML}
-            </div>
-        `;
-    } catch (e) {
-        resultDiv.innerHTML = `<div class="text-red-400 text-sm">❌ Planning Failed. Try again.</div>`;
-    }
-}
-</script>
-    
-    <div id="radar-result" class="text-gray-400 mb-4 text-sm">
-        Press the button to scan your current location...
-    </div>
-
-    <div class="flex gap-2">
-        <div class="mt-4 flex gap-2">
-    <button onclick="scanLocation(false)" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded shadow-lg transition flex items-center justify-center gap-2">
-        <i class="fas fa-satellite-dish"></i> Scan Area
-    </button>
-    
-    <label class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-4 rounded shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
-        <i class="fas fa-eye"></i> Analyze Intel
-        <input type="file" id="intel-upload" class="hidden" accept="image/*" onchange="uploadIntel(this)">
-    </label>
-</div>
-
-<button onclick="scanLocation(true)" class="w-full mt-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-2 rounded shadow-lg text-sm">
-    🕹️ Sim: Microsoft HQ
-</button>
-    </div>
-</div>
-
-<script>
-async function scanLocation(isSimulation) {
-    const resultDiv = document.getElementById('radar-result');
-    
-    // 1. COOL LOADING ANIMATION 🛰️
-    resultDiv.innerHTML = `
-        <div class="flex items-center gap-3 text-red-400 animate-pulse p-4 border border-red-500/30 rounded-lg bg-red-900/10">
-            <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            <span class="font-mono text-xs tracking-widest uppercase">Acquiring Satellite Lock...</span>
-        </div>
-    `;
-
-    let lat, lng;
-
-    // 2. GET COORDINATES
-    if (isSimulation) {
-        lat = -26.25;
-        lng = 27.85; // Microsoft HQ
-    } else {
-        if (!navigator.geolocation) {
-            resultDiv.innerHTML = "<span class='text-red-500'>❌ GPS HARDWARE MISSING</span>";
-            return;
-        }
-        try {
-            const pos = await new Promise((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(resolve, reject);
-            });
-            lat = pos.coords.latitude;
-            lng = pos.coords.longitude;
-        } catch (e) {
-            resultDiv.innerHTML = "<span class='text-red-500'>❌ SIGNAL BLOCKED (Check Permissions)</span>";
-            return;
-        }
-    }
-
-    // 3. SEND TO BRAIN 🧠
-    try {
-        const response = await fetch('/location/scan', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ latitude: lat, longitude: lng })
-        });
-        
-        const data = await response.json();
-        
-        // 4. BUILD THE UI (The Fix for "Extra Microsoft")
-        let findingsHTML = "";
-        
-        if (data.findings && data.findings.length > 0) {
-            // Turn the list into TACTICAL CARDS
-            findingsHTML = data.findings.map(f => {
-                let cleanText = f.replace("📍 FOUND: ", ""); 
-                return `
-                <div class="bg-gray-800 border-l-2 border-red-500 p-3 rounded-r mb-2 flex justify-between items-center group">
                     <div>
-                        <div class="text-white font-bold text-sm">${cleanText}</div>
-                        <div class="text-[10px] text-red-400 uppercase tracking-widest mt-1">TARGET ACQUIRED</div>
-                    </div>
-                    <div class="h-2 w-2 rounded-full bg-red-500 shadow-[0_0_10px_red]"></div>
-                </div>`;
-            }).join('');
-        } else {
-            findingsHTML = `<div class="text-gray-500 italic text-sm p-2">No strategic targets in range.</div>`;
-        }
-
-        // 5. DISPLAY THE RESULT
-        resultDiv.innerHTML = `
-            <div class="animate-fade-in space-y-4">
-                <div>
-                    ${findingsHTML}
-                </div>
-                
-                <div class="bg-gradient-to-br from-gray-900 to-black p-4 rounded-xl border border-gray-700 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 p-2 opacity-10"><i class="fas fa-satellite-dish text-4xl text-white"></i></div>
-                    <div class="flex items-start gap-3 relative z-10">
-                        <div class="mt-1 min-w-[24px] text-2xl">🤖</div>
-                        <div>
-                            <div class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">STRATEGIC ADVICE</div>
-                            <div class="text-gray-300 text-sm leading-relaxed font-light">
-                                "${data.advice}"
-                            </div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-white font-bold">{{ goal.title }}</span>
+                            <span class="text-zinc-500 font-mono text-xs">{{ goal.progress }}%</span>
+                        </div>
+                        <div class="w-full bg-black h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-red-600 h-full rounded-full" style="width: {{ goal.progress }}%"></div>
                         </div>
                     </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-600 text-sm italic">No active missions. Ask the AI to set a goal.</p>
+            {% endif %}
+        </div>
+
+        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fas fa-satellite-dish text-6xl text-white"></i></div>
+            
+            <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                <span class="w-2 h-2 bg-blue-500 rounded-full animate-ping"></span>
+                Local Intel Feed
+            </h3>
+            
+            <div id="radar-result" class="bg-gray-900/50 p-4 rounded-lg border-l-4 border-blue-500 mb-4 min-h-[80px]">
+                <div class="text-gray-400 text-sm flex items-center gap-2">
+                    <i class="fas fa-spinner animate-spin"></i> System Standby... Scan area for opportunities.
                 </div>
             </div>
-        `;
-    } catch (err) {
-        resultDiv.innerHTML = `<span class='text-red-500'>❌ SYSTEM FAILURE: ${err}</span>`;
-    }
-}
-</script>
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 flex-1 flex flex-col justify-between">
-            <h3 class="text-zinc-500 font-mono text-xs uppercase tracking-widest mb-4">NETWORK ALERTS</h3>
-            
-            {% if current_user.is_authenticated and alerts %}
-                <ul class="space-y-2">
-                    {% for alert in alerts %}
-                    <li class="flex items-center justify-between p-2 rounded bg-red-900/10 border border-red-900/20">
-                        <span class="text-white text-sm font-bold ml-2">{{ alert.name }}</span>
-                        <span class="text-red-400 text-[10px] font-mono uppercase bg-red-900/20 px-2 py-1 rounded">{{ alert.days }} DAYS</span>
-                    </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <div class="text-center py-4">
-                    <span class="text-zinc-600 text-xs">NO ALERTS</span>
-                </div>
-            {% endif %}
 
-            <div class="mt-4 pt-4 border-t border-zinc-800 text-center">
-                <p class="text-zinc-500 text-[10px] italic">"{{ quote }}"</p>
+            <div class="flex gap-2">
+                <button onclick="scanLocation(false)" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded shadow-lg transition flex items-center justify-center gap-2">
+                    <i class="fas fa-search-location"></i> Scan
+                </button>
+                <label class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-4 rounded shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="fas fa-camera"></i> Analyze
+                    <input type="file" id="intel-upload" class="hidden" accept="image/*" onchange="uploadIntel(this)">
+                </label>
             </div>
         </div>
+
+    </div>
+
+    <div class="lg:col-span-5 flex flex-col gap-4">
+        
+        <a href="{{ url_for('linkup.map_view') }}" class="flex-1 bg-gradient-to-r from-gray-900 to-gray-800 p-5 rounded-xl border border-gray-700 hover:border-blue-500 transition group">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h4 class="text-white font-bold text-lg group-hover:text-blue-400 transition">LinkUp Geo</h4>
+                    <p class="text-gray-500 text-xs mt-1">Gigs & Local Hiring</p>
+                </div>
+                <i class="fas fa-briefcase text-2xl text-blue-500/50 group-hover:text-blue-500 transition"></i>
+            </div>
+        </a>
+
+        <a href="{{ url_for('civic.dashboard') }}" class="flex-1 bg-gradient-to-r from-gray-900 to-gray-800 p-5 rounded-xl border border-gray-700 hover:border-yellow-500 transition group">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h4 class="text-white font-bold text-lg group-hover:text-yellow-400 transition">CivicNerve</h4>
+                    <p class="text-gray-500 text-xs mt-1">Community Reporting</p>
+                </div>
+                <i class="fas fa-hard-hat text-2xl text-yellow-500/50 group-hover:text-yellow-500 transition"></i>
+            </div>
+        </a>
+
+        <a href="{{ url_for('macalaa.index') }}" class="flex-1 bg-gradient-to-r from-gray-900 to-gray-800 p-5 rounded-xl border border-gray-700 hover:border-purple-500 transition group">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h4 class="text-white font-bold text-lg group-hover:text-purple-400 transition">Macalaa</h4>
+                    <p class="text-gray-500 text-xs mt-1">Vision Assistance</p>
+                </div>
+                <i class="fas fa-eye text-2xl text-purple-500/50 group-hover:text-purple-500 transition"></i>
+            </div>
+        </a>
+
     </div>
 </div>
-
-<h2 class="text-sm font-bold text-zinc-500 mb-4 pl-1 font-mono uppercase tracking-widest">Skhokho Intelligence</h2>
 
 <div class="bg-black border border-zinc-800 rounded-xl overflow-hidden shadow-2xl flex flex-col h-[500px]">
     
     <div class="bg-zinc-900/80 backdrop-blur border-b border-zinc-800 p-4 flex flex-col md:flex-row justify-between items-center gap-4">
-        
         <div class="flex items-center gap-3">
-            <div class="relative">
-                <div class="w-2 h-2 bg-green-500 rounded-full absolute top-0 right-0 animate-ping"></div>
-                <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">AI</div>
-            </div>
+            <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">AI</div>
             <div>
                 <h2 class="text-white font-bold text-sm tracking-wide">NEURAL CORE</h2>
-                <p class="text-zinc-500 text-[10px] font-mono uppercase">Link Active</p>
+                <p class="text-zinc-500 text-[10px] font-mono uppercase">Managing Hidden Systems</p>
             </div>
         </div>
 
-        <div class="flex gap-2 bg-black/50 p-1 rounded-lg border border-zinc-800">
-            <a href="{{ url_for('tools.balaa') }}" class="px-3 py-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white text-xs font-mono transition flex items-center gap-2">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                BALAA
+        <div class="flex gap-2 bg-black/50 p-1.5 rounded-lg border border-zinc-800">
+            <a href="{{ url_for('tools.balaa') }}" class="px-3 py-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white text-[10px] font-mono transition flex items-center gap-2">
+                <i class="fas fa-wallet"></i> BALAA
             </a>
             <div class="w-px bg-zinc-800 h-full"></div>
-            <a href="{{ url_for('tools.diary') }}" class="px-3 py-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white text-xs font-mono transition flex items-center gap-2">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                DIARY
+            <a href="{{ url_for('tools.diary') }}" class="px-3 py-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white text-[10px] font-mono transition flex items-center gap-2">
+                <i class="fas fa-book"></i> DIARY
             </a>
             <div class="w-px bg-zinc-800 h-full"></div>
-            <a href="{{ url_for('crm.dashboard') }}" class="px-3 py-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white text-xs font-mono transition flex items-center gap-2">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                NETWORK
+            <a href="{{ url_for('crm.dashboard') }}" class="px-3 py-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white text-[10px] font-mono transition flex items-center gap-2">
+                <i class="fas fa-users"></i> NETWORK
             </a>
         </div>
     </div>
@@ -323,7 +149,8 @@ async function scanLocation(isSimulation) {
         <div class="flex gap-4">
             <div class="w-8 h-8 bg-red-600 rounded-lg flex-shrink-0 flex items-center justify-center text-xs text-white font-bold">SK</div>
             <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-lg rounded-tl-none max-w-[85%] text-zinc-300 text-sm leading-relaxed shadow-sm">
-                Sho {{ current_user.username }}! I'm online. Check your missions or let's talk strategy. What's on your mind?
+                Sho {{ current_user.username }}! I'm online. <br>
+                I'm tracking your goals above. What's the next move?
             </div>
         </div>
     </div>
@@ -332,7 +159,6 @@ async function scanLocation(isSimulation) {
         <form id="chat-form" class="flex gap-3 relative">
             <input type="text" id="user-input" placeholder="Type command or message..." autocomplete="off"
                    class="flex-grow bg-black border border-zinc-700 text-white rounded-lg pl-4 pr-12 py-3 focus:border-red-600 focus:outline-none focus:ring-1 focus:ring-red-600 transition font-mono text-sm shadow-inner">
-            
             <button type="submit" class="absolute right-2 top-1.5 bottom-1.5 bg-red-600 hover:bg-red-700 text-white px-4 rounded-lg font-bold transition flex items-center justify-center">
                 ↵
             </button>
@@ -340,21 +166,8 @@ async function scanLocation(isSimulation) {
     </div>
 </div>
 
-<style>
-    .typewriter-text {
-        overflow: hidden;
-        border-right: .15em solid #dc2626;
-        white-space: nowrap;
-        margin: 0; 
-        width: 0; 
-        animation: typing 2.5s steps(40, end) forwards, blink-caret .75s step-end infinite;
-        animation-fill-mode: forwards;
-    }
-    @keyframes typing { from { width: 0 } to { width: 100% } }
-    @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: #dc2626; } }
-</style>
-
 <script>
+    // --- CHAT LOGIC ---
     const chatContainer = document.getElementById('chat-container');
     const chatForm = document.getElementById('chat-form');
     const userInput = document.getElementById('user-input');
@@ -372,7 +185,6 @@ async function scanLocation(isSimulation) {
                 ${text}
             </div>
         `;
-        
         chatContainer.appendChild(div);
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
@@ -381,21 +193,14 @@ async function scanLocation(isSimulation) {
         e.preventDefault();
         const message = userInput.value.trim();
         if (!message) return;
-
         appendMessage('user', message);
         userInput.value = '';
 
-        // Loading State
         const loadingId = 'loading-' + Date.now();
         const loadingDiv = document.createElement('div');
         loadingDiv.id = loadingId;
         loadingDiv.className = 'flex gap-4';
-        loadingDiv.innerHTML = `
-            <div class="w-8 h-8 bg-red-600 rounded-lg flex-shrink-0 flex items-center justify-center text-xs text-white font-bold">SK</div>
-            <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-lg rounded-tl-none text-zinc-500 text-xs italic animate-pulse">
-                Thinking...
-            </div>
-        `;
+        loadingDiv.innerHTML = `<div class="w-8 h-8 bg-red-600 rounded-lg flex-shrink-0 flex items-center justify-center text-xs text-white font-bold">SK</div><div class="bg-zinc-900 border border-zinc-800 p-3 rounded-lg rounded-tl-none text-zinc-500 text-xs italic animate-pulse">Thinking...</div>`;
         chatContainer.appendChild(loadingDiv);
         chatContainer.scrollTop = chatContainer.scrollHeight;
 
@@ -407,50 +212,61 @@ async function scanLocation(isSimulation) {
             });
             const data = await response.json();
             document.getElementById(loadingId).remove();
-            appendMessage('bot', data.reply);
+            appendMessage('bot', data.response || data.reply || "Eish, connection glitch.");
         } catch (error) {
             document.getElementById(loadingId).remove();
             appendMessage('bot', "Connection Error. Core offline.");
         }
     });
-    async function uploadIntel(input) {
-    if (input.files && input.files[0]) {
+
+    // --- RADAR LOGIC ---
+    async function scanLocation(isSimulation) {
         const resultDiv = document.getElementById('radar-result');
-        // Loading Animation
-        resultDiv.innerHTML = `
-            <div class="flex items-center gap-3 text-purple-400 animate-pulse p-4 border border-purple-500/30 rounded-lg bg-purple-900/10">
-                <i class="fas fa-eye animate-ping"></i>
-                <span class="font-mono text-xs tracking-widest uppercase">Analyzing Visual Data...</span>
-            </div>
-        `;
-
-        const formData = new FormData();
-        formData.append('file', input.files[0]);
-
+        resultDiv.innerHTML = `<div class="flex items-center gap-3 text-red-400 animate-pulse w-full"><i class="fas fa-satellite-dish animate-ping"></i><span class="font-mono text-xs tracking-widest uppercase">Acquiring Satellite Lock...</span></div>`;
+        let lat, lng;
+        if (isSimulation) { lat = -26.25; lng = 27.85; } 
+        else {
+            if (!navigator.geolocation) { resultDiv.innerHTML = "<span class='text-red-500'>❌ GPS MISSING</span>"; return; }
+            try { const pos = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject)); lat = pos.coords.latitude; lng = pos.coords.longitude; } 
+            catch (e) { resultDiv.innerHTML = "<span class='text-red-500'>❌ SIGNAL BLOCKED</span>"; return; }
+        }
         try {
-            const response = await fetch('/analyze/image', {
-                method: 'POST',
-                body: formData
-            });
+            const response = await fetch('/location/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ latitude: lat, longitude: lng }) });
             const data = await response.json();
+            let findingsHTML = (data.findings && data.findings.length > 0) ? data.findings.map(f => `<div class="bg-gray-800 border-l-2 border-blue-500 p-2 rounded-r mb-1 text-xs text-white font-bold">${f.replace("📍 FOUND: ", "")}</div>`).join('') : `<div class="text-gray-500 italic text-xs">No strategic targets.</div>`;
+            resultDiv.innerHTML = `<div class="animate-fade-in w-full"><div class="mb-2">${findingsHTML}</div><div class="bg-black/30 p-3 rounded border border-gray-700"><div class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">STRATEGIC ADVICE</div><div class="text-gray-300 text-sm font-light leading-relaxed">"${data.advice}"</div></div></div>`;
+        } catch (err) { resultDiv.innerHTML = `<span class='text-red-500'>❌ SYSTEM FAILURE</span>`; }
+    }
 
-            // Display Result
-            resultDiv.innerHTML = `
-                <div class="bg-gray-900 border-l-4 border-purple-500 p-4 rounded-r-xl shadow-2xl animate-fade-in">
-                    <div class="flex items-start gap-3">
-                        <div class="text-2xl mt-1">👁️</div>
-                        <div>
-                            <div class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-1">VISUAL ANALYSIS</div>
-                            <div class="text-gray-200 text-sm leading-relaxed">${data.analysis}</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        } catch (err) {
-            resultDiv.innerHTML = "<span class='text-red-500'>❌ UPLOAD FAILED</span>";
+    // --- VISION LOGIC ---
+    async function uploadIntel(input) {
+        if (input.files && input.files[0]) {
+            const resultDiv = document.getElementById('radar-result');
+            resultDiv.innerHTML = `<div class="flex items-center gap-3 text-purple-400 animate-pulse w-full"><i class="fas fa-eye animate-ping"></i><span class="font-mono text-xs tracking-widest uppercase">Analyzing Visual Data...</span></div>`;
+            const formData = new FormData();
+            formData.append('file', input.files[0]);
+            try {
+                const response = await fetch('/analyze/image', { method: 'POST', body: formData });
+                const data = await response.json();
+                resultDiv.innerHTML = `<div class="bg-gray-900 border-l-4 border-purple-500 p-3 rounded-r-xl shadow-2xl animate-fade-in w-full"><div class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-1">VISUAL ANALYSIS</div><div class="text-gray-200 text-sm leading-relaxed">${data.analysis}</div></div>`;
+            } catch (err) { resultDiv.innerHTML = "<span class='text-red-500'>❌ UPLOAD FAILED</span>"; }
         }
     }
-}
 </script>
 
+<style>
+    .typewriter-text {
+        overflow: hidden;
+        border-right: .15em solid #dc2626;
+        white-space: nowrap;
+        margin: 0; 
+        width: 0; 
+        animation: typing 2.5s steps(40, end) forwards, blink-caret .75s step-end infinite;
+        animation-fill-mode: forwards;
+    }
+    @keyframes typing { from { width: 0 } to { width: 100% } }
+    @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: #dc2626; } }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
 {% endblock %}

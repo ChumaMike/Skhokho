@@ -4,7 +4,8 @@ from app.extensions import db
 from app.models import Goal, Milestone
 from datetime import datetime
 
-goals_bp = Blueprint('goals', __name__, url_prefix='/goals')
+# URL Prefix is handled in __init__.py (/goals)
+goals_bp = Blueprint('goals', __name__)
 
 # 1. Dashboard: View all high-level goals
 @goals_bp.route('/', methods=['GET', 'POST'])
@@ -38,11 +39,11 @@ def dashboard():
             flash("Objective title required.", "warning")
             
     # Get active goals
-    active_goals = Goal.query.filter_by(user_id=current_user.id, is_archived=False).all()
-    return render_template('goals_dashboard.html', goals=active_goals)
+    active_goals = Goal.query.filter_by(user_id=current_user.id, status='Active').all()
+    return render_template('goals.html', goals=active_goals)
 
 # 2. Detail View: Manage Milestones for a specific Goal
-@goals_bp.route('/<int:goal_id>', methods=['GET', 'POST'])
+@goals_bp.route('/view/<int:goal_id>', methods=['GET', 'POST'])
 @login_required
 def view_goal(goal_id):
     goal = Goal.query.get_or_404(goal_id)
@@ -61,27 +62,4 @@ def view_goal(goal_id):
             db.session.commit()
             flash("Milestone added.", "success")
     
-    return render_template('goal_detail.html', goal=goal)
-
-# 3. Toggle Milestone Status
-@goals_bp.route('/milestone/<int:id>/toggle')
-@login_required
-def toggle_milestone(id):
-    milestone = Milestone.query.get_or_404(id)
-    if milestone.goal.user_id != current_user.id:
-        return "Unauthorized", 403
-    
-    milestone.is_completed = not milestone.is_completed
-    db.session.commit()
-    return redirect(url_for('goals.view_goal', goal_id=milestone.goal.id))
-
-# 4. Delete/Archive Goal
-@goals_bp.route('/<int:id>/delete')
-@login_required
-def delete_goal(id):
-    goal = Goal.query.get_or_404(id)
-    if goal.user_id == current_user.id:
-        db.session.delete(goal)
-        db.session.commit()
-        flash("Objective terminated.", "info")
-    return redirect(url_for('goals.dashboard'))
+    return render_template('view_goal.html', goal=goal)
