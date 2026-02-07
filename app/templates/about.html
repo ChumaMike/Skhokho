@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}About Skhokho OS{% endblock %}
+
+{% block content %}
+<div class="space-y-24 pb-20">
+
+    <section class="text-center space-y-6 pt-10">
+        <div class="inline-block px-3 py-1 border border-red-900/50 rounded-full bg-red-900/10 text-red-500 text-xs font-mono tracking-widest mb-4">
+            SYSTEM V3.1 // ONLINE
+        </div>
+        <h1 class="text-5xl md:text-7xl font-bold tracking-tighter text-white">
+            Digital Dignity for the <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-600">Township Economy</span>.
+        </h1>
+        <p class="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+            Skhokho is not just an app. It is a <strong>Smart City Operating System</strong> engineered for Soweto. 
+            We connect the hustle, protect the vulnerable, and digitize the streets.
+        </p>
+    </section>
+
+    <section class="grid md:grid-cols-3 gap-8 container mx-auto px-4">
+        
+        <div class="group bg-zinc-900/50 border border-zinc-800 p-8 rounded-2xl hover:border-blue-500/50 transition duration-500">
+            <div class="w-12 h-12 bg-blue-900/30 text-blue-400 rounded-lg flex items-center justify-center mb-6 text-2xl group-hover:scale-110 transition">
+                <i class="fas fa-briefcase"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-3">LinkUp Geo</h3>
+            <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                The gig economy engine. We connect local providers (Plumbers, Electricians) directly to neighbors who need them.
+            </p>
+            <ul class="text-xs text-zinc-500 font-mono space-y-2">
+                <li>• GPS-Based Matching</li>
+                <li>• No-Text "Snap-to-Hire"</li>
+                <li>• Local Circular Economy</li>
+            </ul>
+        </div>
+
+        <div class="group bg-zinc-900/50 border border-zinc-800 p-8 rounded-2xl hover:border-purple-500/50 transition duration-500">
+            <div class="w-12 h-12 bg-purple-900/30 text-purple-400 rounded-lg flex items-center justify-center mb-6 text-2xl group-hover:scale-110 transition">
+                <i class="fas fa-eye"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-3">Macalaa Vision</h3>
+            <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                The visual guardian. Using <strong>Gemini Vision</strong>, Macalaa sees the world for the visually impaired and detects danger automatically.
+            </p>
+            <ul class="text-xs text-zinc-500 font-mono space-y-2">
+                <li>• Real-Time Danger Alerts</li>
+                <li>• Auto-Emergency Reporting</li>
+                <li>• Voice Navigation Assist</li>
+            </ul>
+        </div>
+
+        <div class="group bg-zinc-900/50 border border-zinc-800 p-8 rounded-2xl hover:border-yellow-500/50 transition duration-500">
+            <div class="w-12 h-12 bg-yellow-900/30 text-yellow-400 rounded-lg flex items-center justify-center mb-6 text-2xl group-hover:scale-110 transition">
+                <i class="fas fa-hard-hat"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-3">Civic Nerve</h3>
+            <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                Gamified governance. Citizens earn <strong>Civic Points</strong> for reporting infrastructure issues, keeping the city safe and functional.
+            </p>
+            <ul class="text-xs text-zinc-500 font-mono space-y-2">
+                <li>• Report-to-Earn Model</li>
+                <li>• Automated Municipal Dispatch</li>
+                <li>• Community Safety Score</li>
+            </ul>
+        </div>
+
+    </section>
+
+    <section class="relative bg-black border-y border-zinc-900 py-16 overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+        <div class="container mx-auto px-4 relative z-10 text-center">
+            <h2 class="text-sm font-mono text-zinc-500 tracking-widest uppercase mb-8">Powered by Next-Gen Intelligence</h2>
+            <div class="flex flex-wrap justify-center gap-8 md:gap-16 opacity-70 grayscale hover:grayscale-0 transition duration-500">
+                
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-brain text-4xl text-blue-400"></i>
+                    <div class="text-left">
+                        <div class="text-white font-bold">Google Gemini</div>
+                        <div class="text-[10px] text-gray-500">MULTIMODAL REASONING</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <i class="fab fa-python text-4xl text-yellow-400"></i>
+                    <div class="text-left">
+                        <div class="text-white font-bold">Python Flask</div>
+                        <div class="text-[10px] text-gray-500">MODULAR BACKEND</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-database text-4xl text-blue-600"></i>
+                    <div class="text-left">
+                        <div class="text-white font-bold">PostgreSQL</div>
+                        <div class="text-[10px] text-gray-500">UNIFIED DATABASE</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="text-center space-y-6">
+        <h2 class="text-3xl font-bold text-white">Ready to join the ecosystem?</h2>
+        <div class="flex justify-center gap-4">
+            <a href="{{ url_for('linkup.web.join_economy') }}" class="px-8 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg transition shadow-lg shadow-red-900/20">
+                Become a Provider
+            </a>
+            <a href="{{ url_for('macalaa.index') }}" class="px-8 py-3 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-lg border border-zinc-700 transition">
+                Try Macalaa Vision
+            </a>
+        </div>
+        <p class="text-xs text-zinc-600 font-mono mt-8">
+            ENGINEERED BY CHUMA MEYISWA // GEMINI 3 HACKATHON 2026
+        </p>
+    </section>
+
+</div>
+{% endblock %}

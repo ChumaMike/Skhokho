@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}LinkUp Geo Map{% endblock %}
+
+{% block content %}
+<div class="relative h-[85vh] w-full rounded-xl overflow-hidden border border-gray-800 shadow-2xl">
+    <div class="absolute top-4 left-4 z-[1000]">
+        <a href="{{ url_for('linkup.web.dashboard') }}" class="bg-black/80 backdrop-blur-md text-white px-4 py-2 rounded-lg border border-gray-700 hover:border-blue-500 transition shadow-lg flex items-center gap-2">
+            <i class="fas fa-columns"></i>
+            <span class="font-bold text-sm">Dashboard</span>
+        </a>
+    </div>
+
+    <div id="map" class="h-full w-full bg-gray-900"></div>
+</div>
+
+<div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-[1000] flex gap-4 w-full max-w-sm px-4">
+    
+    <a href="{{ url_for('linkup.web.join_economy') }}" class="flex-1 bg-blue-600/90 backdrop-blur hover:bg-blue-500 text-white py-3 rounded-lg font-bold text-sm shadow-xl flex flex-col items-center border border-blue-400/30 transition hover:scale-105">
+        <i class="fas fa-briefcase mb-1 text-lg"></i>
+        <span>I'M A PROVIDER</span>
+        <span class="text-[9px] opacity-70 font-normal">GET WORK</span>
+    </a>
+
+    <a href="{{ url_for('linkup.web.post_job') }}" class="flex-1 bg-green-600/90 backdrop-blur hover:bg-green-500 text-white py-3 rounded-lg font-bold text-sm shadow-xl flex flex-col items-center border border-green-400/30 transition hover:scale-105">
+        <i class="fas fa-search-location mb-1 text-lg"></i>
+        <span>I'M A CUSTOMER</span>
+        <span class="text-[9px] opacity-70 font-normal">HIRE LOCAL</span>
+    </a>
+
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    // 1. Initialize Map
+    var map = L.map('map').setView([-26.2514, 27.8967], 13); // Default: Soweto
+
+    // 2. Dark Mode Map Tiles
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO',
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(map);
+
+    // 3. Load Listings Data from Python
+    // 🛡️ Safety Check: If listings is undefined, use empty array
+    var listings = {{ listings | tojson | default('[]') }};
+
+    // 4. Add Markers
+    listings.forEach(function(item) {
+        if (item.lat && item.lon) {
+            var marker = L.marker([item.lat, item.lon]).addTo(map);
+            marker.bindPopup(`
+                <div class="text-gray-900">
+                    <h3 class="font-bold">${item.title || item.category}</h3>
+                    <p class="text-xs">${item.description || item.category}</p>
+                    <button class="mt-2 bg-blue-600 text-white text-xs px-2 py-1 rounded w-full">Contact</button>
+                </div>
+            `);
+        }
+    });
+</script>
+{% endblock %}

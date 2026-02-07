@@ -63,3 +63,32 @@ def view_goal(goal_id):
             flash("Milestone added.", "success")
     
     return render_template('view_goal.html', goal=goal)
+
+@goals_bp.route('/add', methods=['POST'])
+@login_required
+def add_goal():
+    title = request.form.get('title')
+    description = request.form.get('description')
+    
+    if title:
+        new_goal = Goal(
+            title=title,
+            description=description,
+            user_id=current_user.id,
+            created_at=datetime.utcnow()
+        )
+        db.session.add(new_goal)
+        db.session.commit()
+        flash("Mission Initialized.", "success")
+    
+    return redirect(url_for('goals.dashboard'))
+
+@goals_bp.route('/complete/<int:goal_id>')
+@login_required
+def complete_goal(goal_id):
+    goal = Goal.query.get_or_404(goal_id)
+    if goal.user_id == current_user.id:
+        goal.is_completed = True
+        db.session.commit()
+        flash("Mission Accomplished.", "success")
+    return redirect(url_for('goals.dashboard'))

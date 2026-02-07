@@ -86,7 +86,7 @@
 
     <div class="lg:col-span-5 flex flex-col gap-4">
         
-        <a href="{{ url_for('linkup.map_view') }}" class="flex-1 bg-gradient-to-r from-gray-900 to-gray-800 p-5 rounded-xl border border-gray-700 hover:border-blue-500 transition group">
+        <a href="{{ url_for('linkup.web.map_view') }}" class="flex-1 bg-gradient-to-r from-gray-900 to-gray-800 p-5 rounded-xl border border-gray-700 hover:border-blue-500 transition group">
             <div class="flex justify-between items-start">
                 <div>
                     <h4 class="text-white font-bold text-lg group-hover:text-blue-400 transition">LinkUp Geo</h4>
@@ -130,19 +130,25 @@
             </div>
         </div>
 
-        <div class="flex gap-2 bg-black/50 p-1.5 rounded-lg border border-zinc-800">
-            <a href="{{ url_for('tools.balaa') }}" class="px-3 py-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white text-[10px] font-mono transition flex items-center gap-2">
-                <i class="fas fa-wallet"></i> BALAA
-            </a>
-            <div class="w-px bg-zinc-800 h-full"></div>
-            <a href="{{ url_for('tools.diary') }}" class="px-3 py-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white text-[10px] font-mono transition flex items-center gap-2">
-                <i class="fas fa-book"></i> DIARY
-            </a>
-            <div class="w-px bg-zinc-800 h-full"></div>
-            <a href="{{ url_for('crm.dashboard') }}" class="px-3 py-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white text-[10px] font-mono transition flex items-center gap-2">
-                <i class="fas fa-users"></i> NETWORK
-            </a>
-        </div>
+        <div class="flex flex-wrap gap-3">
+    
+        <a href="{{ url_for('tools.balaa') }}" class="flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-zinc-800 hover:border-zinc-600 rounded-lg text-xs font-mono text-zinc-400 hover:text-white transition">
+            <i class="fas fa-calculator"></i> BALAA
+        </a>
+
+        <a href="{{ url_for('tools.diary') }}" class="flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-zinc-800 hover:border-zinc-600 rounded-lg text-xs font-mono text-zinc-400 hover:text-white transition">
+            <i class="fas fa-book"></i> DIARY
+        </a>
+
+        <a href="{{ url_for('goals.dashboard') }}" class="flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-zinc-800 hover:border-red-500 rounded-lg text-xs font-mono text-zinc-400 hover:text-red-500 transition">
+            <i class="fas fa-bullseye"></i> GOALS
+        </a>
+
+        <a href="{{ url_for('crm.dashboard') }}" class="flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-zinc-800 hover:border-zinc-600 rounded-lg text-xs font-mono text-zinc-400 hover:text-white transition">
+            <i class="fas fa-users"></i> NETWORK
+        </a>
+
+    </div>
     </div>
 
     <div id="chat-container" class="flex-grow p-6 overflow-y-auto space-y-4 bg-black/50">

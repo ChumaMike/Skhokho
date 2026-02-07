@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="px-4 py-5 my-5 text-center">
+    <i class="bi bi-geo-fill display-1 text-success"></i>
+    <h1 class="display-5 fw-bold mt-3">Find Trusted Services Near You</h1>
+    <div class="col-lg-6 mx-auto">
+        <p class="lead mb-4">
+            LinkUp Geo connects you to verified plumbers, electricians, and rentals in your township.
+            Stop guessing. Start connecting with trusted providers.
+        </p>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <a href="/map" class="btn btn-primary btn-lg px-4 gap-3">
+                <i class="bi bi-map"></i> View Live Map
+            </a>
+            {% if not current_user.is_authenticated %}
+                <a href="/signup" class="btn btn-outline-secondary btn-lg px-4">
+                    <i class="bi bi-person-plus"></i> Join as Provider
+                </a>
+            {% else %}
+                 <a href="/dashboard" class="btn btn-outline-secondary btn-lg px-4">
+                    <i class="bi bi-speedometer2"></i> My Dashboard
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4 text-center">
+        <div class="card p-3 shadow-sm h-100">
+            <i class="bi bi-whatsapp display-4 text-success mb-2"></i>
+            <h4>WhatsApp Integration</h4>
+            <p>Send your location pin to our bot to find help instantly.</p>
+        </div>
+    </div>
+    <div class="col-md-4 text-center">
+        <div class="card p-3 shadow-sm h-100">
+            <i class="bi bi-patch-check-fill display-4 text-primary mb-2"></i>
+            <h4>Verified Providers</h4>
+            <p>We vet every worker so you don't have to worry about scams.</p>
+        </div>
+    </div>
+    <div class="col-md-4 text-center">
+        <div class="card p-3 shadow-sm h-100">
+            <i class="bi bi-shop display-4 text-warning mb-2"></i>
+            <h4>Local Business</h4>
+            <p>Find malls, shops, and hidden gems in your area.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

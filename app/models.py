@@ -4,30 +4,46 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app.extensions import db
 from geoalchemy2 import Geometry
 
+
 # ==========================================
 # 👤 CORE USER (The Citizen)
 # ==========================================
 class User(UserMixin, db.Model):
+    __tablename__ = 'user'
+
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False)
-    role = db.Column(db.String(50), default="citizen") # citizen, provider, admin
+    username = db.Column(db.String(64), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128))
     
-    # Relationships
-    tickets = db.relationship('CivicTicket', backref='author', lazy=True)
-    provider_profile = db.relationship('ProviderProfile', backref='user', uselist=False, lazy=True)
+    # --- 1. THE ECONOMY (Universal Wallet) ---
+    # This balance works across LinkUp and CivicNerve
+    civic_points = db.Column(db.Integer, default=0) 
     
-    # Legacy Personal Data
-    goals = db.relationship('Goal', backref='user', lazy=True)
-    diary_entries = db.relationship('DiaryEntry', backref='user', lazy=True)
-    contacts = db.relationship('Contact', backref='user', lazy=True)
-    balaa_history = db.relationship('BalaaHistory', backref='user', lazy=True)
+    # --- 2. IDENTITY ---
+    role = db.Column(db.String(20), default='citizen') # citizen, provider, admin
+    phone_number = db.Column(db.String(15), nullable=True)
+    
+    # --- 3. THE NERVE (Life Management) ---
+    # These relationships link the user to their life data
+    goals = db.relationship('Goal', backref='owner', lazy='dynamic')
+    contacts = db.relationship('NetworkContact', backref='owner', lazy='dynamic')
+    
+    # --- 4. SAFETY (Macalaa) ---
+    # Emergency contacts for Macalaa to auto-dial
+    emergency_contact = db.Column(db.String(15), nullable=True)
 
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+    def __repr__(self):
+        return f'<User {self.username} | Points: {self.civic_points}>'
 
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+# --- NEW: Network Contact Model (For your "Network Alerts") ---
+class NetworkContact(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    name = db.Column(db.String(64))
+    action_needed = db.Column(db.String(64)) # e.g., "Call", "Email", "Pay"
+    due_date = db.Column(db.DateTime, default=datetime.utcnow)
+    is_done = db.Column(db.Boolean, default=False)
 
 # ==========================================
 # 🌍 PILLAR 1: LINKUP GEO (The Economy)

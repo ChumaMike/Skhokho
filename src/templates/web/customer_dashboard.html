@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm text-center p-3 border-0">
+                <h4>{{ user.name }}</h4>
+                <span class="badge bg-info">Customer Account</span>
+            </div>
+            
+            <div class="d-grid gap-2 mt-3">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#jobModal">
+                    📢 Request Service
+                </button>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white fw-bold">
+                    <i class="bi bi-map"></i> Service Map
+                </div>
+                <div class="card-body p-0">
+                    <div id="map" style="height: 400px; width: 100%; border-radius: 0 0 5px 5px;"></div>
+                </div>
+            </div>
+
+            <h3>My Active Requests</h3>
+            {% if jobs %}
+                <div class="list-group">
+                    {% for job in jobs %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">{{ job.category|capitalize }}</h5>
+                            <p class="mb-1 text-muted">{{ job.description }}</p>
+                            <small class="text-primary"><i class="bi bi-geo-alt"></i> {{ job.location }}</small>
+                        </div>
+                        <span class="badge bg-success">{{ job.status }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-light text-center border">
+                    <p>No active jobs. Click "Request Service" to find help!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="jobModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">What do you need?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('jobs.create') }}" method="POST"> <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Category</label>
+                        <select name="category" class="form-select">
+                            <option value="service">General Service</option>
+                            <option value="plumber">Plumber</option>
+                            <option value="electrician">Electrician</option>
+                            <option value="cleaning">Cleaning</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Describe the problem</label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="e.g. My sink is leaking..." required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label>Location</label>
+                        <input type="text" name="location" class="form-control" placeholder="e.g. Orlando East" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">🚀 Broadcast Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Initialize Map
+    var map = L.map('map').setView([-26.2514, 27.8967], 12);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // --- ICONS ---
+    var blueIcon = new L.Icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+    });
+
+    var redIcon = new L.Icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+    });
+
+    // 2. Plot PROVIDERS (Blue) - From Database
+    // We check if data exists to prevent crashes
+    var providers = {{ listings | tojson | default([]) }};
+    if (providers.length > 0) {
+        providers.forEach(function(item) {
+            // Only plot if we have coordinates
+            if (item.lat && item.lon) {
+                L.marker([item.lat, item.lon], {icon: blueIcon})
+                 .addTo(map)
+                 .bindPopup(`
+                    <b>${item.title}</b><br>
+                    <span class="text-muted">${item.category}</span><br>
+                    <button class="btn btn-sm btn-success mt-1">Contact</button>
+                 `);
+            }
+        });
+    }
+
+    // 3. Plot MY REQUESTS (Red) - From Database
+    var myRequests = {{ jobs | tojson | default([]) }};
+    if (myRequests.length > 0) {
+        myRequests.forEach(function(job) {
+            if (job.lat && job.lon) {
+                L.marker([job.lat, job.lon], {icon: redIcon})
+                 .addTo(map)
+                 .bindPopup(`
+                    <b style="color:red">📍 My Request</b><br>
+                    "${job.description}"<br>
+                    <span class="badge bg-warning text-dark">Waiting...</span>
+                 `);
+            }
+        });
+    }
+</script>
+{% endblock %}
