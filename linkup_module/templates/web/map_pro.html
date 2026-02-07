@@ -1,68 +1,49 @@
 {% extends "base.html" %}
 
-{% block content %}
-<div class="position-relative">
-    <div id="map" style="height: 80vh; border-radius: 8px; border: 1px solid #ddd;"></div>
+{% block title %}LinkUp Geo Map{% endblock %}
 
-    <div class="card position-absolute top-0 end-0 m-3 p-3 shadow" style="z-index: 999; width: 200px; opacity: 0.9;">
-        <h6 class="fw-bold">Map Legend</h6>
-        <div class="d-flex align-items-center mb-2">
-            <i class="bi bi-geo-alt-fill text-success me-2 fs-5"></i>
-            <small>Verified Pro</small>
-        </div>
-        <div class="d-flex align-items-center mb-2">
-            <i class="bi bi-geo-alt-fill text-primary me-2 fs-5"></i>
-            <small>Unverified / Public</small>
-        </div>
-        <hr>
-        <small class="text-muted" style="font-size: 0.8em;">
-            Click any pin to see contact details and prices.
-        </small>
+{% block content %}
+<div class="relative h-[85vh] w-full rounded-xl overflow-hidden border border-gray-800 shadow-2xl">
+    <div class="absolute top-4 left-4 z-[1000]">
+        <a href="{{ url_for('linkup.web.dashboard') }}" class="bg-black/80 backdrop-blur-md text-white px-4 py-2 rounded-lg border border-gray-700 hover:border-blue-500 transition shadow-lg flex items-center gap-2">
+            <i class="fas fa-columns"></i>
+            <span class="font-bold text-sm">Dashboard</span>
+        </a>
     </div>
+
+    <div id="map" class="h-full w-full bg-gray-900"></div>
 </div>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-    var map = L.map('map').setView([-26.2514, 27.8967], 13);
+    // 1. Initialize Map
+    var map = L.map('map').setView([-26.2514, 27.8967], 13); // Default: Soweto
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
+    // 2. Dark Mode Map Tiles
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO',
+        subdomains: 'abcd',
+        maxZoom: 19
     }).addTo(map);
 
-    var listings = {{ listings | tojson }};
+    // 3. Load Listings Data from Python
+    // 🛡️ Safety Check: If listings is undefined, use empty array
+    var listings = {{ listings | tojson | default('[]') }};
 
-    listings.forEach(item => {
-        // Dynamic Icon Color based on Verification
-        var pinColor = item.is_verified ? 'green' : 'blue';
-        
-        // Use a custom HTML Icon (using Bootstrap Icons inside Leaflet!)
-        var iconHtml = `<i class="bi bi-geo-alt-fill text-${item.is_verified ? 'success' : 'primary'}" style="font-size: 2rem; text-shadow: 2px 2px 2px rgba(0,0,0,0.3);"></i>`;
-        
-        var customIcon = L.divIcon({
-            html: iconHtml,
-            className: 'dummy-class', // removes default white box
-            iconSize: [30, 42],
-            iconAnchor: [15, 42]
-        });
-
-        var marker = L.marker([item.location.lat, item.location.lon], {icon: customIcon}).addTo(map);
-        
-        var badge = item.is_verified 
-            ? '<span class="badge bg-success">Verified Pro</span>' 
-            : '<span class="badge bg-secondary">Public Listing</span>';
-
-        marker.bindPopup(`
-            <div class="text-center">
-                <h6 class="fw-bold mb-1">${item.title}</h6>
-                ${badge}<br>
-                <div class="mt-2 text-muted">${item.price}</div>
-                <a href="tel:${item.contact}" class="btn btn-sm btn-outline-success mt-2">
-                    <i class="bi bi-whatsapp"></i> Contact
-                </a>
-            </div>
-        `);
+    // 4. Add Markers
+    listings.forEach(function(item) {
+        if (item.lat && item.lon) {
+            var marker = L.marker([item.lat, item.lon]).addTo(map);
+            marker.bindPopup(`
+                <div class="text-gray-900">
+                    <h3 class="font-bold">${item.title || item.category}</h3>
+                    <p class="text-xs">${item.description || item.category}</p>
+                    <button class="mt-2 bg-blue-600 text-white text-xs px-2 py-1 rounded w-full">Contact</button>
+                </div>
+            `);
+        }
     });
 </script>
 {% endblock %}
