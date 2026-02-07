@@ -45,3 +45,11 @@ def home():
 @main_bp.route('/about')
 def about():
     return render_template('about.html')
+
+@main_bp.route('/contact', methods=['GET', 'POST'])
+def contact():
+    # In a real app, you would handle the POST request here (send email)
+    if request.method == 'POST':
+        flash("Message transmitted. The Core has received your input.", "success")
+        return redirect(url_for('main.contact'))
+    return render_template('contact.html')

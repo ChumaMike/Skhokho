@@ -92,11 +92,22 @@
     </main>
 
     <footer class="border-t border-zinc-900 bg-black py-8 mt-auto">
-        <div class="container mx-auto px-6 text-center text-zinc-700 text-[10px] font-mono tracking-widest uppercase">
-            <p class="mb-1">SKHOKHO SYSTEM V3.1 // LINKUP ENABLED</p>
-            <p>&copy; 2026 Skhokho Systems</p>
+    <div class="container mx-auto px-6 text-center">
+        <p class="text-zinc-700 text-[10px] font-mono tracking-widest uppercase mb-4">
+            SKHOKHO SYSTEM V3.1 // LINKUP ENABLED
+        </p>
+        
+        <div class="flex justify-center gap-6 text-xs font-mono text-zinc-600">
+            <a href="{{ url_for('main.about') }}" class="hover:text-white transition">ABOUT</a>
+            <span>//</span>
+            <a href="{{ url_for('main.contact') }}" class="hover:text-white transition">CONTACT</a>
+            <span>//</span>
+            <a href="#" class="hover:text-white transition">TERMS</a>
         </div>
-    </footer>
+
+        <p class="mt-4 text-zinc-800 text-[10px]">&copy; 2026 Skhokho Systems</p>
+    </div>
+</footer>
 
 </body>
 </html>
