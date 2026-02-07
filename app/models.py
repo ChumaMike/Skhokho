@@ -86,6 +86,8 @@ class Goal(db.Model):
     is_archived = db.Column(db.Boolean, default=False) # Fix for goals.py query
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     milestones = db.relationship('Milestone', backref='goal', cascade="all, delete-orphan", lazy=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_completed = db.Column(db.Boolean, default=False)
 
     @property
     def progress(self):

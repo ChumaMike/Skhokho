@@ -25,32 +25,25 @@ def app():
 def client(app):
     """
     Creates a test client inside a transaction bubble.
-    Anything this client does is undone after the test.
     """
     with app.app_context():
-        # 1. Connect to the DB
         connection = db.engine.connect()
         transaction = connection.begin()
         
-        # 2. Create a specific session for this test that uses the connection
-        # This bypasses the default session and ensures we are inside the transaction
-        session_factory = sessionmaker(bind=connection)
+        # ✅ FIX: expire_on_commit=False prevents "DetachedInstanceError"
+        # This keeps 'current_user' alive even after we save a Goal.
+        session_factory = sessionmaker(bind=connection, expire_on_commit=False)
         test_session = scoped_session(session_factory)
         
-        # 3. Swap the app's session with our test session
-        # Now, when the app says db.session.add(), it uses OUR bubble
         _original_session = db.session
         db.session = test_session
 
         with app.test_client() as client:
             yield client
 
-        # 4. POP THE BUBBLE: Rollback everything
         db.session.remove()
         transaction.rollback()
         connection.close()
-        
-        # Restore original (good practice)
         db.session = _original_session
 
 # --- 3. AUTH HELPER ---
