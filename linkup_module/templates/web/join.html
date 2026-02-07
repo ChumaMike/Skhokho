@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-xl mx-auto bg-gray-900 border border-gray-800 p-8 rounded-xl shadow-2xl mt-10">
+    <h1 class="text-3xl font-bold text-white mb-2">Join the Economy</h1>
+    <p class="text-gray-500 text-sm mb-6">List your skills. Get found on the map.</p>
+
+    <form method="POST" class="space-y-4">
+        <div>
+            <label class="text-xs text-gray-400 uppercase font-bold">Business Name</label>
+            <input type="text" name="business_name" required class="w-full bg-black border border-gray-700 rounded p-3 text-white focus:border-blue-500 outline-none">
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="text-xs text-gray-400 uppercase font-bold">Category</label>
+                <select name="category" class="w-full bg-black border border-gray-700 rounded p-3 text-white">
+                    <option value="Plumbing">Plumbing</option>
+                    <option value="Electrical">Electrical</option>
+                    <option value="Tech">Tech Support</option>
+                    <option value="Catering">Catering</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-xs text-gray-400 uppercase font-bold">Starting Price (R)</label>
+                <input type="text" name="price" placeholder="R350" class="w-full bg-black border border-gray-700 rounded p-3 text-white">
+            </div>
+        </div>
+
+        <div>
+            <label class="text-xs text-gray-400 uppercase font-bold">Description</label>
+            <textarea name="description" rows="3" class="w-full bg-black border border-gray-700 rounded p-3 text-white"></textarea>
+        </div>
+
+        <input type="hidden" name="lat" value="-26.2514">
+        <input type="hidden" name="lon" value="27.8967">
+
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded transition">
+            GO LIVE
+        </button>
+    </form>
+</div>
+{% endblock %}
