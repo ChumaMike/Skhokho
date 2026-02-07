@@ -30,6 +30,8 @@ def create_app(config_class=Config):
     from app.routes.tools import tools_bp
     from app.routes.crm import crm_bp
     from app.routes.goals import goals_bp
+    
+    
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)

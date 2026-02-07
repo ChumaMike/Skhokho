@@ -41,3 +41,7 @@ def home():
         power=power,
         goals=active_goals
     )
+
+@main_bp.route('/about')
+def about():
+    return render_template('about.html')

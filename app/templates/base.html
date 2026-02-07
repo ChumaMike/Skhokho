@@ -64,8 +64,8 @@
                 <a href="{{ url_for('macalaa.index') }}" class="hover:text-purple-400 transition-colors flex items-center gap-2 {{ 'text-purple-400' if 'macalaa' in request.endpoint }}">
                     <i class="fas fa-eye"></i> MACALAA
                 </a>
-                <a href="#about-section" class="hover:text-white transition-colors flex items-center gap-2">
-                    <i class="fas fa-info-circle"></i> ABOUT
+                <a href="{{ url_for('main.about') }}" class="hover:text-white transition-colors flex items-center gap-2 {{ 'text-red-500' if request.endpoint == 'main.about' }}">
+                    <i class="fas fa-info-circle"></i> ABOUT US
                 </a>
             </nav>
 
