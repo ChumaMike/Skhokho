@@ -7,6 +7,9 @@ from collections import defaultdict
 import requests
 import os
 import logging
+from linkup_module import linkup_bp
+
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -15,6 +18,8 @@ logger = logging.getLogger(__name__)
 # Initialize app
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "fallback-secret")
+
+app.register_blueprint(linkup_bp, url_prefix='/marketplace')
 
 # Database config
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///skhokho.db'

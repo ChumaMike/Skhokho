@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="position-relative">
+    <div id="map" style="height: 80vh; border-radius: 8px; border: 1px solid #ddd;"></div>
+
+    <div class="card position-absolute top-0 end-0 m-3 p-3 shadow" style="z-index: 999; width: 200px; opacity: 0.9;">
+        <h6 class="fw-bold">Map Legend</h6>
+        <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-geo-alt-fill text-success me-2 fs-5"></i>
+            <small>Verified Pro</small>
+        </div>
+        <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-geo-alt-fill text-primary me-2 fs-5"></i>
+            <small>Unverified / Public</small>
+        </div>
+        <hr>
+        <small class="text-muted" style="font-size: 0.8em;">
+            Click any pin to see contact details and prices.
+        </small>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    var map = L.map('map').setView([-26.2514, 27.8967], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    var listings = {{ listings | tojson }};
+
+    listings.forEach(item => {
+        // Dynamic Icon Color based on Verification
+        var pinColor = item.is_verified ? 'green' : 'blue';
+        
+        // Use a custom HTML Icon (using Bootstrap Icons inside Leaflet!)
+        var iconHtml = `<i class="bi bi-geo-alt-fill text-${item.is_verified ? 'success' : 'primary'}" style="font-size: 2rem; text-shadow: 2px 2px 2px rgba(0,0,0,0.3);"></i>`;
+        
+        var customIcon = L.divIcon({
+            html: iconHtml,
+            className: 'dummy-class', // removes default white box
+            iconSize: [30, 42],
+            iconAnchor: [15, 42]
+        });
+
+        var marker = L.marker([item.location.lat, item.location.lon], {icon: customIcon}).addTo(map);
+        
+        var badge = item.is_verified 
+            ? '<span class="badge bg-success">Verified Pro</span>' 
+            : '<span class="badge bg-secondary">Public Listing</span>';
+
+        marker.bindPopup(`
+            <div class="text-center">
+                <h6 class="fw-bold mb-1">${item.title}</h6>
+                ${badge}<br>
+                <div class="mt-2 text-muted">${item.price}</div>
+                <a href="tel:${item.contact}" class="btn btn-sm btn-outline-success mt-2">
+                    <i class="bi bi-whatsapp"></i> Contact
+                </a>
+            </div>
+        `);
+    });
+</script>
+{% endblock %}
