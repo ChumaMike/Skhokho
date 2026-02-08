@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}LinkUp Geo{% endblock %}
+{% block content %}
+<div id="map" class="h-96 w-full bg-zinc-900 rounded-xl border border-zinc-800 flex items-center justify-center">
+    <p class="text-zinc-500">Map Interface Loading...</p>
+</div>
+
+<div class="mt-8">
+    {% for service in services %}
+    <div class="p-4 border-b border-zinc-800">
+        <h3 class="font-bold text-white">{{ service.name }}</h3>
+        <p class="text-sm text-zinc-400">{{ service.category }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

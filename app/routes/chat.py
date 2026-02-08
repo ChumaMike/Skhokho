@@ -2,71 +2,76 @@ import json
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
-# ✅ FIX 1: Correct Import Spelling (ChatLog, not Chatlog)
-from app.models import ChatLog, Goal, DiaryEntry, Contact 
-from app.services.ai_service import get_skhokho_response
+# ✅ FIX: Import NetworkContact, not Contact
+from app.models import ChatLog, Goal, DiaryEntry, NetworkContact
+from app.services.ai_service import get_skhokho_response 
 
 chat_bp = Blueprint('chat', __name__)
 
 @chat_bp.route('/send', methods=['POST'])
 @login_required
 def send_message():
-    try:
-        data = request.get_json()
-        user_message = data.get('message')
-        
-        # 1. Context
-        active_goals = Goal.query.filter_by(user_id=current_user.id).limit(3).all()
-        goals_text = ", ".join([g.title for g in active_goals]) if active_goals else "None"
-        context = f"User's Current Goals: {goals_text}"
-        
-        # 2. AI Brain
-        ai_response_text = get_skhokho_response(user_message, context)
-        
-        # Default reply is just the text
-        final_reply = ai_response_text
-        
-        # 3. Check for JSON Commands
-        if ai_response_text.strip().startswith("{") and "cmd" in ai_response_text:
-            try:
-                command = json.loads(ai_response_text)
-                
-                if command['cmd'] == 'add_goal':
-                    new_item = Goal(title=command['title'], description="AI Generated", user_id=current_user.id)
-                    db.session.add(new_item)
-                    final_reply = f"Sho! Goal set: '{command['title']}'."
-                    
-                elif command['cmd'] == 'add_diary':
-                    new_item = DiaryEntry(entry_type="AI Log", content=f"{command['title']}: {command['content']}", user_id=current_user.id)
-                    db.session.add(new_item)
-                    final_reply = f"Sharp. Logged in Diary: '{command['title']}'."
-                    
-                elif command['cmd'] == 'add_network':
-                    new_item = Contact(name=command['name'], role=command['category'], user_id=current_user.id)
-                    db.session.add(new_item)
-                    final_reply = f"Network updated. Added '{command['name']}'."
-                
-                db.session.commit()
-                print(f"✅ ACTION SUCCESS: {command['cmd']}")
-            except Exception as e:
-                print(f"⚠️ ACTION FAILED: {e}")
-                # Fallback: Just show the text if the DB save fails
-                final_reply = "Eish, I tried to save that but the database blocked me. Check the logs."
+    # 1. Get User Input
+    data = request.get_json()
+    if not data or 'message' not in data:
+        return jsonify({'error': 'No message provided'}), 400
+    
+    user_msg = data['message']
 
-        # 4. Save Chat History
-        # Ensure ChatLog table exists!
-        log = ChatLog(user_id=current_user.id, message=user_message, response=final_reply)
-        db.session.add(log)
-        db.session.commit()
-        
-        # ✅ FIX 2: Send ALL keys to prevent 'undefined'
-        return jsonify({
-            "response": final_reply, 
-            "message": final_reply,
-            "reply": final_reply,
-            "status": "success"
-        })
+    # 2. Gather Context (The "Memory")
+    # We feed Skhokho the user's current goals and contacts so it can give specific advice.
+    active_goals = Goal.query.filter_by(user_id=current_user.id, is_completed=False).limit(3).all()
+    goals_text = ", ".join([g.title for g in active_goals]) if active_goals else "No active goals"
+    
+    # ✅ FIX: Use NetworkContact here
+    contacts = NetworkContact.query.filter_by(user_id=current_user.id).limit(3).all()
+    contacts_text = ", ".join([c.name for c in contacts]) if contacts else "No contacts"
+
+    context_data = f"""
+    User: {current_user.username}
+    Current Goals: {goals_text}
+    Key Contacts: {contacts_text}
+    """
+
+    # 3. Get AI Response
+    ai_reply = get_skhokho_response(user_msg, context_data)
+
+    # 4. Save Conversation
+    log = ChatLog(
+        user_id=current_user.id,
+        message=user_msg,
+        response=ai_reply
+    )
+    db.session.add(log)
+    
+    # 5. Execute Commands (If AI returned a JSON command)
+    # Example: If AI said {"cmd": "add_goal", ...}, we do it here.
+    try:
+        if ai_reply.startswith('{') and 'cmd' in ai_reply:
+            cmd_data = json.loads(ai_reply)
+            
+            if cmd_data.get('cmd') == 'add_goal':
+                new_goal = Goal(
+                    user_id=current_user.id,
+                    title=cmd_data.get('title', 'New Goal'),
+                    description="Added via Macalaa AI"
+                )
+                db.session.add(new_goal)
+                ai_reply = f"Sharp. I've added '{new_goal.title}' to your mission board."
+                
+            elif cmd_data.get('cmd') == 'add_network':
+                new_contact = NetworkContact(
+                    user_id=current_user.id,
+                    name=cmd_data.get('name'),
+                    role=cmd_data.get('category', 'Contact')
+                )
+                db.session.add(new_contact)
+                ai_reply = f"Ayt, I saved {new_contact.name} to your network."
 
     except Exception as e:
-        print(f"❌ CRITICAL CHAT ERROR: {e}")
-        return jsonify({"response": "System Error. Check Terminal.", "message": "System Error."}), 500
+        print(f"⚠️ Command Error: {e}")
+        # Don't crash, just return the text response
+
+    db.session.commit()
+
+    return jsonify({'response': ai_reply})
