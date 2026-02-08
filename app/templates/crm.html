@@ -1,129 +1,77 @@
-<!-- {% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Network Command{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto">
-    <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
-        <div>
-            <h1 class="text-3xl font-bold text-white tracking-tight">Network Command</h1>
-            <p class="text-gray-500 text-sm font-mono mt-1">MANAGE STRATEGIC ASSETS</p>
-        </div>
-        <div class="text-right">
-            <span class="text-xs text-gray-500 font-mono">ASSETS: {{ contacts|length }}</span>
-        </div>
-    </div>
-
-    <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8">
-        <h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">Add New Asset</h3>
-        <form method="POST" class="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <input type="text" name="name" placeholder="Name" required class="bg-black border border-gray-700 text-white rounded p-2 text-sm md:col-span-2 focus:border-red-500 outline-none">
-            <input type="text" name="role" placeholder="Role (e.g. Mentor)" class="bg-black border border-gray-700 text-white rounded p-2 text-sm focus:border-red-500 outline-none">
-            <input type="text" name="phone" placeholder="Phone" class="bg-black border border-gray-700 text-white rounded p-2 text-sm focus:border-red-500 outline-none">
-            <button type="submit" class="bg-red-600 hover:bg-red-500 text-white font-bold rounded p-2 text-sm transition">
-                <i class="fas fa-plus"></i> ADD
-            </button>
-        </form>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {% for contact in contacts %}
-        <div class="bg-gray-900 border border-gray-800 p-4 rounded-lg hover:border-red-500/50 transition group relative">
-            <div class="flex justify-between items-start">
-                <div>
-                    <h4 class="text-white font-bold">{{ contact.name }}</h4>
-                    <span class="bg-gray-800 text-gray-400 text-[10px] px-2 py-0.5 rounded uppercase tracking-wide">{{ contact.role }}</span>
-                </div>
-                <div class="text-right">
-                   <a href="{{ url_for('crm.delete_contact', id=contact.id) }}" class="text-gray-600 hover:text-red-500 text-xs" onclick="return confirm('Burn this contact?')"><i class="fas fa-trash"></i></a>
-                </div>
-            </div>
-            
-            <div class="mt-4 flex gap-2 text-xs text-gray-500 font-mono">
-                {% if contact.phone %}<span><i class="fas fa-phone"></i> {{ contact.phone }}</span>{% endif %}
-                {% if contact.email %}<span><i class="fas fa-envelope"></i> {{ contact.email }}</span>{% endif %}
-            </div>
-
-            <form action="{{ url_for('crm.view_contact', contact_id=contact.id) }}" method="POST" class="mt-4 pt-3 border-t border-gray-800 flex gap-2">
-                 <input type="text" name="description" placeholder="Log interaction..." class="bg-black text-gray-300 text-xs w-full p-1 rounded border border-gray-700 focus:border-blue-500 outline-none">
-                 <button type="submit" class="text-blue-500 hover:text-blue-400 text-xs"><i class="fas fa-paper-plane"></i></button>
-            </form>
-        </div>
-        {% else %}
-        <div class="col-span-2 text-center py-12 text-gray-600 italic">
-            No assets in network. Start building.
-        </div>
-        {% endfor %}
-    </div>
-</div>
-{% endblock %} -->
-
-{% extends 'base.html' %}
-
-{% block title %}Network Intelligence{% endblock %}
-
-{% block content %}
-<div class="max-w-6xl mx-auto">
     
-    <div class="flex justify-between items-end mb-8 border-b border-zinc-800 pb-4">
+    <div class="flex justify-between items-center mb-8 border-b border-zinc-800 pb-4">
         <div>
-            <h2 class="text-3xl font-bold text-white tracking-tight">NETWORK <span class="text-red-600">INTELLIGENCE</span></h2>
-            <p class="text-zinc-500 font-mono text-sm mt-1">Manage allies. Track communications. Build capital.</p>
+            <h2 class="text-2xl font-bold text-white tracking-tight">NETWORK <span class="text-zinc-600">COMMAND</span></h2>
+            <p class="text-zinc-500 text-xs font-mono">STRATEGIC ASSET MANAGEMENT</p>
         </div>
-        <button onclick="document.getElementById('add-contact-form').classList.toggle('hidden')" 
-                class="bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded text-sm font-semibold border border-zinc-700 transition">
-            + ADD NETWORK ASSET
-        </button>
+        <div class="p-2 bg-zinc-900 rounded border border-zinc-800">
+            <span class="text-xs text-zinc-500 font-mono">ASSETS: <span class="text-white font-bold">{{ contacts|length }}</span></span>
+        </div>
     </div>
 
-    <div id="add-contact-form" class="hidden mb-12 bg-zinc-900 border border-zinc-800 p-6 rounded-lg">
-        <form method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input type="text" name="name" placeholder="Name" required class="bg-black border border-zinc-700 text-white p-3 rounded focus:border-red-600 focus:outline-none">
-            <input type="text" name="role" placeholder="Role (e.g. Mentor, Recruiter)" class="bg-black border border-zinc-700 text-white p-3 rounded focus:border-red-600 focus:outline-none">
-            <input type="email" name="email" placeholder="Email" class="bg-black border border-zinc-700 text-white p-3 rounded focus:border-red-600 focus:outline-none">
-            <input type="text" name="phone" placeholder="Phone" class="bg-black border border-zinc-700 text-white p-3 rounded focus:border-red-600 focus:outline-none">
-            <button type="submit" class="col-span-full bg-red-600 hover:bg-red-700 text-white py-2 rounded font-bold">ADD TO NETWORK</button>
-        </form>
-    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="mb-6 p-4 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 text-sm font-mono">
+              <span class="text-green-500">>>></span> {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <form action="{{ url_for('crm.add_contact') }}" method="POST" class="bg-zinc-900/50 border border-zinc-800 p-6 rounded-xl mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <div class="md:col-span-4">
+                <input type="text" name="name" placeholder="Name" required 
+                       class="w-full bg-black border border-zinc-700 text-white rounded px-4 py-2 focus:border-red-600 focus:outline-none transition">
+            </div>
+            <div class="md:col-span-3">
+                <input type="text" name="role" placeholder="Role (e.g. Mentor)" 
+                       class="w-full bg-black border border-zinc-700 text-white rounded px-4 py-2 focus:border-red-600 focus:outline-none transition">
+            </div>
+            <div class="md:col-span-3">
+                <input type="text" name="phone" placeholder="Phone" 
+                       class="w-full bg-black border border-zinc-700 text-white rounded px-4 py-2 focus:border-red-600 focus:outline-none transition">
+            </div>
+            <div class="md:col-span-2">
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition">
+                    ADD
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div class="grid gap-4">
         {% for contact in contacts %}
-        
-        {% set days_since = (now - contact.last_contacted).days if contact.last_contacted else 999 %}
-        {% set is_cold = days_since > 30 %}
-
-        <a href="{{ url_for('crm.view_contact', contact_id=contact.id) }}" 
-           class="group block bg-zinc-900 border {{ 'border-red-900/60' if is_cold else 'border-zinc-800' }} rounded-xl p-6 hover:bg-zinc-800 hover:scale-[1.02] transition-all duration-300">
-            
-            <div class="flex items-center gap-4 mb-4">
-                <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold {{ 'bg-red-900 text-red-200' if is_cold else 'bg-zinc-800 text-zinc-300' }}">
-                    {{ contact.name[0] }}
-                </div>
-                <div>
-                    <h3 class="text-lg font-bold text-white">{{ contact.name }}</h3>
-                    <span class="text-xs font-mono text-zinc-500 uppercase">{{ contact.role or 'Unknown' }}</span>
+        <div class="group bg-black border border-zinc-800 p-5 rounded-lg flex justify-between items-center hover:border-zinc-600 transition">
+            <div>
+                <h4 class="text-white font-bold text-lg">{{ contact.name }}</h4>
+                <div class="flex gap-3 mt-1">
+                    <span class="bg-zinc-900 text-zinc-400 text-xs px-2 py-0.5 rounded border border-zinc-800 uppercase tracking-wide">
+                        {{ contact.role or 'CONTACT' }}
+                    </span>
+                    {% if contact.phone %}
+                    <span class="text-zinc-500 text-xs font-mono flex items-center gap-1">
+                        PH: {{ contact.phone }}
+                    </span>
+                    {% endif %}
                 </div>
             </div>
-
-            <div class="space-y-2 text-sm text-zinc-400">
-                <div class="flex items-center gap-2">
-                    <span class="text-zinc-600">📧</span> {{ contact.email or '---' }}
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-zinc-600">📱</span> {{ contact.phone or '---' }}
-                </div>
+            <div class="opacity-0 group-hover:opacity-100 transition">
+                <button class="text-zinc-500 hover:text-red-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
             </div>
-
-            <div class="mt-4 pt-4 border-t border-zinc-800 flex justify-between items-center text-xs font-mono">
-                <span class="{{ 'text-red-500 font-bold' if is_cold else 'text-green-500' }}">
-                    {{ '⚠️ COLD' if is_cold else '● ACTIVE' }}
-                </span>
-                <span class="text-zinc-600">{{ days_since }} days ago</span>
-            </div>
-        </a>
+        </div>
         {% else %}
-        <div class="col-span-full text-center py-20 bg-zinc-900/50 border border-dashed border-zinc-800 rounded-xl">
-            <p class="text-zinc-500">Network empty. Start building alliances.</p>
+        <div class="text-center py-12 border-2 border-dashed border-zinc-800 rounded-xl">
+            <p class="text-zinc-500">No strategic assets found.</p>
         </div>
         {% endfor %}
     </div>

@@ -105,10 +105,13 @@ class Milestone(db.Model):
 # --- 2. DIARY ---
 class DiaryEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    entry_type = db.Column(db.String(50))
-    content = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    entry_type = db.Column(db.String(50), default="Thought")
+    content = db.Column(db.Text, nullable=False)
+    # ✅ THIS IS MISSING OR NAMED WRONG:
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 
 # --- 3. BALAA (The Missing Piece!) ---
 class BalaaHistory(db.Model):
@@ -148,3 +151,18 @@ class ChatLog(db.Model):
     message = db.Column(db.Text)
     response = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+class NetworkContact(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
+    name = db.Column(db.String(100), nullable=False)
+    role = db.Column(db.String(100))   # e.g. "Investor", "Mentor"
+    phone = db.Column(db.String(20))
+    email = db.Column(db.String(100))
+    
+    last_contacted = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Optional: Link back to User
+    # user = db.relationship('User', backref=db.backref('contacts', lazy=True))

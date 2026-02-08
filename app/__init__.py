@@ -31,13 +31,17 @@ def create_app(config_class=Config):
     
     # The "Neural Core" Engines (Legacy) 🛠️
     from app.routes.chat import chat_bp
-    from app.routes.tools import tools_bp  # <--- Balaa & Diary
-    from app.routes.crm import crm_bp      # <--- Network
-    from app.routes.goals import goals_bp  # <--- Goals
+    from app.routes.tools import tools_bp  
+    from app.routes.crm import crm_bp      
+    from app.routes.goals import goals_bp  
+
+
 
     # --- REGISTER ALL BLUEPRINTS ---
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
+
+    
     
     # Super App Routes
     app.register_blueprint(linkup_bp, url_prefix='/linkup')
