@@ -1,10 +1,118 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app.extensions import db
-from app.models import Service, Job, User, JobChat
+from app.models import Service, Job, User, JobChat, NetworkContact, NetworkAlert
 from datetime import datetime
 
 linkup_bp = Blueprint('linkup', __name__, url_prefix='/linkup')
+
+@linkup_bp.route('/network')
+@login_required
+def network_view():
+    contacts = NetworkContact.query.filter_by(user_id=current_user.id).all()
+    alerts = NetworkAlert.query.filter_by(user_id=current_user.id).all()
+    return render_template('network.html', contacts=contacts, alerts=alerts)
+
+@linkup_bp.route('/network/add_contact', methods=['POST'])
+@login_required
+def add_contact():
+    name = request.form.get('name')
+    if name:
+        new_contact = NetworkContact(
+            user_id=current_user.id,
+            name=name,
+            role=request.form.get('role'),
+            phone=request.form.get('phone'),
+            email=request.form.get('email')
+        )
+        db.session.add(new_contact)
+        db.session.commit()
+        flash("Contact Added.", "success")
+    return redirect(url_for('linkup.network_view'))
+
+@linkup_bp.route('/network/edit_contact/<int:contact_id>', methods=['POST'])
+@login_required
+def edit_contact(contact_id):
+    contact = NetworkContact.query.get(contact_id)
+    if contact and contact.user_id == current_user.id:
+        contact.name = request.form.get('name')
+        contact.role = request.form.get('role')
+        contact.phone = request.form.get('phone')
+        contact.email = request.form.get('email')
+        db.session.commit()
+        flash("Contact Updated.", "success")
+    return redirect(url_for('linkup.network_view'))
+
+@linkup_bp.route('/network/delete_contact/<int:contact_id>')
+@login_required
+def delete_contact(contact_id):
+    contact = NetworkContact.query.get(contact_id)
+    if contact and contact.user_id == current_user.id:
+        # Delete all alerts associated with this contact
+        NetworkAlert.query.filter_by(contact_id=contact_id).delete()
+        db.session.delete(contact)
+        db.session.commit()
+        flash("Contact Deleted.", "success")
+    return redirect(url_for('linkup.network_view'))
+
+@linkup_bp.route('/network/add_alert/<int:contact_id>', methods=['POST'])
+@login_required
+def add_alert(contact_id):
+    contact = NetworkContact.query.get(contact_id)
+    if contact and contact.user_id == current_user.id:
+        title = request.form.get('alert_title')
+        if title:
+            alert_date = None
+            if request.form.get('alert_date'):
+                alert_date = datetime.strptime(request.form.get('alert_date'), '%Y-%m-%dT%H:%M')
+            
+            new_alert = NetworkAlert(
+                user_id=current_user.id,
+                contact_id=contact_id,
+                title=title,
+                description=request.form.get('alert_description'),
+                alert_type=request.form.get('alert_type', 'Email'),
+                alert_date=alert_date,
+                is_completed=False
+            )
+            db.session.add(new_alert)
+            db.session.commit()
+            flash("Alert Added.", "success")
+    return redirect(url_for('linkup.network_view'))
+
+@linkup_bp.route('/network/edit_alert/<int:alert_id>', methods=['POST'])
+@login_required
+def edit_alert(alert_id):
+    alert = NetworkAlert.query.get(alert_id)
+    if alert and alert.user_id == current_user.id:
+        alert.title = request.form.get('alert_title')
+        alert.description = request.form.get('alert_description')
+        alert.alert_type = request.form.get('alert_type')
+        if request.form.get('alert_date'):
+            alert.alert_date = datetime.strptime(request.form.get('alert_date'), '%Y-%m-%dT%H:%M')
+        db.session.commit()
+        flash("Alert Updated.", "success")
+    return redirect(url_for('linkup.network_view'))
+
+@linkup_bp.route('/network/delete_alert/<int:alert_id>')
+@login_required
+def delete_alert(alert_id):
+    alert = NetworkAlert.query.get(alert_id)
+    if alert and alert.user_id == current_user.id:
+        db.session.delete(alert)
+        db.session.commit()
+        flash("Alert Deleted.", "success")
+    return redirect(url_for('linkup.network_view'))
+
+@linkup_bp.route('/network/toggle_alert/<int:alert_id>')
+@login_required
+def toggle_alert(alert_id):
+    alert = NetworkAlert.query.get(alert_id)
+    if alert and alert.user_id == current_user.id:
+        alert.is_completed = not alert.is_completed
+        db.session.commit()
+        flash("Alert Status Updated.", "success")
+    return redirect(url_for('linkup.network_view'))
 
 @linkup_bp.route('/')
 @login_required

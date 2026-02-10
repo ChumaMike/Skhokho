@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+
+{% block title %}Network Management{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    
+    <a href="{{ url_for('main.home') }}" class="inline-flex items-center text-zinc-500 hover:text-white mb-6 transition">
+        &larr; BACK TO DASHBOARD
+    </a>
+
+    <div class="bg-zinc-900 border border-zinc-800 p-8 rounded-xl mb-8 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 blur-[60px] rounded-full"></div>
+        
+        <div class="flex justify-between items-start">
+            <div>
+                <span class="text-blue-500 font-mono text-xs uppercase tracking-widest">NETWORK ASSETS</span>
+                <h1 class="text-4xl font-bold text-white mt-2 mb-4">Network Management</h1>
+                <p class="text-zinc-400 max-w-2xl">Manage your network contacts and set up alerts for important interactions.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- Contacts Section -->
+        <div>
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+                <div class="p-6 border-b border-zinc-800">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500 mr-3">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        Contacts
+                    </h2>
+                    <p class="text-zinc-500 text-sm mt-1">{{ contacts|length }} contacts in your network</p>
+                </div>
+                
+                <div class="p-6">
+                    <!-- Add Contact Form -->
+                    <div class="bg-black border border-zinc-800 p-4 rounded-lg mb-6">
+                        <h3 class="text-zinc-400 text-sm font-bold uppercase mb-4">Add New Contact</h3>
+                        <form action="{{ url_for('linkup.add_contact') }}" method="POST">
+                            <div class="grid grid-cols-1 gap-4">
+                                <input type="text" name="name" placeholder="Contact Name" required 
+                                       class="w-full bg-zinc-900 border border-zinc-700 text-white p-2 rounded focus:border-blue-600 focus:outline-none">
+                                <input type="text" name="role" placeholder="Role/Position" 
+                                       class="w-full bg-zinc-900 border border-zinc-700 text-white p-2 rounded focus:border-blue-600 focus:outline-none">
+                                <input type="text" name="phone" placeholder="Phone Number" 
+                                       class="w-full bg-zinc-900 border border-zinc-700 text-white p-2 rounded focus:border-blue-600 focus:outline-none">
+                                <input type="email" name="email" placeholder="Email Address" 
+                                       class="w-full bg-zinc-900 border border-zinc-700 text-white p-2 rounded focus:border-blue-600 focus:outline-none">
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded mt-4 transition">
+                                + Add Contact
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Contacts List -->
+                    {% for contact in contacts %}
+                    <div class="bg-black border border-zinc-800 p-4 rounded-lg mb-4 hover:border-blue-600 transition">
+                        <div class="flex justify-between items-start mb-3">
+                            <h4 class="text-white font-bold">{{ contact.name }}</h4>
+                            <div class="flex space-x-2">
+                                <button onclick="toggleEditContact({{ contact.id }})" class="text-zinc-500 hover:text-blue-500 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                    </svg>
+                                </button>
+                                <a href="{{ url_for('linkup.delete_contact', contact_id=contact.id) }}" onclick="return confirm('Are you sure you want to delete this contact?')" class="text-zinc-500 hover:text-red-500 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M3 6h18"/>
+                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        {% if contact.role %}
+                        <p class="text-zinc-400 text-sm mb-1">{{ contact.role }}</p>
+                        {% endif %}
+                        {% if contact.phone %}
+                        <p class="text-zinc-400 text-sm mb-1">📞 {{ contact.phone }}</p>
+                        {% endif %}
+                        {% if contact.email %}
+                        <p class="text-zinc-400 text-sm mb-1">📧 {{ contact.email }}</p>
+                        {% endif %}
+                        
+                        <!-- Edit Contact Form (Hidden by default) -->
+                        <div id="edit-contact-{{ contact.id }}" class="hidden mt-4 pt-4 border-t border-zinc-800">
+                            <form action="{{ url_for('linkup.edit_contact', contact_id=contact.id) }}" method="POST">
+                                <div class="grid grid-cols-1 gap-4">
+                                    <input type="text" name="name" value="{{ contact.name }}" required 
+                                           class="w-full bg-zinc-900 border border-zinc-700 text-white p-2 rounded focus:border-blue-600 focus:outline-none">
+                                    <input type="text" name="role" value="{{ contact.role or '' }}" 
+                                           class="w-full bg-zinc-900 border border-zinc-700 text-white p-2 rounded focus:border-blue-600 focus:outline-none">
+                                    <input type="text" name="phone" value="{{ contact.phone or '' }}" 
+                                           class="w-full bg-zinc-900 border border-zinc-700 text-white p-2 rounded focus:border-blue-600 focus:outline-none">
+                                    <input type="email" name="email" value="{{ contact.email or '' }}" 
+                                           class="w-full bg-zinc-900 border border-zinc-700 text-white p-2 rounded focus:border-blue-600 focus:outline-none">
+                                </div>
+                                <div class="flex space-x-2 mt-4">
+                                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded transition">
+                                        Save
+                                    </button>
+                                    <button type="button" onclick="toggleEditContact({{ contact.id }})" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2 rounded transition">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Add Alert Form -->
+                        <div class="mt-4 pt-4 border-t border-zinc-800">
+                            <button onclick="toggleAddAlert({{ contact.id }})" class="text-blue-500 hover:text-blue-400 text-sm font-medium transition">
+                                + Add Alert
+                            </button>
+                            
+                            <div id="add-alert-{{ contact.id }}" class="hidden mt-3">
+                                <form action="{{ url_for('linkup.add_alert', contact_id=contact.id) }}" method="POST">
+                                    <div class="grid grid-cols-1 gap-4">
+                                        <input type="text" name="alert_title" placeholder="Alert Title" required 
+                                               class="w-full bg-zinc-900 border border-zinc-700 text-white p-2 rounded focus:border-blue-600 focus:outline-none">
+                                        <textarea name="alert_description" placeholder="Description" 
+                                                  class="w-full bg-zinc-900 border border-zinc-700 text-white p-2 rounded focus:border-blue-600 focus:outline-none"></textarea>
+                                        <select name="alert_type" class="w-full bg-zinc-900 border border-zinc-700 text-white p-2 rounded focus:border-blue-600 focus:outline-none">
+                                            <option value="Email">Email</option>
+                                            <option value="Call">Call</option>
+                                            <option value="Meeting">Meeting</option>
+                                            <option value="Follow-up">Follow-up</option>
+                                        </select>
+                                        <input type="datetime-local" name="alert_date" required 
+                                               class="w-full bg-zinc-900 border border-zinc-700 text-white p-2 rounded focus:border-blue-600 focus:outline-none">
+                                    </div>
+                                    <div class="flex space-x-2 mt-4">
+                                        <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded transition">
+                                            Save Alert
+                                        </button>
+                                        <button type="button" onclick="toggleAddAlert({{ contact.id }})" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2 rounded transition">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-zinc-500 italic">No contacts in your network yet. Add your first contact above.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts Section -->
+        <div>
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+                <div class="p-6 border-b border-zinc-800">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-500 mr-3">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                        Alerts
+                    </h2>
+                    <p class="text-zinc-500 text-sm mt-1">{{ alerts|length }} active alerts</p>
+                </div>
+                
+                <div class="p-6">
+                    {% if alerts %}
+                        {% for alert in alerts %}
+                        <div class="bg-black border border-zinc-800 p-4 rounded-lg mb-4 hover:border-amber-600 transition">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h4 class="text-white font-bold">{{ alert.title }}</h4>
+                                    <p class="text-zinc-500 text-sm">{{ alert.contact.name }}</p>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button onclick="toggleEditAlert({{ alert.id }})" class="text-zinc-500 hover:text-amber-500 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                        </svg>
+                                    </button>
+                                    <a href="{{ url_for('linkup.delete_alert', alert_id=alert.id) }}" onclick="return confirm('Are you sure you want to delete this alert?')" class="text-zinc-500 hover:text-red-500 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M3 6h18"/>
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            {% if alert.description %}
+                            <p class="text-zinc-400 text-sm mb-2">{{ alert.description }}</p>
+                            {% endif %}
+                            
+                            <div class="flex flex-wrap gap-2 text-xs font-medium mb-3">
+                                <span class="bg-amber-500/20 text-amber-500 px-2 py-1 rounded">{{ alert.alert_type }}</span>
+                                <span class="bg-zinc-800 text-zinc-400 px-2 py-1 rounded">
+                                    {{ alert.alert_date.strftime('%Y-%m-%d %H:%M') }}
+                                </span>
+                            </div>
+                            
+                            <a href="{{ url_for('linkup.toggle_alert', alert_id=alert.id) }}" class="inline-flex items-center text-sm text-amber-500 hover:text-amber-400 transition">
+                                {% if alert.is_completed %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1">
+                                        <path d="M18 6L7 17l-5-5"/>
+                                    </svg>
+                                    Mark as Pending
+                                {% else %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polyline points="12 6 12 12 16 14"/>
+                                    </svg>
+                                    Mark as Completed
+                                {% endif %}
+                            </a>
+                            
+                            <!-- Edit Alert Form (Hidden by default) -->
+                            <div id="edit-alert-{{ alert.id }}" class="hidden mt-4 pt-4 border-t border-zinc-800">
+                                <form action="{{ url_for('linkup.edit_alert', alert_id=alert.id) }}" method="POST">
+                                    <div class="grid grid-cols-1 gap-4">
+                                        <input type="text" name="alert_title" value="{{ alert.title }}" required 
+                                               class="w-full bg-zinc-900 border border-zinc-700 text-white p-2 rounded focus:border-amber-600 focus:outline-none">
+                                        <textarea name="alert_description" placeholder="Description" 
+                                                  class="w-full bg-zinc-900 border border-zinc-700 text-white p-2 rounded focus:border-amber-600 focus:outline-none">{{ alert.description or '' }}</textarea>
+                                        <select name="alert_type" class="w-full bg-zinc-900 border border-zinc-700 text-white p-2 rounded focus:border-amber-600 focus:outline-none">
+                                            <option value="Email" {{ 'selected' if alert.alert_type == 'Email' else '' }}>Email</option>
+                                            <option value="Call" {{ 'selected' if alert.alert_type == 'Call' else '' }}>Call</option>
+                                            <option value="Meeting" {{ 'selected' if alert.alert_type == 'Meeting' else '' }}>Meeting</option>
+                                            <option value="Follow-up" {{ 'selected' if alert.alert_type == 'Follow-up' else '' }}>Follow-up</option>
+                                        </select>
+                                        <input type="datetime-local" name="alert_date" value="{{ alert.alert_date.strftime('%Y-%m-%dT%H:%M') }}" required 
+                                               class="w-full bg-zinc-900 border border-zinc-700 text-white p-2 rounded focus:border-amber-600 focus:outline-none">
+                                    </div>
+                                    <div class="flex space-x-2 mt-4">
+                                        <button type="submit" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 rounded transition">
+                                            Save
+                                        </button>
+                                        <button type="button" onclick="toggleEditAlert({{ alert.id }})" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2 rounded transition">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                    <p class="text-zinc-500 italic">No alerts set up yet. Add alerts to your contacts above.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleEditContact(contactId) {
+    const form = document.getElementById(`edit-contact-${contactId}`);
+    form.classList.toggle('hidden');
+}
+
+function toggleAddAlert(contactId) {
+    const form = document.getElementById(`add-alert-${contactId}`);
+    form.classList.toggle('hidden');
+}
+
+function toggleEditAlert(alertId) {
+    const form = document.getElementById(`edit-alert-${alertId}`);
+    form.classList.toggle('hidden');
+}
+</script>
+{% endblock %}

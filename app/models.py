@@ -238,6 +238,7 @@ class MacalaaLog(db.Model):
 class Goal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    parent_id = db.Column(db.Integer, db.ForeignKey('goal.id'), nullable=True)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=True)
     category = db.Column(db.String(50), default='Personal', nullable=False)
@@ -247,6 +248,7 @@ class Goal(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship('User', backref=db.backref('goals', lazy=True))
+    parent = db.relationship('Goal', remote_side=[id], backref=db.backref('subgoals', lazy=True))
 
     def __repr__(self):
         return f'<Goal {self.title}>'
@@ -277,6 +279,24 @@ class NetworkContact(db.Model):
 
     def __repr__(self):
         return f'<NetworkContact {self.name}>'
+
+
+class NetworkAlert(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    contact_id = db.Column(db.Integer, db.ForeignKey('network_contact.id'), nullable=False)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    alert_type = db.Column(db.String(50), default='Email', nullable=False)  # Email, Call, Meeting
+    alert_date = db.Column(db.DateTime, nullable=False)
+    is_completed = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref=db.backref('network_alerts', lazy=True))
+    contact = db.relationship('NetworkContact', backref=db.backref('alerts', lazy=True))
+
+    def __repr__(self):
+        return f'<NetworkAlert {self.title}>'
 
 
 class BalaaHistory(db.Model):

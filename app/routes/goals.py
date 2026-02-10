@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app.extensions import db
-from app.models import Goal, Milestone
+from app.models import Goal, Milestone, NetworkAlert, NetworkContact
 from datetime import datetime
 
 goals_bp = Blueprint('goals', __name__, url_prefix='/goals')
@@ -10,14 +10,16 @@ goals_bp = Blueprint('goals', __name__, url_prefix='/goals')
 @login_required
 def dashboard():
     # Fetch Data
-    active_goals = Goal.query.filter_by(user_id=current_user.id, is_completed=False).all()
-    completed_goals = Goal.query.filter_by(user_id=current_user.id, is_completed=True).all()
-    return render_template('goals.html', active_goals=active_goals, completed_goals=completed_goals)
+    active_goals = Goal.query.filter_by(user_id=current_user.id, is_completed=False, parent_id=None).all()
+    completed_goals = Goal.query.filter_by(user_id=current_user.id, is_completed=True, parent_id=None).all()
+    # Get network alerts that are active and upcoming
+    upcoming_alerts = NetworkAlert.query.filter_by(user_id=current_user.id, is_completed=False).filter(NetworkAlert.alert_date > datetime.utcnow()).all()
+    return render_template('goals.html', active_goals=active_goals, completed_goals=completed_goals, upcoming_alerts=upcoming_alerts)
 
 @goals_bp.route('/strategic')
 @login_required
 def strategic_dashboard():
-    goals = Goal.query.filter_by(user_id=current_user.id, is_completed=False).all()
+    goals = Goal.query.filter_by(user_id=current_user.id, is_completed=False, parent_id=None).all()
     return render_template('goals_dashboard.html', goals=goals)
 
 @goals_bp.route('/add', methods=['POST'])
@@ -29,7 +31,8 @@ def add_goal():
             user_id=current_user.id,
             title=title,
             description=request.form.get('description'),
-            is_completed=False
+            is_completed=False,
+            parent_id=request.form.get('parent_id') if request.form.get('parent_id') else None
         )
         db.session.add(new_goal)
         db.session.commit()
@@ -52,12 +55,35 @@ def add_strategic_goal():
             category=request.form.get('category', 'Personal'),
             target_date=target_date,
             progress=0,
-            is_completed=False
+            is_completed=False,
+            parent_id=request.form.get('parent_id') if request.form.get('parent_id') else None
         )
         db.session.add(new_goal)
         db.session.commit()
         flash("Strategic Objective Initiated.", "success")
     return redirect(url_for('goals.strategic_dashboard'))
+
+@goals_bp.route('/add_subgoal/<int:goal_id>', methods=['POST'])
+@login_required
+def add_subgoal(goal_id):
+    parent_goal = Goal.query.get(goal_id)
+    if parent_goal and parent_goal.user_id == current_user.id:
+        title = request.form.get('subgoal_title')
+        if title:
+            new_subgoal = Goal(
+                user_id=current_user.id,
+                parent_id=goal_id,
+                title=title,
+                description=request.form.get('subgoal_description'),
+                category=parent_goal.category,
+                target_date=parent_goal.target_date,
+                progress=0,
+                is_completed=False
+            )
+            db.session.add(new_subgoal)
+            db.session.commit()
+            flash("Subgoal Added.", "success")
+    return redirect(url_for('goals.view_goal', goal_id=goal_id))
 
 @goals_bp.route('/view/<int:goal_id>')
 @login_required

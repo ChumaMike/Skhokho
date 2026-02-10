@@ -22,6 +22,39 @@
         </form>
     </div>
 
+    <!-- Asset Alerts Section -->
+    {% if upcoming_alerts %}
+    <div class="space-y-4 mb-12">
+        <h3 class="text-zinc-500 text-xs font-mono uppercase tracking-wider mb-4 border-b border-zinc-800 pb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-500 inline mr-2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            Asset Alerts ({{ upcoming_alerts|length }})
+        </h3>
+        
+        {% for alert in upcoming_alerts %}
+            <div class="bg-zinc-900 border border-amber-900/30 bg-amber-900/5 p-5 rounded-lg flex justify-between items-center group hover:border-amber-600 transition">
+                <div>
+                    <h4 class="text-white font-bold text-lg">{{ alert.title }}</h4>
+                    <p class="text-zinc-500 text-sm mt-1">{{ alert.contact.name }} - {{ alert.alert_type }}</p>
+                    <p class="text-zinc-600 text-xs mt-1">{{ alert.alert_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                    {% if alert.description %}
+                        <p class="text-zinc-500 text-sm mt-1">{{ alert.description }}</p>
+                    {% endif %}
+                </div>
+                
+                <a href="{{ url_for('linkup.toggle_alert', alert_id=alert.id) }}" 
+                   class="text-zinc-600 hover:text-green-500 transition px-3 py-2 border border-zinc-800 rounded hover:border-green-500/50">
+                    <span class="text-xs font-mono font-bold">MARK COMPLETE</span>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Active Goals Section -->
     <div class="space-y-4 mb-12">
         <h3 class="text-zinc-500 text-xs font-mono uppercase tracking-wider mb-4 border-b border-zinc-800 pb-2">Active Operations</h3>
         
@@ -32,12 +65,21 @@
                         <h4 class="text-white font-bold text-lg">{{ goal.title }}</h4> {% if goal.description %}
                             <p class="text-zinc-500 text-sm mt-1">{{ goal.description }}</p>
                         {% endif %}
+                        {% if goal.subgoals %}
+                            <p class="text-zinc-600 text-xs mt-1">{{ goal.subgoals|length }} subgoals</p>
+                        {% endif %}
                     </div>
                     
-                    <a href="{{ url_for('goals.complete_goal', goal_id=goal.id) }}" 
-                       class="text-zinc-600 hover:text-green-500 transition px-3 py-2 border border-zinc-800 rounded hover:border-green-500/50">
-                        <span class="text-xs font-mono font-bold">MARK COMPLETE</span>
-                    </a>
+                    <div class="flex items-center space-x-2">
+                        <a href="{{ url_for('goals.view_goal', goal_id=goal.id) }}" 
+                           class="text-zinc-600 hover:text-blue-500 transition px-3 py-2 border border-zinc-800 rounded hover:border-blue-500/50">
+                            <span class="text-xs font-mono font-bold">DETAILS</span>
+                        </a>
+                        <a href="{{ url_for('goals.complete_goal', goal_id=goal.id) }}" 
+                           class="text-zinc-600 hover:text-green-500 transition px-3 py-2 border border-zinc-800 rounded hover:border-green-500/50">
+                            <span class="text-xs font-mono font-bold">MARK COMPLETE</span>
+                        </a>
+                    </div>
                 </div>
             {% endfor %}
         {% else %}
