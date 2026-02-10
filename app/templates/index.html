@@ -70,9 +70,34 @@
                 </div>
             </div>
 
+            <!-- Breaking News Section -->
+            <div id="breaking-news" class="mb-4 hidden">
+                <div class="text-red-400 text-sm font-bold mb-2 flex items-center gap-2">
+                    <i class="fas fa-exclamation-triangle"></i> BREAKING NEWS
+                </div>
+                <div id="news-items" class="space-y-2"></div>
+            </div>
+
+            <!-- Matched Opportunities Section -->
+            <div id="matched-opportunities" class="mb-4 hidden">
+                <div class="text-green-400 text-sm font-bold mb-2 flex items-center gap-2">
+                    <i class="fas fa-bullseye"></i> MATCHED OPPORTUNITIES
+                </div>
+                <div id="opportunity-items" class="space-y-2"></div>
+            </div>
+
+            <!-- AI Advice Section -->
+            <div id="ai-advice" class="mb-4 hidden bg-black/30 p-3 rounded border border-gray-700">
+                <div class="text-blue-400 text-xs font-bold uppercase tracking-widest mb-1">STRATEGIC ADVICE</div>
+                <div id="advice-content" class="text-gray-300 text-sm font-light leading-relaxed"></div>
+            </div>
+
             <div class="flex gap-2">
                 <button onclick="scanLocation(false)" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded shadow-lg transition flex items-center justify-center gap-2">
                     <i class="fas fa-search-location"></i> Scan
+                </button>
+                <button onclick="getLocalIntel()" class="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-4 rounded shadow-lg transition flex items-center justify-center gap-2">
+                    <i class="fas fa-newspaper"></i> Intel Feed
                 </button>
                 <label class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-4 rounded shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
                     <i class="fas fa-camera"></i> Analyze
@@ -264,6 +289,96 @@
             } catch (err) { resultDiv.innerHTML = "<span class='text-red-500'>❌ UPLOAD FAILED</span>"; }
         }
     }
+
+    // --- LOCAL INTEL FEED LOGIC ---
+    async function getLocalIntel() {
+        const radarDiv = document.getElementById('radar-result');
+        const newsDiv = document.getElementById('breaking-news');
+        const newsItemsDiv = document.getElementById('news-items');
+        const oppsDiv = document.getElementById('matched-opportunities');
+        const oppItemsDiv = document.getElementById('opportunity-items');
+        const adviceDiv = document.getElementById('ai-advice');
+        const adviceContentDiv = document.getElementById('advice-content');
+
+        radarDiv.innerHTML = `<div class="flex items-center gap-3 text-blue-400 animate-pulse w-full"><i class="fas fa-newspaper animate-ping"></i><span class="font-mono text-xs tracking-widest uppercase">Fetching Local Intel...</span></div>`;
+        
+        // Hide sections while loading
+        newsDiv.classList.add('hidden');
+        oppsDiv.classList.add('hidden');
+        adviceDiv.classList.add('hidden');
+
+        let lat, lng;
+        try {
+            // Try to get current location
+            const pos = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject));
+            lat = pos.coords.latitude;
+            lng = pos.coords.longitude;
+        } catch (e) {
+            // Fallback to Johannesburg if location access denied
+            lat = -26.2041;
+            lng = 28.0473;
+        }
+
+        try {
+            const response = await fetch('/location/local-intel', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ latitude: lat, longitude: lng })
+            });
+            
+            const data = await response.json();
+            
+            // Display radar result
+            radarDiv.innerHTML = `<div class="text-green-400 text-sm flex items-center gap-2">
+                <i class="fas fa-check-circle"></i> Local Intel Retrieved Successfully
+            </div>`;
+
+            // Display breaking news
+            if (data.breaking_news && data.breaking_news.length > 0) {
+                newsItemsDiv.innerHTML = data.breaking_news.map(news => `
+                    <div class="bg-red-900/20 border border-red-500/30 p-3 rounded-lg text-xs">
+                        <div class="font-bold text-white mb-1">${news.title}</div>
+                        <div class="text-red-300 text-[10px]">${news.description || 'No description available'}</div>
+                        ${news.location ? `<div class="text-gray-400 text-[10px] mt-1"><i class="fas fa-map-marker-alt mr-1"></i>${news.location}</div>` : ''}
+                    </div>
+                `).join('');
+                newsDiv.classList.remove('hidden');
+            }
+
+            // Display matched opportunities
+            if (data.opportunities && data.opportunities.length > 0) {
+                oppItemsDiv.innerHTML = data.opportunities.map(opp => `
+                    <div class="bg-green-900/20 border border-green-500/30 p-3 rounded-lg text-xs">
+                        <div class="font-bold text-white mb-1">${opp.opportunity.title}</div>
+                        <div class="text-green-300 text-[10px]">${opp.opportunity.description || 'No description available'}</div>
+                        ${opp.opportunity.company ? `<div class="text-gray-400 text-[10px] mt-1"><i class="fas fa-building mr-1"></i>${opp.opportunity.company}</div>` : ''}
+                        ${opp.opportunity.location ? `<div class="text-gray-400 text-[10px]"><i class="fas fa-map-marker-alt mr-1"></i>${opp.opportunity.location}</div>` : ''}
+                        ${opp.opportunity.salary ? `<div class="text-gray-400 text-[10px]"><i class="fas fa-money-bill mr-1"></i>${opp.opportunity.salary}</div>` : ''}
+                        <div class="text-yellow-400 text-[10px] mt-1">Matches: ${opp.goal.title}</div>
+                    </div>
+                `).join('');
+                oppsDiv.classList.remove('hidden');
+            }
+
+            // Display AI advice
+            if (data.advice) {
+                adviceContentDiv.textContent = data.advice;
+                adviceDiv.classList.remove('hidden');
+            }
+
+        } catch (err) {
+            radarDiv.innerHTML = `<span class='text-red-500'>❌ FAILED TO RETRIEVE LOCAL INTEL</span>`;
+        }
+    }
+
+    // Auto-refresh intel feed on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if user has goals before loading intel
+        {% if goals %}
+        // Delayed to let other components load
+        setTimeout(getLocalIntel, 1000);
+        {% endif %}
+    });
 </script>
 
 <style>

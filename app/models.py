@@ -8,7 +8,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=True)
     password_hash = db.Column(db.String(256), nullable=False)
-    wallet_balance = db.Column(db.Integer, default=0)
+    wallet_balance = db.Column(db.Float, default=0.0)
     reputation_points = db.Column(db.Integer, default=0)
     role = db.Column(db.String(20), default='citizen')  # citizen, provider, official
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -356,3 +356,39 @@ class Transaction(db.Model):
 
     def __repr__(self):
         return f'<Transaction {self.id}>'
+
+
+class Opportunity(db.Model):
+    """Opportunities like jobs, internships, events that match user goals"""
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    category = db.Column(db.String(50), nullable=False)  # Job, Internship, Event, Training
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    location_name = db.Column(db.String(200), nullable=True)
+    company = db.Column(db.String(100), nullable=True)
+    requirements = db.Column(db.Text, nullable=True)
+    salary = db.Column(db.String(50), nullable=True)
+    expires_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Opportunity {self.title}>'
+
+
+class NewsItem(db.Model):
+    """Local breaking news items"""
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    category = db.Column(db.String(50), nullable=False)  # Crime, Traffic, Weather, Community
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
+    location_name = db.Column(db.String(200), nullable=True)
+    source = db.Column(db.String(100), nullable=True)
+    published_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_breaking = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return f'<NewsItem {self.title}>'
