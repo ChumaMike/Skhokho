@@ -13,17 +13,24 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        email = request.form.get('email', '')  # Optional email field
 
         if User.query.filter_by(username=username).first():
             flash('Username already exists', 'danger')
             return redirect(url_for('auth.register'))
 
-        new_user = User(username=username)
+        # Create new user with wallet initialized
+        new_user = User(
+            username=username,
+            email=email if email else None,
+            wallet_balance=0.0,
+            reputation_points=0
+        )
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
 
-        flash('Registration successful! Please login.', 'success')
+        flash('Registration successful! You can now login.', 'success')
         return redirect(url_for('auth.login'))
 
     return render_template('register.html')
@@ -40,7 +47,9 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
             login_user(user)
+            flash(f'Welcome back, {user.username}!', 'success')
             next_page = request.args.get('next')
+            # Redirect to dashboard (home) where wallet and points are displayed
             return redirect(next_page or url_for('main.home'))
         
         flash('Invalid username or password', 'danger')

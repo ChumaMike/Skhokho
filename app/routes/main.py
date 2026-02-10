@@ -41,12 +41,18 @@ def home():
         'stage': 0, 
         'status': 'Online'
     }
+    
+    # 4. Wallet & Reputation Data (Universal across all pillars)
+    wallet_balance = current_user.wallet_balance
+    reputation_points = current_user.reputation_points
 
-    # 4. Render
+    # 5. Render
     return render_template('index.html', 
                          goals=active_goals,
                          ticket_count=ticket_count,
                          contact_count=contact_count,
                          greeting=greeting,
-                         weather=weather_data, # ✅ Sending Weather
-                         power=power_data)     # ✅ Sending Power
+                         weather=weather_data,
+                         power=power_data,
+                         wallet_balance=wallet_balance,
+                         reputation_points=reputation_points)
