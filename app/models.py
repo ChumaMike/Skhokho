@@ -240,6 +240,9 @@ class Goal(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=True)
+    category = db.Column(db.String(50), default='Personal', nullable=False)
+    target_date = db.Column(db.DateTime, nullable=True)
+    progress = db.Column(db.Integer, default=0)
     is_completed = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -248,6 +251,18 @@ class Goal(db.Model):
     def __repr__(self):
         return f'<Goal {self.title}>'
 
+
+class Milestone(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    goal_id = db.Column(db.Integer, db.ForeignKey('goal.id'), nullable=False)
+    title = db.Column(db.String(200), nullable=False)
+    is_completed = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    goal = db.relationship('Goal', backref=db.backref('milestones', lazy=True))
+
+    def __repr__(self):
+        return f'<Milestone {self.title}>'
 
 class NetworkContact(db.Model):
     id = db.Column(db.Integer, primary_key=True)

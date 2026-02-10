@@ -5,7 +5,7 @@ Management script for Skhokho database operations
 import click
 from app import create_app
 from app.extensions import db
-from app.models import User, Transaction, Service, Job, NetworkContact, Goal, CivicTicket
+from app.models import User, Service, Job, NetworkContact, Goal
 
 
 @click.group()
@@ -75,7 +75,7 @@ def seed_demo():
             name="Plumbing Services",
             category="Home Repair",
             description="Professional plumbing services in Soweto",
-            cost=200,
+            price=200,
             latitude=-26.2485,
             longitude=27.8546
         )
@@ -85,18 +85,11 @@ def seed_demo():
         goal = Goal(
             user_id=demo_user.id,
             title="Save R5000 for Business",
-            description="Save money to start a small business"
+            description="Save money to start a small business",
+            category="Finance",
+            progress=0
         )
         db.session.add(goal)
-        
-        # Create demo transaction
-        transaction = Transaction(
-            user_id=demo_user.id,
-            amount=500.0,
-            transaction_type="Deposit",
-            description="Initial demo deposit"
-        )
-        db.session.add(transaction)
         
         db.session.commit()
         
@@ -112,15 +105,15 @@ def show_stats():
     
     with app.app_context():
         user_count = User.query.count()
-        transaction_count = Transaction.query.count()
         service_count = Service.query.count()
         job_count = Job.query.count()
+        goal_count = Goal.query.count()
         
         click.echo("📊 Database Statistics:")
         click.echo(f"   Users: {user_count}")
-        click.echo(f"   Transactions: {transaction_count}")
         click.echo(f"   Services: {service_count}")
         click.echo(f"   Jobs: {job_count}")
+        click.echo(f"   Goals: {goal_count}")
         
         if user_count > 0:
             total_balance = db.session.query(db.func.sum(User.wallet_balance)).scalar() or 0

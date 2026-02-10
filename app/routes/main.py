@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request
 from flask_login import login_required, current_user
 from datetime import datetime
-from app.models import Service, CivicIssue
+from app.models import Service, CivicIssue, Goal
 from app.services.ai_service import get_skhokho_response
 from PIL import Image
 import os
@@ -74,9 +74,12 @@ def home():
     wallet_balance = current_user.wallet_balance
     reputation_points = current_user.reputation_points
 
-    # 4. Render
+    # 4. Get goals from database
+    goals = Goal.query.filter_by(user_id=current_user.id, is_completed=False).all()
+
+    # 5. Render
     return render_template('index.html', 
-                         goals=[],
+                         goals=goals,
                          ticket_count=0,
                          contact_count=0,
                          greeting=greeting,

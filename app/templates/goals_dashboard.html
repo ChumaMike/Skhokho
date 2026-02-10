@@ -17,7 +17,7 @@
     </div>
 
     <div id="create-goal-form" class="hidden mb-12 bg-zinc-900 border border-red-900/30 p-6 rounded-lg shadow-[0_0_20px_rgba(220,38,38,0.1)]">
-        <form method="POST" class="grid gap-6">
+        <form action="{{ url_for('goals.add_strategic_goal') }}" method="POST" class="grid gap-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <label class="block">
                     <span class="text-zinc-400 text-xs font-mono uppercase">Objective Title</span>

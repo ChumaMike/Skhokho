@@ -9,7 +9,7 @@ def app():
     app = create_app()
     app.config.update({
         "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": "postgresql://skhokho_user:skhokho_pass@db:5432/skhokho_db",
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
         "WTF_CSRF_ENABLED": False,
         # NullPool ensures connections close immediately, preventing deadlocks
         "SQLALCHEMY_ENGINE_OPTIONS": {"poolclass": NullPool}
