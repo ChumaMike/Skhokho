@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% block title %}LinkUp Dashboard{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-white">LinkUp <span class="text-blue-500">Dashboard</span></h2>
+        <div class="text-right">
+            <p class="text-zinc-400 text-sm">User Type: 
+                <span class="text-blue-500 font-bold">{% if current_user.role == 'provider' %}Provider{% else %}User{% endif %}</span>
+            </p>
+            <p class="text-zinc-400 text-sm">Balance: <span class="text-green-500 font-bold">{{ current_user.wallet_balance }}c</span></p>
+        </div>
+    </div>
+
+    <!-- Provider Dashboard -->
+    {% if current_user.role == 'provider' %}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- My Services -->
+        <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-white mb-4">My Services</h3>
+            {% if current_user.services %}
+            <div class="space-y-4">
+                {% for service in current_user.services %}
+                <div class="bg-zinc-800 p-4 rounded-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-white">{{ service.name }}</h4>
+                            <p class="text-zinc-500 text-sm">{{ service.category }}</p>
+                            {% if service.description %}
+                            <p class="text-zinc-400 text-sm mt-2">{{ service.description[:100] }}...</p>
+                            {% endif %}
+                        </div>
+                        <div class="text-right">
+                            <span class="block text-green-400 font-mono font-bold">{{ service.price }}c</span>
+                            <span class="text-zinc-400 text-xs">ID: {{ service.id }}</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex gap-2">
+                        <button class="bg-blue-600 text-white text-xs px-3 py-1 rounded hover:bg-blue-500 transition">
+                            Edit
+                        </button>
+                        <button class="bg-red-600 text-white text-xs px-3 py-1 rounded hover:bg-red-500 transition">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-zinc-400">You haven't registered any services yet.</p>
+            <a href="{{ url_for('linkup.economy_view') }}" class="text-blue-500 hover:text-blue-400 text-sm mt-2 inline-block">
+                Register your first service
+            </a>
+            {% endif %}
+        </div>
+
+        <!-- My Jobs as Provider -->
+        <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-white mb-4">My Jobs</h3>
+            {% if provider_jobs %}
+            <div class="space-y-4">
+                {% for job in provider_jobs %}
+                <div class="bg-zinc-800 p-4 rounded-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-white">{{ job.service.name }}</h4>
+                            <p class="text-zinc-500 text-sm">Client: {{ job.client.username }}</p>
+                            <p class="text-zinc-400 text-xs">{{ job.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="block text-green-400 font-mono font-bold">{{ job.price }}c</span>
+                            <span class="inline-block px-2 py-1 text-xs font-bold rounded {{ 
+                                'bg-yellow-600' if job.status == 'Pending' else 
+                                'bg-blue-600' if job.status == 'In_Progress' else 
+                                'bg-green-600' if job.status == 'Completed' else 'bg-red-600'
+                            }}">
+                                {{ job.status }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <a href="{{ url_for('linkup.view_job', job_id=job.id) }}" class="text-blue-500 hover:text-blue-400 text-sm">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-zinc-400">No jobs assigned to you yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Reputation Stats -->
+        <div class="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-white mb-4">Reputation & Statistics</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-zinc-800 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-blue-500">{{ current_user.reputation_points }}</div>
+                    <div class="text-zinc-400 text-sm">Reputation Points</div>
+                </div>
+                <div class="bg-zinc-800 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-green-500">{{ total_earnings }}</div>
+                    <div class="text-zinc-400 text-sm">Total Earnings (c)</div>
+                </div>
+                <div class="bg-zinc-800 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-yellow-500">{{ completed_jobs }}</div>
+                    <div class="text-zinc-400 text-sm">Completed Jobs</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Dashboard -->
+    {% else %}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- My Jobs as Client -->
+        <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-white mb-4">My Jobs</h3>
+            {% if client_jobs %}
+            <div class="space-y-4">
+                {% for job in client_jobs %}
+                <div class="bg-zinc-800 p-4 rounded-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-white">{{ job.service.name }}</h4>
+                            <p class="text-zinc-500 text-sm">Provider: {{ job.provider.username }}</p>
+                            <p class="text-zinc-400 text-xs">{{ job.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="block text-green-400 font-mono font-bold">{{ job.price }}c</span>
+                            <span class="inline-block px-2 py-1 text-xs font-bold rounded {{ 
+                                'bg-yellow-600' if job.status == 'Pending' else 
+                                'bg-blue-600' if job.status == 'In_Progress' else 
+                                'bg-green-600' if job.status == 'Completed' else 'bg-red-600'
+                            }}">
+                                {{ job.status }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <a href="{{ url_for('linkup.view_job', job_id=job.id) }}" class="text-blue-500 hover:text-blue-400 text-sm">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-zinc-400">You haven't hired any services yet.</p>
+            <a href="{{ url_for('linkup.economy_view') }}" class="text-blue-500 hover:text-blue-400 text-sm mt-2 inline-block">
+                Browse services
+            </a>
+            {% endif %}
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-white mb-4">Quick Actions</h3>
+            <div class="space-y-3">
+                <a href="{{ url_for('linkup.economy_view') }}" class="flex items-center gap-3 bg-zinc-800 p-3 rounded-lg hover:bg-zinc-700 transition">
+                    <i class="fas fa-search text-blue-500"></i>
+                    <span class="text-white">Browse Services</span>
+                </a>
+                <a href="{{ url_for('chat') }}" class="flex items-center gap-3 bg-zinc-800 p-3 rounded-lg hover:bg-zinc-700 transition">
+                    <i class="fas fa-comments text-green-500"></i>
+                    <span class="text-white">Ask Skhokho Chat</span>
+                </a>
+                <a href="{{ url_for('macalaa') }}" class="flex items-center gap-3 bg-zinc-800 p-3 rounded-lg hover:bg-zinc-700 transition">
+                    <i class="fas fa-video text-purple-500"></i>
+                    <span class="text-white">Macalaa Visual</span>
+                </a>
+                <a href="{{ url_for('wallet') }}" class="flex items-center gap-3 bg-zinc-800 p-3 rounded-lg hover:bg-zinc-700 transition">
+                    <i class="fas fa-wallet text-yellow-500"></i>
+                    <span class="text-white">Add Credits</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recommended Services -->
+        <div class="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-white mb-4">Recommended Services</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {% for service in recommended_services %}
+                <div class="bg-zinc-800 p-4 rounded-lg">
+                    <h4 class="font-bold text-white">{{ service.name }}</h4>
+                    <p class="text-zinc-500 text-sm">{{ service.category }}</p>
+                    <p class="text-zinc-400 text-xs mt-2">{{ service.description[:80] }}...</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <span class="text-green-400 font-mono font-bold">{{ service.price }}c</span>
+                        <form action="{{ url_for('linkup.hire_provider', service_id=service.id) }}" method="POST">
+                            <button type="submit" class="bg-blue-600 text-white text-xs px-3 py-1 rounded hover:bg-blue-500 transition">
+                                HIRE NOW
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

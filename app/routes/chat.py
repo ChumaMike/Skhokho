@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
 # ✅ FIX: Import NetworkContact, not Contact
-from app.models import ChatLog, Goal, DiaryEntry, NetworkContact
+from app.models import ChatLog, Goal, DiaryEntry, NetworkContact, Service
 from app.services.ai_service import get_skhokho_response 
 
 chat_bp = Blueprint('chat', __name__)
@@ -92,6 +92,23 @@ def send_message():
                 group_size = cmd_data.get('group_size', 1)
                 per_person = fare / group_size if group_size > 0 else fare
                 ai_reply = f"🚖 Baala Calc: R{fare} ÷ {group_size} people = R{per_person:.2f} each"
+                
+            elif cmd == 'find_service':
+                # Find service providers integration
+                service_type = cmd_data.get('service_type', '')
+                services = Service.query.filter(
+                    Service.name.ilike(f'%{service_type}%') | 
+                    Service.category.ilike(f'%{service_type}%')
+                ).limit(3).all()
+                
+                if services:
+                    service_list = []
+                    for service in services:
+                        service_list.append(f"- {service.name} ({service.category}): {service.price}c")
+                    service_text = "\n".join(service_list)
+                    ai_reply = f"🔍 Found {len(services)} service providers for '{service_type}':\n{service_text}\n\nVisit LinkUp to hire."
+                else:
+                    ai_reply = f"Sorry, no '{service_type}' services found in your area. Try checking LinkUp for other options."
 
     except Exception as e:
         print(f"⚠️ Command Error: {e}")

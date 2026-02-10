@@ -54,6 +54,7 @@ def get_skhokho_response(user_message, context_data="", image=None):
             3. Add Network Contact: {"cmd": "add_network", "name": "Person Name", "role": "Their role/profession", "phone": "optional", "email": "optional"}
             4. Set Budget Alert: {"cmd": "set_alert", "threshold": 200, "message": "Alert when balance drops below R200"}
             5. Calculate Baala (Taxi Fare): {"cmd": "baala_calc", "fare": 15, "group_size": 4}
+            6. Find Service Providers: {"cmd": "find_service", "service_type": "plumber"} - for queries like "plumber", "electrician", "carpenter"
             
             IMPORTANT RULES:
             - For database actions, output ONLY the JSON (no extra text)

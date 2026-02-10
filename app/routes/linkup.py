@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app.extensions import db
-from app.models import Service, Job, User, JobChat, NetworkContact, NetworkAlert
+from app.models import Service, Job, User, JobChat, NetworkContact, NetworkAlert, CivicIssue
 from datetime import datetime
 
 linkup_bp = Blueprint('linkup', __name__, url_prefix='/linkup')
@@ -123,7 +123,10 @@ def economy_view():
 @linkup_bp.route('/map')
 @login_required
 def map_view():
-    return render_template('linkup/map.html')
+    # Get counts for legend
+    services_count = Service.query.filter(Service.latitude.isnot(None), Service.longitude.isnot(None)).count()
+    issues_count = CivicIssue.query.filter(CivicIssue.latitude.isnot(None), CivicIssue.longitude.isnot(None)).count()
+    return render_template('linkup/map.html', services_count=services_count, issues_count=issues_count)
 
 @linkup_bp.route('/join', methods=['POST'])
 @login_required
@@ -136,18 +139,44 @@ def join_economy():
             category=request.form.get('category'),
             description=request.form.get('description'),
             price=int(request.form.get('price', 50)), # Default 50 credits
-            latitude=float(request.form.get('location_lat', 0)),
-            longitude=float(request.form.get('location_lng', 0))
+            latitude=float(request.form.get('location_lat', -26.23)),
+            longitude=float(request.form.get('location_lng', 27.85))
         )
         db.session.add(new_service)
+        
+        # Update user role to provider if not already
+        if current_user.role != 'provider':
+            current_user.role = 'provider'
+        
         db.session.commit()
         print("Created service:", new_service)
         print("All services:", Service.query.all())
-        flash("Service Registered.", "success")
+        flash("Service Registered. You are now a provider!", "success")
     except Exception as e:
         print("Error:", str(e))
         flash(f"Error: {str(e)}", "error")
     return redirect(url_for('linkup.economy_view'))
+
+@linkup_bp.route('/dashboard')
+@login_required
+def dashboard():
+    """Show user or provider dashboard based on role"""
+    if current_user.role == 'provider':
+        # Provider dashboard data
+        provider_jobs = Job.query.filter_by(provider_id=current_user.id).all()
+        total_earnings = sum(job.price for job in provider_jobs if job.status == 'Completed' and job.is_paid)
+        completed_jobs = len([job for job in provider_jobs if job.status == 'Completed'])
+        return render_template('linkup/dashboard.html', 
+                            provider_jobs=provider_jobs,
+                            total_earnings=total_earnings,
+                            completed_jobs=completed_jobs)
+    else:
+        # User dashboard data
+        client_jobs = Job.query.filter_by(client_id=current_user.id).all()
+        recommended_services = Service.query.limit(3).all()
+        return render_template('linkup/dashboard.html', 
+                            client_jobs=client_jobs,
+                            recommended_services=recommended_services)
 
 # 💰 THE TRANSACTION ROUTE
 @linkup_bp.route('/hire/<int:service_id>', methods=['POST'])
