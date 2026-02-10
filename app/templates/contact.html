@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Contact & Payment - Skhokho{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+        <h1 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+            <i class="fas fa-address-book"></i> CONTACT & PAYMENT
+        </h1>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- Contact Information -->
+            <div class="space-y-6">
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-3">Contact Details</h2>
+                    <div class="space-y-3 text-zinc-400 text-sm">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-phone w-4 text-zinc-500"></i>
+                            <a href="tel:0693023981" class="hover:text-white transition-colors">069 302 3981</a>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-envelope w-4 text-zinc-500"></i>
+                            <a href="mailto:nmeyiswa@gmail.com" class="hover:text-white transition-colors">nmeyiswa@gmail.com</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-3">Social Links</h2>
+                    <div class="space-y-3 text-zinc-400 text-sm">
+                        <div class="flex items-center gap-3">
+                            <i class="fab fa-linkedin w-4 text-zinc-500"></i>
+                            <a href="https://linkedin.com/in/chuma-mike" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">LinkedIn Profile</a>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i class="fab fa-github w-4 text-zinc-500"></i>
+                            <a href="https://github.com/ChumaMike" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">GitHub Profile</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Information -->
+            <div class="space-y-6">
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-3">Payment Methods</h2>
+                    <div class="space-y-3 text-zinc-400 text-sm">
+                        <div class="bg-zinc-950 border border-zinc-800 rounded p-3">
+                            <div class="font-mono text-white mb-1">Bank Transfer</div>
+                            <div class="text-xs text-zinc-500">For large payments and business transactions</div>
+                        </div>
+                        <div class="bg-zinc-950 border border-zinc-800 rounded p-3">
+                            <div class="font-mono text-white mb-1">Mobile Money</div>
+                            <div class="text-xs text-zinc-500">Instant payments via mobile platforms</div>
+                        </div>
+                        <div class="bg-zinc-950 border border-zinc-800 rounded p-3">
+                            <div class="font-mono text-white mb-1">In-App Wallet</div>
+                            <div class="text-xs text-zinc-500">Use your Skhokho wallet for quick transactions</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-3">Payment Policy</h2>
+                    <div class="text-zinc-400 text-sm space-y-2">
+                        <p>• All payments are processed securely</p>
+                        <p>• Transactions are encrypted end-to-end</p>
+                        <p>• Payment confirmation within 24 hours</p>
+                        <p>• Refunds available according to our policy</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Business Hours -->
+        <div class="mt-8 pt-6 border-t border-zinc-800">
+            <h2 class="text-lg font-bold text-white mb-3">Business Hours</h2>
+            <div class="grid md:grid-cols-2 gap-4 text-zinc-400 text-sm">
+                <div class="bg-zinc-950 border border-zinc-800 rounded p-3">
+                    <div class="font-mono text-white mb-1">Weekdays</div>
+                    <div class="text-xs text-zinc-500">08:00 - 18:00</div>
+                </div>
+                <div class="bg-zinc-950 border border-zinc-800 rounded p-3">
+                    <div class="font-mono text-white mb-1">Weekends</div>
+                    <div class="text-xs text-zinc-500">09:00 - 14:00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

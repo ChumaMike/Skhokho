@@ -340,3 +340,19 @@ class ChatLog(db.Model):
 
     def __repr__(self):
         return f'<ChatLog {self.id}>'
+
+
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    transaction_type = db.Column(db.String(50), nullable=False)  # Deposit, Withdrawal, Payment, Earning, Conversion
+    description = db.Column(db.Text, nullable=True)
+    related_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', foreign_keys=[user_id], backref=db.backref('transactions', lazy=True))
+    related_user = db.relationship('User', foreign_keys=[related_user_id])
+
+    def __repr__(self):
+        return f'<Transaction {self.id}>'

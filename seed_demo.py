@@ -87,7 +87,7 @@ def seed_database():
                 'description': 'Major pothole causing traffic issues',
                 'latitude': -26.2325,
                 'longitude': 27.8818,
-                'ai_severity_score': 75,
+                'ai_risk_score': 75,
                 'city_status': 'Reported'
             },
             {
@@ -95,7 +95,7 @@ def seed_database():
                 'description': 'Deep pothole dangerous for cyclists',
                 'latitude': -26.2340,
                 'longitude': 27.8825,
-                'ai_severity_score': 85,
+                'ai_risk_score': 85,
                 'city_status': 'Investigating'
             },
             {
@@ -103,7 +103,7 @@ def seed_database():
                 'description': 'Pothole causing vehicle damage',
                 'latitude': -26.2310,
                 'longitude': 27.8805,
-                'ai_severity_score': 65,
+                'ai_risk_score': 65,
                 'city_status': 'Reported'
             }
         ]
@@ -114,7 +114,7 @@ def seed_database():
                 description=issue_data['description'],
                 latitude=issue_data['latitude'],
                 longitude=issue_data['longitude'],
-                ai_severity_score=issue_data['ai_severity_score'],
+                ai_risk_score=issue_data['ai_risk_score'],
                 city_status=issue_data['city_status'],
                 reporter_id=user.id
             )

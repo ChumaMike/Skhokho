@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, redirect, url_for, jsonify, request
+from flask import Blueprint, render_template, redirect, url_for, jsonify, request, flash
 from flask_login import login_required, current_user
 from datetime import datetime
-from app.models import Service, CivicIssue, Goal
+from app.models import Service, CivicIssue, Goal, Transaction
 from app.services.ai_service import get_skhokho_response
+from app.services.wallet import WalletService
 from PIL import Image
 import os
 from werkzeug.utils import secure_filename
@@ -124,6 +125,12 @@ def scan_location():
         print(f"⚠️ Scan Error: {e}")
         return jsonify({'error': str(e)}), 500
 
+@main_bp.route('/contact')
+@login_required
+def contact():
+    """Contact and payment information page"""
+    return render_template('contact.html')
+
 @main_bp.route('/analyze/image', methods=['POST'])
 @login_required
 def analyze_image():
@@ -156,3 +163,92 @@ def analyze_image():
     except Exception as e:
         print(f"⚠️ Analysis Error: {e}")
         return jsonify({'error': str(e)}), 500
+
+@main_bp.route('/about')
+@login_required
+def about():
+    """About Us page"""
+    return render_template('about.html')
+
+@main_bp.route('/wallet')
+@login_required
+def wallet():
+    """Wallet page with transactions and conversion functionality"""
+    # Get transaction history
+    transactions = Transaction.query.filter_by(user_id=current_user.id)\
+        .order_by(Transaction.timestamp.desc())\
+        .limit(10)\
+        .all()
+    
+    # Get last transaction date
+    last_transaction = None
+    if transactions:
+        last_transaction = transactions[0].timestamp.strftime('%Y-%m-%d %H:%M:%S')
+    
+    return render_template(
+        'wallet.html',
+        wallet_balance=current_user.wallet_balance,
+        reputation_points=current_user.reputation_points,
+        transactions=transactions,
+        last_transaction=last_transaction
+    )
+
+@main_bp.route('/deposit', methods=['POST'])
+@login_required
+def deposit():
+    """Deposit money into user's wallet"""
+    try:
+        amount = float(request.form.get('amount', 0))
+        result = WalletService.deposit(current_user.id, amount, "Manual deposit")
+        if result['success']:
+            flash(result['message'], 'success')
+        else:
+            flash(result['message'], 'error')
+    except Exception as e:
+        flash(f"Error: {str(e)}", 'error')
+    return redirect(url_for('main.wallet'))
+
+@main_bp.route('/withdraw', methods=['POST'])
+@login_required
+def withdraw():
+    """Withdraw money from user's wallet"""
+    try:
+        amount = float(request.form.get('amount', 0))
+        result = WalletService.withdraw(current_user.id, amount, "Manual withdrawal")
+        if result['success']:
+            flash(result['message'], 'success')
+        else:
+            flash(result['message'], 'error')
+    except Exception as e:
+        flash(f"Error: {str(e)}", 'error')
+    return redirect(url_for('main.wallet'))
+
+@main_bp.route('/convert-points-to-money', methods=['POST'])
+@login_required
+def convert_points_to_money():
+    """Convert reputation points to money"""
+    try:
+        points = int(request.form.get('points', 0))
+        result = WalletService.convert_points_to_money(current_user.id, points)
+        if result['success']:
+            flash(result['message'], 'success')
+        else:
+            flash(result['message'], 'error')
+    except Exception as e:
+        flash(f"Error: {str(e)}", 'error')
+    return redirect(url_for('main.wallet'))
+
+@main_bp.route('/convert-money-to-points', methods=['POST'])
+@login_required
+def convert_money_to_points():
+    """Convert money to reputation points"""
+    try:
+        amount = float(request.form.get('amount', 0))
+        result = WalletService.convert_money_to_points(current_user.id, amount)
+        if result['success']:
+            flash(result['message'], 'success')
+        else:
+            flash(result['message'], 'error')
+    except Exception as e:
+        flash(f"Error: {str(e)}", 'error')
+    return redirect(url_for('main.wallet'))

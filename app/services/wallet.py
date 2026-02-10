@@ -217,6 +217,114 @@ class WalletService:
             return {"success": False, "message": f"Database error: {str(e)}"}
     
     @staticmethod
+    def convert_points_to_money(user_id: int, points: int, conversion_rate: float = 0.1) -> dict:
+        """
+        Convert reputation points to money
+        
+        Args:
+            user_id: The user's ID
+            points: Number of points to convert
+            conversion_rate: Rate of conversion (1 point = R0.10 by default)
+            
+        Returns:
+            dict with success status and message
+        """
+        if points <= 0:
+            return {"success": False, "message": "Points must be positive"}
+        
+        try:
+            user = db.session.get(User, user_id)
+            if not user:
+                return {"success": False, "message": "User not found"}
+            
+            if user.reputation_points < points:
+                return {
+                    "success": False,
+                    "message": f"Insufficient points. Available: {user.reputation_points}"
+                }
+            
+            # Convert points to money
+            amount = points * conversion_rate
+            
+            # Update user's balance and points
+            user.reputation_points -= points
+            user.wallet_balance += amount
+            
+            # Create transaction record
+            transaction = Transaction(
+                user_id=user_id,
+                amount=amount,
+                transaction_type="Conversion",
+                description=f"Converted {points} points to R{amount:.2f}"
+            )
+            db.session.add(transaction)
+            db.session.commit()
+            
+            return {
+                "success": True,
+                "message": f"Converted {points} points to R{amount:.2f}",
+                "new_balance": user.wallet_balance,
+                "remaining_points": user.reputation_points
+            }
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            return {"success": False, "message": f"Database error: {str(e)}"}
+    
+    @staticmethod
+    def convert_money_to_points(user_id: int, amount: float, conversion_rate: float = 0.1) -> dict:
+        """
+        Convert money to reputation points
+        
+        Args:
+            user_id: The user's ID
+            amount: Amount of money to convert
+            conversion_rate: Rate of conversion (R0.10 = 1 point by default)
+            
+        Returns:
+            dict with success status and message
+        """
+        if amount <= 0:
+            return {"success": False, "message": "Amount must be positive"}
+        
+        try:
+            user = db.session.get(User, user_id)
+            if not user:
+                return {"success": False, "message": "User not found"}
+            
+            if user.wallet_balance < amount:
+                return {
+                    "success": False,
+                    "message": f"Insufficient funds. Balance: R{user.wallet_balance:.2f}"
+                }
+            
+            # Convert money to points
+            points = int(amount / conversion_rate)
+            
+            # Update user's balance and points
+            user.wallet_balance -= amount
+            user.reputation_points += points
+            
+            # Create transaction record
+            transaction = Transaction(
+                user_id=user_id,
+                amount=-amount,
+                transaction_type="Conversion",
+                description=f"Converted R{amount:.2f} to {points} points"
+            )
+            db.session.add(transaction)
+            db.session.commit()
+            
+            return {
+                "success": True,
+                "message": f"Converted R{amount:.2f} to {points} points",
+                "new_balance": user.wallet_balance,
+                "total_points": user.reputation_points
+            }
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            return {"success": False, "message": f"Database error: {str(e)}"}
+    
+    @staticmethod
     def add_reputation_points(user_id: int, points: int, reason: str = "Activity") -> dict:
         """
         Add reputation points to a user (global across all pillars)
