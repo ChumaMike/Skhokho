@@ -23,7 +23,7 @@ def register():
         new_user = User(
             username=username,
             email=email if email else None,
-            wallet_balance=0.0,
+            wallet_balance=0,
             reputation_points=0
         )
         new_user.set_password(password)

@@ -7,6 +7,33 @@ from app.services.ai_service import get_skhokho_response
 
 api_bp = Blueprint('api', __name__)
 
+@api_bp.route('/macalaa/assist', methods=['POST'])
+def macalaa_assist():
+    try:
+        data = request.get_json()
+        query = data.get('query', '').lower()
+        
+        # Determine response based on query content
+        if any(keyword in query for keyword in ['money', 'balance']):
+            # In a real app, this would fetch from a database or API
+            amount = 1500.00
+            response = f"Your balance is R{amount:.2f}."
+        elif any(keyword in query for keyword in ['job', 'work']):
+            # In a real app, this would fetch from a job board or API
+            jobs_available = 5
+            response = f"There are {jobs_available} jobs available nearby."
+        elif 'help' in query:
+            response = "I can help you navigate. Say 'Map' to see locations."
+        elif 'map' in query:
+            response = "Opening the map now."
+        else:
+            response = "I'm sorry, I didn't understand that. Please try asking about money, jobs, help, or map."
+        
+        return jsonify({'response': response})
+    except Exception as e:
+        print(f"⚠️ Macalaa Assist ERROR: {e}")
+        return jsonify({'response': "Sorry, there was an error processing your request."}), 500
+
 @api_bp.route('/v1/ask', methods=['POST'])
 def public_api():
     # 1. SECURITY CHECK (Middleware) 🛡️

@@ -7,25 +7,23 @@
             <h1 class="text-3xl font-bold text-yellow-500 tracking-tight">CivicNerve</h1>
             <p class="text-gray-500 text-sm font-mono mt-1">COMMUNITY ACTION TERMINAL</p>
         </div>
-        <button class="bg-yellow-600 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded shadow-lg text-sm">
+        <a href="{{ url_for('civic.report_issue') }}" class="bg-yellow-600 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded shadow-lg text-sm inline-block">
             <i class="fas fa-camera"></i> REPORT ISSUE
-        </button>
+        </a>
     </div>
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {% if tickets %}
-            {% for ticket in tickets %}
+        {% if issues %}
+            {% for issue in issues %}
             <div class="bg-gray-900 border border-gray-800 p-4 rounded-xl">
                 <div class="flex justify-between">
-                    <h3 class="text-white font-bold">{{ ticket.title }}</h3>
-                    <span class="text-xs font-mono text-yellow-500 border border-yellow-500/30 px-2 py-1 rounded">{{ ticket.status }}</span>
+                    <h3 class="text-white font-bold">{{ issue.title }}</h3>
+                    <span class="text-xs font-mono text-yellow-500 border border-yellow-500/30 px-2 py-1 rounded">{{ issue.city_status }}</span>
                 </div>
-                <p class="text-gray-400 text-sm mt-2">{{ ticket.description }}</p>
-                {% if ticket.guardian_seal %}
+                <p class="text-gray-400 text-sm mt-2">{{ issue.description }}</p>
                 <div class="mt-4 text-[10px] font-mono text-green-500 flex items-center gap-1">
-                    <i class="fas fa-shield-alt"></i> GUARDIAN SEAL VERIFIED
+                    <i class="fas fa-shield-alt"></i> SEVERITY: {{ issue.ai_severity_score }}
                 </div>
-                {% endif %}
             </div>
             {% endfor %}
         {% else %}

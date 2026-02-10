@@ -1,50 +1,59 @@
 from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
 from flask_login import login_required, current_user
 from app.extensions import db
-from app.models import CivicTicket
-from app.services.ai_service import get_skhokho_response
+from app.models import CivicIssue
+from app.services.ai_service import analyze_issue
 import hashlib
+from datetime import datetime
 
 civic_bp = Blueprint('civic', __name__)
 
 @civic_bp.route('/')
 def dashboard():
-    # Show all tickets on a map/list
-    tickets = CivicTicket.query.order_by(CivicTicket.created_at.desc()).all()
-    return render_template('civic/dashboard.html', tickets=tickets)
+    # Show all issues on a map/list
+    issues = CivicIssue.query.order_by(CivicIssue.created_at.desc()).all()
+    return render_template('civic/dashboard.html', issues=issues)
 
-@civic_bp.route('/report', methods=['POST'])
+@civic_bp.route('/report', methods=['GET', 'POST'])
 @login_required
 def report_issue():
-    """The 'Water Burst' Scenario"""
+    if request.method == 'GET':
+        return render_template('civic/report.html')
+        
+    """The 'CivicNerve' Scenario"""
     title = request.form.get('title')
     description = request.form.get('description')
-    image = request.files.get('image') # The photo of the leak
+    latitude = request.form.get('latitude', -26.2321)
+    longitude = request.form.get('longitude', 27.8816)
+    image = request.files.get('image') # The photo of the issue
     
     # 1. AI GUARDIAN ANALYSIS 🛡️
-    # We send the image to Gemini to assess severity
-    # In a real app, we would process the image file here
-    ai_verdict = get_skhokho_response(
-        f"Analyze this civic issue report: {title} - {description}. Rate severity 1-100.", 
-        context_data="CivicNerve Guardian Protocol"
-    )
+    ai_severity_score = analyze_issue(description)
     
     # 2. GENERATE DIGITAL SEAL (SHA-256) 🔐
     # This proves the report hasn't been tampered with
     raw_data = f"{title}{current_user.id}{datetime.utcnow()}"
     digital_seal = hashlib.sha256(raw_data.encode()).hexdigest()
     
-    # 3. SAVE TO DB
-    new_ticket = CivicTicket(
+    # 3. GAMIFICATION: REWARD USER
+    if ai_severity_score > 50:
+        current_user.wallet_balance += 50
+        current_user.reputation_points += 10
+        flash('City AI analyzed your report. Severity: High. You earned 50 Credits!', 'success')
+    else:
+        flash('City AI analyzed your report. Severity: Low.', 'info')
+    
+    # 4. SAVE TO DB
+    new_issue = CivicIssue(
         title=title,
         description=description,
-        author=current_user,
-        guardian_seal=digital_seal,
-        status="Investigating",
-        ai_risk_score=85 # In real code, parse this from AI response
+        reporter_id=current_user.id,
+        latitude=float(latitude),
+        longitude=float(longitude),
+        ai_severity_score=ai_severity_score,
+        city_status="Reported"
     )
-    db.session.add(new_ticket)
+    db.session.add(new_issue)
     db.session.commit()
     
-    flash(f"Ticket Logged! Guardian Seal: {digital_seal[:8]}...", "success")
     return redirect(url_for('civic.dashboard'))

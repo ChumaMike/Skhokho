@@ -1,20 +1,18 @@
-import sqlite3
+from app import create_app
+from app.extensions import db
 
-# Function to connect to SQLite database
-# Use this in your Flask routes
+def init_database():
+    app = create_app()
+    
+    with app.app_context():
+        # Drop all existing tables
+        db.drop_all()
+        
+        # Create all tables
+        db.create_all()
+        
+        print("Database initialized successfully!")
+        print("Tables created: users, services, jobs, civic_issues, macalaa_logs")
 
-def get_db_connection():
-    conn = sqlite3.connect('skhokho.db')
-    conn.row_factory = sqlite3.Row
-    return conn
-
-# One-time script to initialize the DB with schema.sql
-if __name__ == '__main__':
-    connection = sqlite3.connect('skhokho.db')
-
-    with open('schema.sql') as f:
-        connection.executescript(f.read())
-
-    connection.commit()
-    connection.close()
-    print("Database initialized with schema.sql")
+if __name__ == "__main__":
+    init_database()

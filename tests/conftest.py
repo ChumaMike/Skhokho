@@ -41,6 +41,8 @@ def clean_db(app):
 
     with app.app_context():
         db.session.remove()
+        db.drop_all()
+        db.create_all()
 
 class AuthActions:
     def __init__(self, client):

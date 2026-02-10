@@ -1,21 +1,95 @@
 {% extends 'base.html' %}
-{% block title %}LinkUp Geo{% endblock %}
+{% block title %}LinkUp Maps{% endblock %}
 {% block content %}
-<div class="h-[80vh] bg-gray-900 rounded-xl border border-gray-800 relative overflow-hidden flex items-center justify-center">
+<div class="h-[80vh] bg-gray-900 rounded-xl border border-gray-800 relative overflow-hidden">
     
     <div class="absolute top-4 left-4 z-10 bg-black/80 backdrop-blur p-4 rounded-lg border border-gray-700">
-        <h1 class="text-blue-500 font-bold text-xl"><i class="fas fa-briefcase"></i> LinkUp Geo</h1>
-        <p class="text-gray-400 text-xs">The Township Economy Map</p>
+        <h1 class="text-blue-500 font-bold text-xl"><i class="fas fa-map-marked-alt"></i> LinkUp Maps</h1>
+        <p class="text-gray-400 text-xs">Services & Civic Issues</p>
     </div>
 
-    <div class="text-center text-gray-600">
-        <i class="fas fa-map-marked-alt text-6xl mb-4 opacity-50"></i>
-        <h2 class="text-xl font-bold text-gray-500">Map Interface Loading...</h2>
-        <p class="text-xs mt-2">Connecting to Leaflet.js...</p>
-    </div>
+    <div id="map" class="w-full h-full"></div>
     
-    <a href="{{ url_for('linkup.provider_dashboard') }}" class="absolute bottom-4 right-4 bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-full font-bold shadow-lg z-10 transition">
-        PROVIDER DASHBOARD
+    <a href="{{ url_for('linkup.economy_view') }}" class="absolute bottom-4 right-4 bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-full font-bold shadow-lg z-10 transition">
+        ECONOMY VIEW
     </a>
 </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize map centered on Soweto
+    const map = L.map('map').setView([-26.23, 27.85], 13);
+
+    // Add OpenStreetMap tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19
+    }).addTo(map);
+
+    // Create custom icons
+    const serviceIcon = L.divIcon({
+        className: 'custom-marker',
+        html: '<div style="background-color: #3b82f6; color: white; padding: 8px 12px; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"><i class="fas fa-briefcase"></i></div>',
+        iconSize: [40, 40],
+        iconAnchor: [20, 20]
+    });
+
+    const issueIcon = L.divIcon({
+        className: 'custom-marker',
+        html: '<div style="background-color: #ef4444; color: white; padding: 8px 12px; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"><i class="fas fa-exclamation-circle"></i></div>',
+        iconSize: [40, 40],
+        iconAnchor: [20, 20]
+    });
+
+    // Fetch map data from API
+    fetch('{{ url_for("main.map_data") }}')
+        .then(response => response.json())
+        .then(data => {
+            // Add service markers
+            data.services.forEach(service => {
+                const marker = L.marker([service.lat, service.lng], {
+                    icon: serviceIcon
+                }).addTo(map);
+                
+                marker.bindPopup(`
+                    <div style="padding: 8px;">
+                        <h3 style="margin: 0 0 8px 0; color: #3b82f6;">${service.title}</h3>
+                        <p style="margin: 0 0 8px 0; font-size: 14px;">Category: ${service.category}</p>
+                        <p style="margin: 0 0 12px 0; font-size: 14px; font-weight: bold;">R${service.price}</p>
+                        <button onclick="hireService(${service.id})" style="background-color: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-handshake"></i> Hire
+                        </button>
+                    </div>
+                `);
+            });
+
+            // Add issue markers
+            data.issues.forEach(issue => {
+                const marker = L.marker([issue.lat, issue.lng], {
+                    icon: issueIcon
+                }).addTo(map);
+                
+                marker.bindPopup(`
+                    <div style="padding: 8px;">
+                        <h3 style="margin: 0 0 8px 0; color: #ef4444;">${issue.title}</h3>
+                        <p style="margin: 0 0 8px 0; font-size: 14px;">Severity: ${issue.severity}/10</p>
+                        <p style="margin: 0 0 8px 0; font-size: 14px;">Status: ${issue.status}</p>
+                    </div>
+                `);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching map data:', error);
+        });
+
+    // Hire service function
+    window.hireService = function(serviceId) {
+        alert(`Hire service with ID: ${serviceId}`);
+        // TODO: Implement actual hire functionality
+    };
+});
+</script>
 {% endblock %}

@@ -43,7 +43,6 @@
                 <h3 class="text-zinc-500 font-mono text-xs uppercase tracking-widest flex items-center gap-2">
                     <i class="fas fa-crosshairs"></i> Active Missions
                 </h3>
-                <a href="{{ url_for('goals.dashboard') }}" class="text-[10px] bg-red-600/20 text-red-500 px-2 py-1 rounded hover:bg-red-600 hover:text-white transition">MANAGE</a>
             </div>
 
             {% if goals %}
@@ -94,10 +93,26 @@
 
     <div class="lg:col-span-5 flex flex-col gap-4">
         
-        <a href="{{ url_for('linkup.map_view') }}" class="flex-1 bg-gradient-to-r from-gray-900 to-gray-800 p-5 rounded-xl border border-gray-700 hover:border-blue-500 transition group">
+        <a href="{{ url_for('linkup.map_view') }}" class="flex-1 bg-gradient-to-br from-blue-900/20 to-blue-800/20 p-6 rounded-xl border border-blue-700/30 hover:border-blue-500 hover:bg-blue-900/30 transition group">
+            <div class="flex flex-col h-full">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h4 class="text-white font-bold text-xl group-hover:text-blue-400 transition">View Map</h4>
+                        <p class="text-gray-500 text-xs mt-1">Services & Civic Issues</p>
+                    </div>
+                    <i class="fas fa-map-marked-alt text-3xl text-blue-500/50 group-hover:text-blue-500 transition"></i>
+                </div>
+                <div class="mt-auto">
+                    <div class="bg-blue-600/20 text-blue-400 px-3 py-1.5 rounded-lg text-xs font-mono inline-block">
+                        <i class="fas fa-map-pin mr-1"></i> Interactive Map
+                    </div>
+                </div>
+            </div>
+        </a>
+        <a href="{{ url_for('linkup.economy_view') }}" class="flex-1 bg-gradient-to-r from-gray-900 to-gray-800 p-5 rounded-xl border border-gray-700 hover:border-blue-500 transition group">
             <div class="flex justify-between items-start">
                 <div>
-                    <h4 class="text-white font-bold text-lg group-hover:text-blue-400 transition">LinkUp Geo</h4>
+                    <h4 class="text-white font-bold text-lg group-hover:text-blue-400 transition">LinkUp Economy</h4>
                     <p class="text-gray-500 text-xs mt-1">Gigs & Local Hiring</p>
                 </div>
                 <i class="fas fa-briefcase text-2xl text-blue-500/50 group-hover:text-blue-500 transition"></i>
@@ -137,18 +152,20 @@
                 <p class="text-zinc-500 text-[10px] font-mono uppercase">Managing Hidden Systems</p>
             </div>
         </div>
-
-        <div class="flex gap-2 bg-black/50 p-1.5 rounded-lg border border-zinc-800">
-            <a href="{{ url_for('tools.balaa') }}" class="px-3 py-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white text-[10px] font-mono transition flex items-center gap-2">
-                <i class="fas fa-wallet"></i> BALAA
+        
+        <!-- Quick Links -->
+        <div class="flex gap-2 flex-wrap justify-center">
+            <a href="{{ url_for('goals.dashboard') }}" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fas fa-bullseye"></i> Goals
             </a>
-            <div class="w-px bg-zinc-800 h-full"></div>
-            <a href="{{ url_for('tools.diary') }}" class="px-3 py-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white text-[10px] font-mono transition flex items-center gap-2">
-                <i class="fas fa-book"></i> DIARY
+            <a href="{{ url_for('crm.dashboard') }}" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fas fa-users"></i> Network
             </a>
-            <div class="w-px bg-zinc-800 h-full"></div>
-            <a href="{{ url_for('crm.dashboard') }}" class="px-3 py-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white text-[10px] font-mono transition flex items-center gap-2">
-                <i class="fas fa-users"></i> NETWORK
+            <a href="{{ url_for('tools.diary') }}" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fas fa-book"></i> Diary
+            </a>
+            <a href="{{ url_for('tools.balaa') }}" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fas fa-calculator"></i> Baala
             </a>
         </div>
     </div>
@@ -158,7 +175,8 @@
             <div class="w-8 h-8 bg-red-600 rounded-lg flex-shrink-0 flex items-center justify-center text-xs text-white font-bold">SK</div>
             <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-lg rounded-tl-none max-w-[85%] text-zinc-300 text-sm leading-relaxed shadow-sm">
                 Sho {{ current_user.username }}! I'm online. <br>
-                I'm tracking your goals above. What's the next move?
+                I'm tracking your goals above. What's the next move?<br><br>
+                <span class="text-zinc-500 text-xs">💡 Try: "Add a goal to save R5000" or "Calculate taxi fare R15 for 4 people"</span>
             </div>
         </div>
     </div>
@@ -196,36 +214,30 @@
         chatContainer.appendChild(div);
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
-
+    
+    // Chat form submission
     chatForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const message = userInput.value.trim();
         if (!message) return;
+        
         appendMessage('user', message);
         userInput.value = '';
-
-        const loadingId = 'loading-' + Date.now();
-        const loadingDiv = document.createElement('div');
-        loadingDiv.id = loadingId;
-        loadingDiv.className = 'flex gap-4';
-        loadingDiv.innerHTML = `<div class="w-8 h-8 bg-red-600 rounded-lg flex-shrink-0 flex items-center justify-center text-xs text-white font-bold">SK</div><div class="bg-zinc-900 border border-zinc-800 p-3 rounded-lg rounded-tl-none text-zinc-500 text-xs italic animate-pulse">Thinking...</div>`;
-        chatContainer.appendChild(loadingDiv);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-
+        
         try {
-            const response = await fetch("{{ url_for('chat.send_message') }}", {
+            const response = await fetch('/chat/send', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: message })
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: message})
             });
+            
             const data = await response.json();
-            document.getElementById(loadingId).remove();
-            appendMessage('bot', data.response || data.reply || "Eish, connection glitch.");
+            appendMessage('bot', data.response);
         } catch (error) {
-            document.getElementById(loadingId).remove();
-            appendMessage('bot', "Connection Error. Core offline.");
+            appendMessage('bot', '⚠️ Connection error. Please try again.');
         }
     });
+
 
     // --- RADAR LOGIC ---
     async function scanLocation(isSimulation) {

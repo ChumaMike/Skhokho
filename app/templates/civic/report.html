@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Report a Civic Issue</h1>
+    <div class="row">
+        <div class="col-md-8">
+            <form method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="title">Issue Title</label>
+                    <input type="text" class="form-control" id="title" name="title" required placeholder="e.g., Pothole on Main Street">
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="4" required placeholder="Please provide details about the issue..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image">Photo (optional)</label>
+                    <input type="file" class="form-control-file" id="image" name="image" accept="image/*">
+                </div>
+                
+                <div class="form-group">
+                    <label>Location</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="location" placeholder="Click the button to get your location" readonly>
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-primary" id="getLocation">Get My Location</button>
+                        </div>
+                    </div>
+                    <small class="form-text text-muted">Your location will help the city respond faster.</small>
+                </div>
+                
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
+                
+                <button type="submit" class="btn btn-success btn-block">Submit Report</button>
+            </form>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>How it works</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-edit"></i> Fill out the form with details</li>
+                        <li><i class="fas fa-camera"></i> Add a photo if you can</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Share your location</li>
+                        <li><i class="fas fa-robot"></i> AI analyzes severity</li>
+                        <li><i class="fas fa-coins"></i> Earn credits for high severity issues</li>
+                    </ul>
+                    
+                    <div class="alert alert-info mt-3">
+                        <h6><i class="fas fa-info-circle"></i> High Severity Issues</h6>
+                        <p>Issues with keywords like "pothole", "fire", or "danger" earn you 50 Credits and 10 Reputation Points!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('getLocation').addEventListener('click', function() {
+    if (navigator.geolocation) {
+        const btn = this;
+        const originalText = btn.textContent;
+        btn.textContent = 'Getting location...';
+        btn.disabled = true;
+        
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                
+                document.getElementById('latitude').value = latitude;
+                document.getElementById('longitude').value = longitude;
+                document.getElementById('location').value = `Lat: ${latitude.toFixed(4)}, Lon: ${longitude.toFixed(4)}`;
+                
+                btn.textContent = 'Location Obtained!';
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-success');
+            },
+            function(error) {
+                console.error('Geolocation error:', error);
+                alert('Unable to get your location. Please try again.');
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        );
+    } else {
+        alert('Geolocation is not supported by your browser.');
+    }
+});
+</script>
+
+<style>
+.card {
+    margin-top: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.btn-block {
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 16px;
+}
+</style>
+{% endblock %}

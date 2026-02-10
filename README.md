@@ -1,133 +1,215 @@
-# SKHOKHO.SYS // Life Operating System
+# Skhokho
 
-![Python](https://img.shields.io/badge/Python-3.10-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Flask](https://img.shields.io/badge/Flask-2.0-000000?style=for-the-badge&logo=flask&logoColor=white)
-![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![OpenAI](https://img.shields.io/badge/AI-Powered-412991?style=for-the-badge&logo=openai&logoColor=white)
-![Status](https://img.shields.io/badge/System-Operational-green?style=for-the-badge)
+**Skhokho is not just an app; it is a feedback loop ecosystem.**
 
-**Skhokho** is an enterprise-grade personal management platform (LifeOS) engineered for the South African context. It integrates financial calculations, network relationship management (CRM), strategic goal tracking, and local environmental telemetry into a single, high-performance command center.
+A community-focused super app that connects economic activity, civic engagement, and accessibility into one unified platform for South African townships.
 
-The system features **Skhokho AI**, an integrated chatbot companion that assesses user well-being, provides life strategy, and acts as a daily accountability partner.
+## 🌍 The Ecosystem
 
----
+Skhokho operates on **three interconnected loops**:
 
-## 📸 System Interface
+### 1. 💰 Economic Loop
+Users earn money in **LinkUp** → Track/Budget it in **Skhokho Dashboard** → Spend it on Goals/Services
 
-*(Add screenshots here. For example: `![Dashboard Screenshot](docs/dashboard.png)`)*
+### 2. 🏛️ Civic Loop  
+Users report data in **CivicNerve** → Earn Reputation Points → Get trusted status/discounts in **LinkUp**
 
----
+### 3. 🦯 Accessibility Layer
+**Macalaa** sits on top of everything, ensuring blind/disabled users can participate in both loops equally
 
-## ⚡ Core Modules
-
-### 1. 🤖 Skhokho AI Companion (NEW)
-A conversational intelligence engine designed to be your daily architect:
-* **Well-being Assessment:** Daily check-ins to track mental state and energy levels.
-* **Strategic Advisor:** Provides tailored "Life Hacks" and tips based on your current goals and challenges.
-* **Conversational Interface:** A chat-based UI for venting, brainstorming, or getting quick advice.
-
-### 2. 🎛️ Command Center (Dashboard)
-A centralized HUD providing real-time intelligence:
-* **Environmental Telemetry:** Integration with OpenWeatherMap for local forecasts.
-* **Grid Status:** Real-time Load Shedding stage updates via EskomSePush API.
-* **Priority Queue:** Top 3 active strategic goals sorted by completion status.
-* **Network Alerts:** Automated "Red Flags" for contacts neglected for >30 days.
-
-### 3. 🚕 Balaa Financial Engine
-A specialized arithmetic engine for the South African taxi industry:
-* Calculates fare distribution for groups.
-* Tracks expected vs. received totals.
-* Computes change variance.
-* Maintains a transactional history log.
-
-### 4. 🎯 Strategic Goal Tracker
-A project management system for personal ambition:
-* Create high-level objectives (e.g., "Career", "Finance").
-* Break down objectives into executable milestones.
-* Visual progress bars powered by real-time completion logic.
-
-### 5. 🤝 Network Intelligence (CRM)
-A "Personal Rolodex" to manage social capital:
-* Track professional and personal contacts.
-* Log interactions (Calls, Meetings, Emails).
-* **Cold Contact Algorithm:** Automatically flags contacts that haven't been engaged in 30 days.
+📖 **[Read the Complete Ecosystem Overview](ECOSYSTEM_OVERVIEW.md)**
 
 ---
 
-## 🏗️ Architecture
+## ✨ Core Features
 
-The application follows a **Service-Repository Pattern** to ensure scalability and separation of concerns:
+### 🏠 Skhokho Dashboard (Command Center)
+- **AI Chatbot with Database Write Access**: Natural language commands that execute real actions
+  - "Add a goal to save R5000 for a laptop" → Creates goal in database
+  - "I met a great plumber, add him to my network" → Saves contact
+  - "Alert me if my budget drops below R200" → Sets budget alert
+- **Wallet & Reputation Tracking**: Real-time balance and reputation points
+- **Baala Calculator Integration**: Taxi fare splitting via chat
+- **Context-Aware**: Knows your goals, contacts, and financial status
 
-```text
-app/
-├── routes/          # Logic Controllers (Blueprints)
-│   ├── auth.py      # Security & Session Management
-│   ├── chat.py      # Skhokho AI Logic
-│   ├── crm.py       # Network Logic
-│   ├── goals.py     # Strategy Engine
-│   └── tools.py     # Utilities (Balaa/Diary)
-├── services/        # External API Integrations
-│   ├── ai_service.py # OpenAI / LLM Integration
-│   ├── eskom.py     # Load Shedding Service
-│   └── weather.py   # Weather Service
-├── models.py        # SQLAlchemy Database Schema
-└── templates/       # Jinja2 UI (Tailwind CSS)
-🛠️ Installation & Setup
-Prerequisites
-Python 3.10+
+### 🤝 LinkUp (The Marketplace)
+- **Dual-Role Identity**: Users can be both service providers AND customers
+- **Interactive Map**: Real-time geospatial view of services and civic issues
+- **Escrow System**: Secure payment holding until job completion
+- **Rating & Reviews**: 1-5 star ratings for both providers and customers
+- **Verified Badges**: Earned through reputation (50+ points)
 
-API Keys (OpenWeatherMap, EskomSePush, OpenAI)
+### 👁️ CivicNerve (The City Agent)
+- **AI Vision Analysis**: Google Gemini analyzes photos of civic issues
+- **Auto-Categorization**: AI determines issue type and severity (0-100)
+- **Community Voting**: Upvote system prioritizes urgent issues
+- **Reputation Rewards**: Earn points for verified reports
+- **Status Tracking**: Real-time updates from Reported → Resolved
 
-1. Clone the Repository
-Bash
+### 🦯 Macalaa (Visual & Voice Assistant)
+- **Voice Navigation**: Full app control via voice commands
+  - "Macalaa, hire a plumber" → Opens LinkUp with plumber filter
+  - "Check my balance" → Reads wallet and reputation
+- **Environment Scanning**: AI describes surroundings from camera
+- **Danger Detection**: Auto-detects hazards and warns users urgently
+- **Auto-Reporting**: Dangers automatically reported to CivicNerve
+- **Location Narration**: Describes nearby services and safety warnings
 
-git clone [https://github.com/yourusername/skhokho.git](https://github.com/yourusername/skhokho.git)
-cd skhokho
-2. Initialize Environment
-Bash
+### 🛠️ Tools
+- **Diary**: Personal journal with AI-powered insights
+- **Baala Calculator**: Taxi fare splitting and payment tracking
+- **Goals**: Mission tracking with progress visualization
+- **Network (CRM)**: Professional and personal contact management
 
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-3. Configure Variables
-Create a .env file in the root directory:
+## Requirements
 
-Ini, TOML
+- Python 3.10+
+- Flask
+- Flask-SQLAlchemy
+- Flask-Login
+- Flask-Migrate
+- psycopg2-binary (for PostgreSQL)
+- python-dotenv
+- requests
+- google-generativeai (or google.genai)
+- pillow
+- geoalchemy2
+- flask-limiter
+- flask-talisman
+- flask-wtf
+- email_validator
 
-FLASK_APP=run.py
-FLASK_DEBUG=1
-SECRET_KEY=your-super-secret-key
-DATABASE_URL=sqlite:///skhokho.db
-WEATHER_API_KEY=your_key_here
-ESKOM_API_TOKEN=your_token_here
-OPENAI_API_KEY=your_openai_key_here
-4. Database Migration
-Initialize the SQLite database schema:
+## Installation
 
-Bash
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/ChumaMike/Skhokho.git
+   cd Skhokho
+   ```
 
-flask db upgrade
-5. Launch System
-Bash
+2. **Create a virtual environment**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Linux/Mac
+   # or
+   venv\Scripts\activate  # Windows
+   ```
 
-flask run
-Access the terminal at http://127.0.0.1:5000
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-🧪 Testing & Quality Assurance
-Skhokho maintains a rigorous testing suite using pytest, covering authentication, math logic, and security edge cases.
+4. **Configure environment variables**:
+   - Copy `.env.example` to `.env` (if exists)
+   - Or create a new `.env` file with the following content:
+     ```
+     FLASK_APP=run.py
+     FLASK_DEBUG=1
+     SECRET_KEY=dev-key-change-this-in-prod
+     DATABASE_URL=sqlite:///skhokho.db
+     WEATHER_API_KEY=your_weather_api_key
+     NEWSAPI_KEY=your_news_api_key
+     ESKOM_API_TOKEN=your_eskom_token
+     GOOGLE_API_KEY=your_google_api_key
+     SKHOKHO_CLIENT_SECRET=your_secret_key
+     GEMINI_API_KEY=your_gemini_api_key
+     ```
 
-To execute the test suite:
+5. **Initialize the database**:
+   ```bash
+   python init_db.py
+   python seed_demo.py  # Optional: Adds demo data
+   ```
 
-Bash
+## Running the App
 
-pytest
-To generate a coverage report:
+### Development Server
 
-Bash
+```bash
+python run.py --port 5000 --host 0.0.0.0
+```
 
+The app will be available at `http://localhost:5000/`
 
-pytest --cov=app
-🛡️ License
-Distributed under the MIT License. See LICENSE for more information.
+### Docker
 
-Engineer: Chuma Meyiswa Version: 2.1.0 (AI Update)
+```bash
+docker-compose up
+```
+
+## Usage
+
+### Accessing the App
+
+1. Open your browser and navigate to `http://localhost:5000/`
+2. Register a new account or log in with existing credentials
+3. Explore the various features:
+   - **Goals**: Click on "Goals" in the navigation to set and track your goals
+   - **Network**: Manage your contacts under "Network"
+   - **Tools**: Access Balaa (fare calculator) and Diary (journal) under "Tools"
+   - **LinkUp**: Find local service providers on the map
+   - **Macalaa AI**: Chat with the AI assistant
+   - **Civic**: Report and view civic issues
+
+### Demo User
+
+If you ran `seed_demo.py`, you can log in with:
+- Username: `citizen_one`
+- Password: `demo`
+
+## Testing
+
+To run the tests:
+
+```bash
+pytest tests/
+```
+
+## Architecture
+
+- **Flask** - Web framework
+- **SQLite/PostgreSQL** - Database
+- **Flask-SQLAlchemy** - ORM
+- **Flask-Login** - Authentication
+- **Google Generative AI (Gemini)** - AI chat functionality
+- **Leaflet** - Map visualization for LinkUp
+- **Font Awesome** - Icons
+
+## Project Structure
+
+```
+Skhokho/
+├── app/
+│   ├── __init__.py       # App initialization
+│   ├── extensions.py     # Flask extensions (db, login_manager, etc.)
+│   ├── models.py         # Database models
+│   ├── routes/           # Blueprint routes
+│   ├── services/         # Business logic and external API integration
+│   ├── static/           # Static files (CSS, JavaScript, images)
+│   └── templates/        # HTML templates
+├── tests/                # Test files
+├── .env                  # Environment variables
+├── config.py             # App configuration
+├── docker-compose.yml    # Docker configuration
+├── Dockerfile            # Dockerfile
+├── init_db.py            # Database initialization script
+├── requirements.txt      # Python dependencies
+├── run.py                # App entry point
+└── seed_demo.py          # Demo data seeding script
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a new branch for your feature
+3. Make your changes and commit them
+4. Push to your fork and create a pull request
+
+## License
+
+MIT License
+
+## Contact
+
+For questions or support, please contact [Chuma Mike](https://github.com/ChumaMike)

@@ -1,6 +1,6 @@
 import pytest
 from app.extensions import db
-from app.models import User, Job, JobChat
+from app.models import User, Job, JobChat, Service
 
 def test_wallet_mechanics(app):
     with app.app_context():
@@ -21,11 +21,16 @@ def test_job_escrow_logic(app):
         db.session.add_all([p, c])
         db.session.commit()
         
-        job = Job(customer_id=c.id, provider_id=p.id, status="In_Progress", agreed_price=50)
+        # Create a service first
+        s = Service(provider_id=p.id, name="Test Service", category="Testing", price=50, latitude=0.0, longitude=0.0)
+        db.session.add(s)
+        db.session.commit()
+        
+        job = Job(service_id=s.id, client_id=c.id, provider_id=p.id, status="In_Progress", price=50)
         db.session.add(job)
         
         # Simulate logic
-        c.wallet_balance -= job.agreed_price
+        c.wallet_balance -= job.price
         db.session.commit()
         
         assert c.wallet_balance == 150
@@ -38,7 +43,12 @@ def test_chat_ownership(app):
         db.session.add_all([u1, u2])
         db.session.commit()
 
-        job = Job(customer_id=u1.id, provider_id=u2.id, status="Open")
+        # Create a service first
+        s = Service(provider_id=u2.id, name="Test Service", category="Testing", price=50, latitude=0.0, longitude=0.0)
+        db.session.add(s)
+        db.session.commit()
+        
+        job = Job(service_id=s.id, client_id=u1.id, provider_id=u2.id, status="Open", price=50)
         db.session.add(job)
         db.session.commit()
         

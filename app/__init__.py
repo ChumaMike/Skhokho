@@ -40,15 +40,13 @@ def create_app(config_class=Config):
     from app.routes.macalaa import macalaa_bp
     from app.routes.civic import civic_bp
     from app.routes.api import api_bp
-    
-    # ✅ FIX: UNCOMMENT/ADD THESE LINES TO CONNECT THE CHAT
     from app.routes.chat import chat_bp 
-    app.register_blueprint(chat_bp, url_prefix='/chat')
-
+    
     app.register_blueprint(linkup_bp, url_prefix='/linkup')
     app.register_blueprint(macalaa_bp, url_prefix='/macalaa')
     app.register_blueprint(civic_bp, url_prefix='/civic')
     app.register_blueprint(api_bp, url_prefix='/api')
+    app.register_blueprint(chat_bp, url_prefix='/chat')
 
     return app
 
